@@ -24,7 +24,7 @@ Tasker es una aplicación web para organizar proyectos y tareas académicas, des
 | Base de datos | PostgreSQL |
 | Control de versiones | Git y GitHub |
 | Planificación y seguimiento | Jira |
-| Diseño UX/UI | `design.md` y prototipos aprobados |
+| Diseño UX/UI | [DESIGN.md](DESIGN.md) y prototipos aprobados |
 
 El desarrollo se realizará mediante un único sprint, priorizando una aplicación funcional, segura, verificable y demostrable.
 
@@ -54,7 +54,7 @@ tasker-web/
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── .gitignore
 ├── AGENTS.md
-├── design.md
+├── DESIGN.md
 └── README.md
 ```
 
@@ -76,7 +76,7 @@ Esta estructura se completará progresivamente según las historias correspondie
 2. Separar la presentación de la lógica de acceso a datos.
 3. Evitar duplicación de código y dependencias innecesarias.
 4. Mantener los componentes reutilizables en `shared/`.
-5. Respetar los lineamientos visuales establecidos en `design.md`.
+5. Consultar [DESIGN.md](DESIGN.md) como referencia del sistema visual y el [README de recursos de marca](frontend/public/brand/README.md) para su uso, licencia y procedencia. Mantener las reglas de colores, tipografía y componentes en `DESIGN.md`, sin duplicarlas en estos estándares.
 6. No modificar la estructura general sin justificarlo en el Pull Request.
 
 ### 2.2. Convenciones de nombres

@@ -53,6 +53,8 @@ tasker-web/
 
 **Nota:** las carpetas de Angular y Supabase solo aparecerán después de que las historias correspondientes se implementen. No deben crearse vacías para simular entregables.
 
+**Diseño y marca:** [DESIGN.md](DESIGN.md) es la referencia del sistema de diseño de Tasker. Los [recursos oficiales de marca](frontend/public/brand/README.md) incluyen logotipo, isotipo y fuentes.
+
 ## Organización del trabajo
 
 El proyecto tiene **un sprint**, del **3 al 17 de noviembre de 2026**, con evaluación el **17 de noviembre**.
