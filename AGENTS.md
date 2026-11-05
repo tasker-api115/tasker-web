@@ -316,7 +316,15 @@ Las migraciones deben ser verificables y no deben aplicarse simultáneamente por
 
 **Política de contraseñas:** antes de implementar HU-54, el equipo backend deberá verificar y documentar aquí la política configurada en Supabase Auth, incluyendo requisitos de longitud, complejidad y confirmación de correo cuando corresponda. No se asumirán valores que no hayan sido configurados.
 
-**Regla funcional pendiente:** HU-31 y HU-33 presentan criterios diferentes sobre quién puede cambiar el estado de una tarea. Esta discrepancia debe resolverse y documentarse en Jira antes de implementar las políticas RLS correspondientes.
+**Autorización para modificar estados de tareas (HU-31 y HU-33):**
+
+- Solo el integrante asignado a una tarea puede modificar su estado, incluido el dueño del proyecto cuando sea el asignado.
+- Los estados permitidos son `Por hacer`, `En progreso` y `Completada`.
+- El cambio mediante drag and drop debe respetar las mismas restricciones de HU-31.
+- Los usuarios que no pertenecen al proyecto no pueden modificar estados.
+- Los permisos deben verificarse en la interfaz y mediante políticas RLS en Supabase.
+- Los cambios deben persistirse en la base de datos y reflejarse en las vistas correspondientes.
+- Si falla una operación de drag and drop, se debe informar al usuario y restaurar el estado anterior.
 
 ### 6.3. Credenciales y datos de prueba
 
