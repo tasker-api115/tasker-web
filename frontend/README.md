@@ -1,8 +1,14 @@
 # Tasker frontend
 
 ```bash
+
+#Cambiar a carpeta de front
 cd frontend
+
+#Instalar dependencias
 npm ci
+
+#Iniciar proyecto
 npm start
 ```
 Abrir http://localhost:4200.
