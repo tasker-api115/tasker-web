@@ -1,0 +1,49 @@
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<div class="app-shell">
+  <aside class="app-navigation">
+    <!-- Etiqueta textual temporal. Sustituir con el SVG oficial recibido de HU-07, sin reconstruir el logo. -->
+    <a class="brand-label" routerLink="/inicio">{{ settings.appName }}</a>
+    <div>
+      <p class="nav-caption">Espacio de trabajo</p>
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a
+          z-button
+          zSize="lg"
+          routerLink="/inicio"
+          routerLinkActive
+          #home="routerLinkActive"
+          [zType]="home.isActive ? 'secondary' : 'ghost'"
+          ariaCurrentWhenActive="page"
+        >
+          <ng-icon name="lucideHouse" aria-hidden="true" /> Inicio
+          @if (home.isActive) {
+            <ng-icon name="lucideCheck" class="ml-auto" aria-hidden="true" />
+          }
+        </a>
+        <a
+          z-button
+          zSize="lg"
+          routerLink="/tareas"
+          routerLinkActive
+          #tasks="routerLinkActive"
+          [zType]="tasks.isActive ? 'secondary' : 'ghost'"
+          ariaCurrentWhenActive="page"
+        >
+          <ng-icon name="lucideSquareCheck" aria-hidden="true" /> Tareas
+          @if (tasks.isActive) {
+            <ng-icon name="lucideCheck" class="ml-auto" aria-hidden="true" />
+          }
+        </a>
+      </nav>
+    </div>
+    <p class="nav-note">Un espacio para organizar<br />lo que viene.</p>
+  </aside>
+  <div class="app-workspace">
+    <header class="app-topbar">
+      <span class="text-sm text-muted-foreground">Mi espacio</span
+      ><z-badge zType="secondary">Versión inicial</z-badge>
+    </header>
+    <main id="contenido" class="app-main" tabindex="-1"><router-outlet /></main>
+    <footer class="app-footer">{{ settings.appName }} · Organiza tu próximo paso</footer>
+  </div>
+</div>
