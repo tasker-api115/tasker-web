@@ -1,11 +1,86 @@
 {
-  "source": "https://www.npmjs.com/package/geist/v/1.9.1",
-  "package": "geist",
-  "version": "1.9.1",
-  "note": "Fuentes de la distribuci\u00f3n upstream. No se recibi\u00f3 el paquete de marca HU-07 para comparar los binarios.",
-  "sha256": {
-    "Geist-Variable.woff2": "426b7334d14e0b1c4021e00249fa26938f3d812e36644a2b58b4ecfae0803bbc",
-    "GeistMono-Variable.woff2": "d3e5c101bb65fab2e62e53082a99d2ba4c48e54aa7670365440f559e277818b4",
-    "LICENSE.txt": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137"
+  "repository": "https://github.com/vercel/geist-font",
+  "release": "v1.7.2",
+  "commit": "a73329da8fc62afc917f796555202e4997f79b7c",
+  "description": "Fuentes oficiales de Vercel; versión estática reproducible. Geist Sans se registra como Geist.",
+  "fonts": [
+    {
+      "file": "Geist-Regular.ttf",
+      "family": "Geist",
+      "weight": 400,
+      "style": "Regular",
+      "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/fonts/Geist/ttf/Geist-Regular.ttf",
+      "sha256": "85a1c6b18a6b0a06dfe9fd4f6d6a5d4979f74ec861eaef4bc7868b5492b8a117",
+      "size_bytes": 126048
+    },
+    {
+      "file": "Geist-Medium.ttf",
+      "family": "Geist",
+      "weight": 500,
+      "style": "Medium",
+      "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/fonts/Geist/ttf/Geist-Medium.ttf",
+      "sha256": "3a3b36f0d0b981f4857f7f00eeef4a5ee123605575d362ab31ee7c19e3d11f2f",
+      "size_bytes": 127660
+    },
+    {
+      "file": "Geist-SemiBold.ttf",
+      "family": "Geist",
+      "weight": 600,
+      "style": "SemiBold",
+      "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/fonts/Geist/ttf/Geist-SemiBold.ttf",
+      "sha256": "b9f52322d6d20a7ff1e7fe1310ff12ec851aebb83d24f8b4f1d4149298f489b2",
+      "size_bytes": 127872
+    },
+    {
+      "file": "Geist-Bold.ttf",
+      "family": "Geist",
+      "weight": 700,
+      "style": "Bold",
+      "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/fonts/Geist/ttf/Geist-Bold.ttf",
+      "sha256": "3f21f02b827228c3f0c5fb230d027b5a1a263013618e8052bc1b3c5692812c88",
+      "size_bytes": 128824
+    },
+    {
+      "file": "GeistMono-Regular.ttf",
+      "family": "Geist Mono",
+      "weight": 400,
+      "style": "Regular",
+      "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/fonts/GeistMono/ttf/GeistMono-Regular.ttf",
+      "sha256": "5a0de4b3d54ab272f76a1d8c84b7fb24c67bbec6591d5300e61c7bc10094b6c8",
+      "size_bytes": 149284
+    },
+    {
+      "file": "GeistMono-Medium.ttf",
+      "family": "Geist Mono",
+      "weight": 500,
+      "style": "Medium",
+      "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/fonts/GeistMono/ttf/GeistMono-Medium.ttf",
+      "sha256": "6fa6a795c17a11bcbef410f52a853e8503f8e25d92762d202d907c54f5c0c0fb",
+      "size_bytes": 150096
+    },
+    {
+      "file": "GeistMono-SemiBold.ttf",
+      "family": "Geist Mono",
+      "weight": 600,
+      "style": "SemiBold",
+      "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/fonts/GeistMono/ttf/GeistMono-SemiBold.ttf",
+      "sha256": "fd16d1b58c2178315d110eb399a92cb02bac80f8250e0b58a605fe96ee257364",
+      "size_bytes": 150468
+    },
+    {
+      "file": "GeistMono-Bold.ttf",
+      "family": "Geist Mono",
+      "weight": 700,
+      "style": "Bold",
+      "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/fonts/GeistMono/ttf/GeistMono-Bold.ttf",
+      "sha256": "325de0913317e63c9b0084d3f571c6d1c9279e776e9260c62be19e1c12d1be3c",
+      "size_bytes": 151260
+    }
+  ],
+  "license": {
+    "file": "LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/vercel/geist-font/a73329da8fc62afc917f796555202e4997f79b7c/LICENSE.txt",
+    "sha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+    "size_bytes": 4368
   }
 }
