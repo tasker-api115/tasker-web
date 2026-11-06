@@ -104,7 +104,7 @@ npm ci
 npm start
 ```
 
-Los pasos definitivos para vincular Supabase, ejecutar migraciones y configurar los entornos se documentarán después de HU-17 y HU-18. **No se deben publicar contraseñas o claves de administración.**
+La configuración inicial de Supabase, las variables individuales y los pasos de vinculación y verificación se documentan en [docs/supabase.md](docs/supabase.md). Las migraciones se incorporarán en su historia correspondiente. **No se deben publicar contraseñas o claves de administración.**
 
 ## Seguridad y repositorio público
 
