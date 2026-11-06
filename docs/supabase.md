@@ -75,7 +75,9 @@ npx supabase status
 Usar las URL y claves locales que muestre el CLI para trabajar con ese entorno.
 Son distintas de las del proyecto alojado. La configuración generada usa el puerto
 3000 para redirecciones de Auth; ajustarlo cuando se defina la URL del frontend.
-Los datos semilla y las migraciones se añadirán en sus historias correspondientes.
+La migración inicial del modelo está en `supabase/migrations/`. Para crear las tres
+cuentas ficticias en Auth y sus perfiles, seguir [Usuarios de prueba](test-users.md).
+La carga es manual por entorno; un commit no copia usuarios locales al proyecto alojado.
 
 ## Verificaciones y pendientes
 
