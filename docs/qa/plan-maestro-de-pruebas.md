@@ -5,7 +5,7 @@
 **Historia:** HU-39 — Elaborar Plan de Pruebas  
 **Proyecto:** Sistema de gestión de proyectos y tareas académicas  
 **Asignatura:** Administración de Proyectos Informáticos (API115), Universidad de El Salvador  
-**Versión del plan:** 1.0  
+**Versión del plan:** 1.2  
 **Fecha de elaboración:** 5 de noviembre de 2026  
 **Periodo estimado de elaboración:** 4–5 de noviembre de 2026  
 **Responsable:** QA  
@@ -21,7 +21,7 @@
 | Elemento | Definición |
 |---|---|
 | Código | QA-PLAN-HU39 |
-| Versión | 1.0 |
+| Versión | 1.2 |
 | Autoría / preparación | Rol QA |
 | Revisión técnica | Líder de desarrollo y responsables de frontend/backend |
 | Revisión del proceso | Scrum Master |
@@ -34,6 +34,8 @@
 | Versión | Fecha | Descripción | Estado |
 |---|---|---|---|
 | 1.0 | 05/11/2026 | Plan inicial basado en `README.md`, `AGENTS.md` y las referencias de plan de pruebas; incorpora estrategia de datos para HU-53. | Propuesta |
+| 1.1 | 05/11/2026 | Revisión preliminar de los escenarios de avance CP-AVA-01 a 03, trazabilidad y supuestos. | Propuesta para revisión |
+| 1.2 | 05/11/2026 | Incorporación explícita de la fórmula de avance definida en HU-35. Corrección de los resultados esperados de CP-AVA-01 a 03, datos de prueba, verificación cuantitativa, trazabilidad y dependencias. | Propuesta para revisión |
 
 ### Aprobaciones y comunicación
 
@@ -102,7 +104,7 @@ La prioridad es una **propuesta de QA** y no reemplaza la prioridad de Jira. La 
 | SD-02 | Existirá una versión desplegable de Angular conectada a un proyecto Supabase aislado para QA. | Si no existe, mantener los casos dependientes como “Bloqueado”; no ejecutar en producción. |
 | SD-03 | Las migraciones y las políticas RLS serán entregadas mediante cambios versionados. | Revisar esquema y permisos contra la versión candidata. |
 | SD-04 | HU-53 implementará o documentará el provisionamiento y reinicio de datos de QA. | Usar esta estrategia como contrato; confirmar scripts, responsables y orden real antes de ejecutar. |
-| SD-05 | Los límites de campos, política de contraseñas, reglas de eliminación y fórmulas de progreso se determinarán con Jira/configuración aprobada. | No fijar valores ni expectativas sin respaldo; marcar escenario condicionado. |
+| SD-05 | Los límites de campos, la política de contraseñas y las reglas de eliminación se verificarán con Jira y la configuración aprobada. El cálculo del avance de proyectos ya está definido en HU-35. | Aplicar la fórmula `(tareas completadas / total de tareas) × 100`, considerando únicamente las tareas en estado `Completada`. Para proyectos sin tareas, el avance será 0 %. El formato de presentación y redondeo se verificará según los criterios de interfaz aprobados. |
 
 # 3. Estrategia de pruebas
 
@@ -180,7 +182,7 @@ Los datos de prueba se crearán exclusivamente para QA, serán ficticios, identi
 | **DS-03 — Membresías** | A contiene B y C; D no pertenece a A; E pertenece solo a B; relación de asignación explícita. | Gestión de integrantes y acceso. |
 | **DS-04 — Tareas y Kanban** | Tareas de A distribuidas entre `Por hacer`, `En progreso` y `Completada`, con asignados distintos. | CRUD de tareas, estados y drag and drop. |
 | **DS-05 — Bordes y validación** | Valores ausentes, formatos inválidos, cadenas largas conforme al límite real, fechas de borde y duplicados. | Negativos y validaciones; valores finales sujetos a Jira. |
-| **DS-06 — Cronograma y avance** | Tareas con fechas distintas y combinaciones controladas de estado; proyecto vacío. | Orden, progreso, reportes e impresión. |
+| **DS-06 — Cronograma y avance** | Proyecto de prueba con 8 tareas: 3 en estado `Completada`, 3 en `En progreso` y 2 en `Por hacer`, distribuidas en fechas distintas. Incluye un proyecto sin tareas para comprobar el resultado de 0 %. Se contemplan cambios autorizados de estado para verificar la actualización del porcentaje de avance. | CP-CRO-01 a 03, CP-AVA-01 a 03 y CP-REP-01 a 03. |
 | **DS-07 — Fallos controlados** | Sesiones caducadas o no válidas y entorno de prueba donde pueda simularse fallo de red o de actualización. | Errores y restauración de estado en Kanban. |
 | **DS-08 — Migraciones** | Esquema limpio y conjunto de comprobación de restricciones/políticas antes de cargar datos. | Instalación técnica y consistencia de BD. |
 
@@ -306,9 +308,9 @@ Los casos llevan identificadores `CP-<módulo>-NN`, prioridad **C** (crítica), 
 
 | ID | Escenario / pasos principales | Resultado esperado verificable | Datos | Prioridad |
 |---|---|---|---|---|
-| CP-AVA-01 | Consultar progreso de proyecto sin tareas. | Se presenta el estado vacío o valor definido por el criterio aprobado, sin errores. | DS-00, DS-02 | A |
-| CP-AVA-02 | Consultar un proyecto con tareas en distintos estados. | El indicador coincide con la **fórmula oficial definida por Jira**, pendiente de obtener. | DS-06 | A |
-| CP-AVA-03 | Completar/revertir tarea mediante acción autorizada y consultar avance. | El progreso se actualiza a partir de los datos persistidos y la regla oficial. | DS-04, DS-06 | A |
+| CP-AVA-01 | Consultar el porcentaje de avance de un proyecto que no contiene tareas. | El sistema muestra un avance de **0 %**, conforme a HU-35. No se produce una división entre cero ni se presenta un resultado indefinido. | DS-00, DS-02, DS-06 | A |
+| CP-AVA-02 | Consultar el avance de un proyecto con 8 tareas distribuidas entre los estados `Por hacer`, `En progreso` y `Completada`, de las cuales 3 están completadas. | El avance se calcula mediante `(tareas completadas / total de tareas) × 100`. Para el escenario definido, el resultado es `(3 / 8) × 100 = 37,5 %`. Solo se contabilizan como completadas las tareas en estado `Completada`, conforme a HU-35. | DS-06 | A |
+| CP-AVA-03 | Completar una tarea mediante una acción autorizada, consultar el avance y posteriormente regresar la tarea a su estado anterior. | Al pasar de 3 a 4 tareas completadas, el porcentaje cambia de **37,5 % a 50 %**. Al revertir el estado, vuelve a **37,5 %**. Los resultados se calculan con la fórmula de HU-35 y deben corresponder a los estados persistidos en PostgreSQL. | DS-04, DS-06 | A |
 
 ### 7.9. Reportes e impresión — MOD-08
 
@@ -371,14 +373,55 @@ Los casos llevan identificadores `CP-<módulo>-NN`, prioridad **C** (crítica), 
 
 ## 8.4. CP-AVA-02 — Verificación cuantitativa del avance
 
-**Precondiciones:** existe un proyecto de QA con estados conocidos y se obtuvo de Jira la fórmula oficial de progreso. **Datos:** DS-06. **Prioridad:** alta.
+**Objetivo:** verificar que el porcentaje de avance mostrado por Tasker se calcula correctamente a partir de la cantidad de tareas completadas y el total de tareas del proyecto, conforme a la HU-35.
 
-1. Registrar las tareas y estados iniciales.
-2. Calcular manualmente el valor esperado **usando la fórmula aprobada**.
-3. Consultar el indicador mostrado por Tasker.
-4. Actualizar una tarea autorizada y repetir la comparación.
+**Precondiciones:** existe un proyecto de QA con 8 tareas registradas, de las cuales 3 están en estado `Completada`, 3 en `En progreso` y 2 en `Por hacer`. Los estados están almacenados correctamente en PostgreSQL.
 
-**Resultado esperado:** coincidencia entre indicador y valor calculado bajo la regla aprobada. **Pendiente:** especificación de fórmula, redondeo y tratamiento de tareas sin completar; no se asumirán porcentajes a partir de criterios no entregados.
+**Datos:** DS-06.
+
+**Tipo de prueba:** funcional, integración y validación de cálculo.
+
+**Prioridad:** alta.
+
+**Regla de negocio (HU-35):**
+
+El porcentaje de avance de un proyecto se calcula mediante:
+
+`Avance (%) = (Tareas completadas / Total de tareas) × 100`
+
+Se consideran completadas únicamente las tareas cuyo estado es `Completada`.
+
+Cuando el proyecto no tiene tareas, el porcentaje de avance debe ser 0 %, evitando la división entre cero.
+
+**Procedimiento de prueba:**
+
+1. Acceder a Tasker mediante una cuenta de QA autorizada.
+2. Seleccionar el proyecto que contiene las 8 tareas del dataset DS-06.
+3. Verificar que existen 3 tareas en estado `Completada`, 3 en `En progreso` y 2 en `Por hacer`.
+4. Calcular manualmente el porcentaje esperado: `(3 / 8) × 100 = 37,5 %`.
+5. Consultar el indicador de avance mostrado por la aplicación y contrastarlo con el resultado calculado.
+6. Cambiar una tarea de `En progreso` a `Completada`, utilizando una cuenta autorizada y respetando las restricciones de HU-31 y HU-33.
+7. Comprobar que el avance se actualiza a `(4 / 8) × 100 = 50 %`.
+8. Recargar la aplicación para verificar que el porcentaje se mantiene y corresponde a los estados persistidos en PostgreSQL.
+9. Regresar la tarea modificada a `En progreso`, mediante una acción autorizada.
+10. Verificar que el avance vuelve a `(3 / 8) × 100 = 37,5 %`.
+11. Consultar un proyecto sin tareas y comprobar que su porcentaje de avance es 0 %.
+
+**Resultados esperados:**
+
+- El porcentaje de avance coincide con la fórmula definida en HU-35.
+- Únicamente las tareas en estado `Completada` se contabilizan en el numerador.
+- Todas las tareas del proyecto se consideran en el denominador, independientemente de su estado.
+- Los cambios autorizados de estado actualizan correctamente el porcentaje de avance.
+- El porcentaje permanece consistente después de recargar la aplicación.
+- Los proyectos sin tareas muestran un avance de 0 %, sin errores de cálculo.
+- El porcentaje se calcula con los estados persistidos y no únicamente con valores temporales de la interfaz.
+
+**Criterio de aprobación:** el caso se considera aprobado cuando todos los resultados calculados coinciden con los valores correspondientes a los datos persistidos, respetando la regla definida en HU-35.
+
+**Consideración de presentación:** la cantidad de decimales o el redondeo visual del porcentaje deberá contrastarse con el diseño o criterio de interfaz aprobado. Esta presentación no modifica la fórmula de cálculo ni el resultado matemático esperado.
+
+**Fundamento:** HU-35 — Cálculo del avance de proyectos.
 
 # 9. Trazabilidad con los requisitos
 
@@ -393,7 +436,8 @@ La matriz siguiente indica el origen conocido y el conjunto de escenarios que de
 | `AGENTS.md`: HU-31 y HU-33 | Solo el asignado cambia estado, incluso drag and drop. | CP-TAR-06, 07; CP-KAN-02 a 04 | Referencia explícita; verificar textos vigentes en Jira. |
 | `README.md`: Kanban | Estados y persistencia visual. | CP-KAN-01 a 05 | Falta identificar historia Jira. |
 | `README.md`: cronograma | Consulta y sincronización de fechas. | CP-CRO-01 a 04 | Falta identificar historia Jira y reglas de fecha. |
-| `README.md`: progreso y reportes | Avance, generación e impresión. | CP-AVA-01 a 03; CP-REP-01 a 03 | Falta fórmula y criterios vigentes. |
+| HU-35 — Cálculo del avance de proyectos | Calcular el porcentaje de avance mediante `(tareas completadas / total de tareas) × 100`, contabilizando únicamente las tareas en estado `Completada`. Para proyectos sin tareas, devolver 0 %. Actualizar el resultado cuando cambian los estados de las tareas. | CP-AVA-01, CP-AVA-02, CP-AVA-03 | Fórmula y condición de proyecto vacío identificadas en HU-35. Pendiente de ejecución y validación contra los resultados de la aplicación. |
+| `README.md`: generación e impresión de reportes | Generar reportes con información correcta, consultar sus resultados y comprobar su presentación para impresión. | CP-REP-01 a 03 | Falta vincular las historias y criterios específicos de reportes registrados en Jira. |
 | `AGENTS.md`: Supabase/RLS | Autorización efectiva y secretos protegidos. | CP-SEG-01 a 05 | Verificar políticas concretas y roles aprobados. |
 | `AGENTS.md`: compilación, migraciones y validación QA | Build, despliegue, datos y versión. | CP-TEC-01 a 04 | Validar scripts al estar disponibles. |
 | HU-53 | Datasets, reinicio y entornos de QA. | Todos los casos con DS-00 a DS-08 | Coordinación e implementación pendientes. |
@@ -475,7 +519,9 @@ Las fechas de ejecución dependen de la entrega real de builds y del avance de H
 | Errores sin evidencia suficiente | Correcciones difíciles de confirmar. | Exigir caso, commit, dataset, pasos, observación y captura sanitizada. |
 | Dependencias del equipo durante un sprint corto | Bloqueos y duplicación de esfuerzos. | Registrar impedimentos en Jira y revisarlos con el Scrum Master. |
 
-**Decisiones necesarias antes de la ejecución formal:** completar enlaces de historias/criterios, confirmar fórmula de avance y límites de validación, definir navegadores soportados, identificar instancia de Supabase QA, formalizar scripts HU-53, aprobar umbrales de salida y asignar ubicación de evidencias.
+**Decisiones necesarias antes de la ejecución formal:** completar los enlaces de las historias y sus criterios de aceptación, confirmar los límites de validación de formularios, verificar el formato de presentación y redondeo del porcentaje de avance según el diseño aprobado, definir los navegadores soportados, identificar la instancia de Supabase destinada a QA, formalizar los scripts de HU-53, aprobar los umbrales de salida y asignar la ubicación de las evidencias.
+
+La fórmula de cálculo del avance y el resultado de 0 % para proyectos sin tareas ya están establecidos en HU-35, por lo que no constituyen decisiones pendientes.
 
 
 ## Anexo A. Formato de hoja de ejecución
