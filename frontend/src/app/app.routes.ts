@@ -1,9 +1,18 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layouts/main-layout/main-layout';
+import { authGuard, guestGuard } from './core/auth/auth.guard';
+
 export const routes: Routes = [
+  {
+    path: 'login',
+    title: 'Iniciar sesión | Tasker',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/pages/login-page').then((m) => m.LoginPage),
+  },
   {
     path: '',
     component: MainLayout,
+    canActivate: [authGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
       {
