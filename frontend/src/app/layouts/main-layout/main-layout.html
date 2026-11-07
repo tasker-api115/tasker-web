@@ -42,6 +42,18 @@
     <header class="app-topbar">
       <span class="text-sm text-muted-foreground">Mi espacio</span
       ><z-badge zType="secondary">Versión inicial</z-badge>
+      <button
+        z-button
+        zType="outline"
+        zSize="sm"
+        type="button"
+        class="ml-auto"
+        [disabled]="signingOut()"
+        (click)="signOut()"
+      >
+        <ng-icon name="lucideLogOut" aria-hidden="true" />
+        {{ signingOut() ? 'Cerrando sesión...' : 'Cerrar sesión' }}
+      </button>
     </header>
     <main id="contenido" class="app-main" tabindex="-1"><router-outlet /></main>
     <footer class="app-footer">{{ settings.appName }} · Organiza tu próximo paso</footer>
