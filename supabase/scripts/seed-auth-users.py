@@ -1,6 +1,7 @@
-"""Crea cuentas ficticias de desarrollo mediante las API de Supabase."""
+"""Carga los datos ficticios de desarrollo mediante las API de Supabase."""
 
 import argparse
+from datetime import date, timedelta
 import getpass
 import json
 import os
@@ -9,9 +10,21 @@ import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-USERS = (("ana@example.com", "Ana"), ("carlos@example.com", "Carlos"),
-         ("maria@example.com", "María"))
 PASSWORD = "Tasker-Prueba2026!"
+OWNER = "propietario@test.com"
+MEMBER = "integrante@test.com"
+USERS = (
+    (OWNER, "Ana", "Propietaria", "TestAdmin123"),
+    (MEMBER, "Luis", "Integrante", "TestUser123"),
+    ("sinproyecto@test.com", "Carlos", "Solitario", "TestNone123"),
+    ("ana@example.com", "Ana", None, PASSWORD),
+    ("carlos@example.com", "Carlos", None, PASSWORD),
+    ("maria@example.com", "María", None, PASSWORD),
+)
+ALPHA = "aaaaa111-1111-1111-1111-111111111111"
+BETA = "bbbbb222-2222-2222-2222-222222222222"
+LOGIN_TASK = "dddd4444-4444-4444-4444-444444444444"
+DATABASE_TASK = "eeee5555-5555-5555-5555-555555555555"
 
 
 class NoRedirects(HTTPRedirectHandler):
@@ -44,7 +57,12 @@ class Api:
             raise RuntimeError("No se pudo conectar con Supabase.") from None
 
 
-def seed(api):
+    def insert_missing(self, table, conflict, rows):
+        self.request("POST", f"/rest/v1/{table}?on_conflict={conflict}", rows,
+                     {"Prefer": "resolution=ignore-duplicates,return=minimal"})
+
+
+def seed_users(api):
     # Comprobar el modelo antes de crear cuentas que necesiten perfiles.
     api.request("GET", "/rest/v1/usuario?select=id_usuario&limit=0")
     existing = {}
@@ -56,21 +74,59 @@ def seed(api):
             break
         page += 1
 
-    for email, name in USERS:
+    user_ids = {}
+    for email, name, surname, password in USERS:
         user = existing.get(email)
         created = user is None
         if created:
             user = api.request("POST", "/auth/v1/admin/users", {
-                "email": email, "password": PASSWORD, "email_confirm": True,
-                "user_metadata": {"nombre": name},
+                "email": email, "password": password, "email_confirm": True,
+                "user_metadata": {"nombre": name, "apellido": surname},
             })
-        api.request("POST", "/rest/v1/usuario?on_conflict=id_usuario", {
-            "id_usuario": user["id"], "nombre": name,
-        }, {"Prefer": "resolution=ignore-duplicates,return=minimal"})
+        user_ids[email] = user["id"]
+        api.insert_missing("usuario", "id_usuario", {
+            "id_usuario": user["id"], "nombre": name, "apellido": surname,
+        })
         profiles = api.request("GET", f"/rest/v1/usuario?id_usuario=eq.{user['id']}&select=id_usuario")
         if len(profiles) != 1:
             raise RuntimeError(f"No se pudo verificar el perfil de {email}.")
         print(f"{email}: {'cuenta creada' if created else 'cuenta existente'}; perfil verificado.")
+
+    return user_ids
+
+
+def seed(api):
+    user_ids = seed_users(api)
+    owner = user_ids[OWNER]
+    member = user_ids[MEMBER]
+    api.insert_missing("proyecto", "id_proyecto", [
+        {"id_proyecto": ALPHA, "id_usuario_propietario": owner,
+         "nombre": "Proyecto Alpha", "descripcion": "Proyecto principal"},
+        {"id_proyecto": BETA, "id_usuario_propietario": owner,
+         "nombre": "Proyecto Beta", "descripcion": "Proyecto secundario"},
+    ])
+    api.insert_missing("miembro_proyecto", "id_proyecto,id_usuario", [
+        {"id_proyecto": ALPHA, "id_usuario": owner, "rol_proyecto": "administrador"},
+        {"id_proyecto": ALPHA, "id_usuario": member, "rol_proyecto": "colaborador"},
+        {"id_proyecto": BETA, "id_usuario": owner, "rol_proyecto": "administrador"},
+    ])
+    today = date.today()
+    api.insert_missing("tarea", "id_tarea", [
+        {"id_tarea": "cccc3333-3333-3333-3333-333333333333", "id_proyecto": ALPHA,
+         "numero_tarea": 1, "nombre": "Configurar repo", "estado": "pendiente",
+         "fecha_fin": (today + timedelta(days=5)).isoformat()},
+        {"id_tarea": LOGIN_TASK, "id_proyecto": ALPHA,
+         "numero_tarea": 2, "nombre": "Desarrollar login", "estado": "en_progreso",
+         "fecha_fin": (today - timedelta(days=5)).isoformat()},
+        {"id_tarea": DATABASE_TASK, "id_proyecto": BETA,
+         "numero_tarea": 1, "nombre": "Definir BD", "estado": "completada",
+         "fecha_fin": today.isoformat()},
+    ])
+    api.insert_missing("ejecuta", "id_usuario,id_tarea", [
+        {"id_usuario": member, "id_tarea": LOGIN_TASK, "rol_tarea": "responsable"},
+        {"id_usuario": owner, "id_tarea": DATABASE_TASK, "rol_tarea": "responsable"},
+    ])
+    print("Carga completada: usuarios, perfiles, proyectos, membresías, tareas y asignaciones.")
 
 
 def main():
