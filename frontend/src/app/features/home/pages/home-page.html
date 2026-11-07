@@ -7,8 +7,11 @@
   <z-card>
     <z-card-header>
       <z-badge zType="secondary" class="w-fit mb-4">Comienza aquí</z-badge>
-      <h2 z-card-title id="start-title">Haz espacio para lo importante</h2>
-      <p z-card-description>Todo empieza con una tarea. Conoce tu nuevo espacio de trabajo.</p>
+      <h2 z-card-title id="start-title" zTitle="Haz espacio para lo importante"></h2>
+      <p
+        z-card-description
+        zDescription="Todo empieza con una tarea. Conoce tu nuevo espacio de trabajo."
+      ></p>
     </z-card-header>
     <z-card-content>
       <div class="flex items-start gap-4 text-muted-foreground">
@@ -29,8 +32,8 @@
   <z-card>
     <z-card-header
       ><ng-icon name="lucideFolder" size="24" class="text-primary mb-4" aria-hidden="true" />
-      <h2 z-card-title>Organiza tus proyectos</h2></z-card-header
-    >
+      <h2 z-card-title zTitle="Organiza tus proyectos"></h2
+    ></z-card-header>
     <z-card-content
       ><p class="text-muted-foreground">
         Reúne objetivos, fechas y tareas en un mismo lugar para tener claro el siguiente paso.
@@ -41,8 +44,8 @@
   <z-card>
     <z-card-header
       ><ng-icon name="lucideUsers" size="24" class="text-primary mb-4" aria-hidden="true" />
-      <h2 z-card-title>Avanza con tu equipo</h2></z-card-header
-    >
+      <h2 z-card-title zTitle="Avanza con tu equipo"></h2
+    ></z-card-header>
     <z-card-content
       ><p class="text-muted-foreground">
         Comparte el trabajo y mantén visibles las responsabilidades de cada integrante.
