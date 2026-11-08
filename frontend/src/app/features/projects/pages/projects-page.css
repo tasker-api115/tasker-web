@@ -1,0 +1,48 @@
+.projects-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.projects-header .page-heading {
+  margin-bottom: 0;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * El proyecto recién creado entra con un desplazamiento corto para que se note dónde apareció.
+ * Ocurre una vez por creación; ease-out fuerte y menos de 300 ms. Movimiento reducido: solo fundido.
+ */
+.project-item[data-new] {
+  animation: project-enter 240ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes project-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-item[data-new] {
+    animation: project-fade 200ms ease both;
+  }
+}
+
+@keyframes project-fade {
+  from {
+    opacity: 0;
+  }
+}

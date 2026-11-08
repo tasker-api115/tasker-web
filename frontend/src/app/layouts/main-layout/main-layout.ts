@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideHouse, lucideSquareCheck, lucideCheck, lucideLogOut } from '@ng-icons/lucide';
+import {
+  lucideHouse,
+  lucideFolder,
+  lucideSquareCheck,
+  lucideCheck,
+  lucideLogOut,
+} from '@ng-icons/lucide';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { ZardBadgeComponent } from '@/shared/components/badge/badge.component';
 import { APP_SETTINGS } from '../../core/config/app-settings';
@@ -17,7 +23,9 @@ import { AuthService } from '../../core/auth/auth.service';
     ZardButtonComponent,
     ZardBadgeComponent,
   ],
-  viewProviders: [provideIcons({ lucideHouse, lucideSquareCheck, lucideCheck, lucideLogOut })],
+  viewProviders: [
+    provideIcons({ lucideHouse, lucideFolder, lucideSquareCheck, lucideCheck, lucideLogOut }),
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './main-layout.html',
 })

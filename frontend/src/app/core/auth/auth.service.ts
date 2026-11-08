@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Session, SupabaseClient, createClient } from '@supabase/supabase-js';
-import { APP_SETTINGS } from '../config/app-settings';
+import { Session } from '@supabase/supabase-js';
+import { SUPABASE_CLIENT } from '../supabase/supabase-client';
 
 export type SignInResult =
   | { readonly ok: true }
@@ -11,8 +11,7 @@ export type SignInResult =
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly settings = inject(APP_SETTINGS);
-  private readonly client: SupabaseClient | null = this.createSupabaseClient();
+  private readonly client = inject(SUPABASE_CLIENT);
   private readonly sessionState = signal<Session | null>(null);
 
   readonly session = this.sessionState.asReadonly();
@@ -48,14 +47,6 @@ export class AuthService {
       }
     }
     this.sessionState.set(null);
-  }
-
-  private createSupabaseClient(): SupabaseClient | null {
-    const { supabaseUrl, supabasePublishableKey } = this.settings;
-    if (!supabaseUrl || !supabasePublishableKey) {
-      return null;
-    }
-    return createClient(supabaseUrl, supabasePublishableKey);
   }
 
   private async restoreSession(): Promise<void> {
