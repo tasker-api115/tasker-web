@@ -202,7 +202,7 @@ Los datos de prueba se crearán exclusivamente para QA, serán ficticios, identi
 2. Cerrar ejecuciones simultáneas; guardar identificadores de fallos pendientes, capturas y versión de los datos para preservar reproducibilidad.
 3. Usar el mecanismo de limpieza **aprobado en HU-53**, limitado a entidades y cuentas de QA; las operaciones sobre Supabase Auth requerirán un administrador autorizado y no se realizarán mediante el cliente web.
 4. Restaurar, en un entorno desechable o siguiendo el procedimiento acordado, las migraciones versionadas que correspondan al commit. No borrar tablas ni aplicar `TRUNCATE` indiscriminadamente en una base compartida.
-5. Cargar el dataset de QA desde scripts/fixtures versionados por HU-53, con orden y dependencias documentados. No reutilizar `seed.sql` de HU-52 como sustituto sin un acuerdo explícito.
+5. Cargar el dataset de QA desde scripts/fixtures versionados por HU-53, con orden y dependencias documentados. No reutilizar los datos semilla de HU-52 como sustituto sin un acuerdo explícito.
 6. Verificar cuentas, proyectos, relaciones, estados de tareas, fechas y aislamiento entre usuarios. Comprobar que las políticas RLS siguen activas.
 7. Registrar **fecha, responsable, entorno, commit, versión del dataset, resultado del reinicio e incidencias** antes de autorizar la nueva campaña.
 

@@ -1,0 +1,56 @@
+<app-page-heading
+  eyebrow="Tu espacio, en orden"
+  heading="Cada gran idea empieza con un paso."
+  description="Bienvenido a Tasker. Un espacio para organizar tus tareas y avanzar en tus proyectos."
+/>
+<section aria-labelledby="start-title">
+  <z-card>
+    <z-card-header>
+      <z-badge zType="secondary" class="w-fit mb-4">Comienza aquí</z-badge>
+      <h2 z-card-title id="start-title" zTitle="Haz espacio para lo importante"></h2>
+      <p
+        z-card-description
+        zDescription="Todo empieza con una tarea. Conoce tu nuevo espacio de trabajo."
+      ></p>
+    </z-card-header>
+    <z-card-content>
+      <div class="flex items-start gap-4 text-muted-foreground">
+        <ng-icon name="lucideSquareCheck" size="24" aria-hidden="true" />
+        <p class="max-w-[640px]">
+          La sección de tareas ya tiene su lugar. Las funciones para crear, asignar y dar
+          seguimiento se incorporarán en próximas entregas.
+        </p>
+      </div>
+    </z-card-content>
+    <z-card-footer
+      ><a z-button zSize="lg" routerLink="/tareas"
+        >Explorar tareas <ng-icon name="lucideArrowRight" aria-hidden="true" /></a
+    ></z-card-footer>
+  </z-card>
+</section>
+<section class="feature-grid" aria-label="Próximas funcionalidades">
+  <z-card>
+    <z-card-header
+      ><ng-icon name="lucideFolder" size="24" class="text-primary mb-4" aria-hidden="true" />
+      <h2 z-card-title zTitle="Organiza tus proyectos"></h2
+    ></z-card-header>
+    <z-card-content
+      ><p class="text-muted-foreground">
+        Reúne objetivos, fechas y tareas en un mismo lugar para tener claro el siguiente paso.
+      </p></z-card-content
+    >
+    <z-card-footer class="mt-auto"><z-badge zType="secondary">Próximamente</z-badge></z-card-footer>
+  </z-card>
+  <z-card>
+    <z-card-header
+      ><ng-icon name="lucideUsers" size="24" class="text-primary mb-4" aria-hidden="true" />
+      <h2 z-card-title zTitle="Avanza con tu equipo"></h2
+    ></z-card-header>
+    <z-card-content
+      ><p class="text-muted-foreground">
+        Comparte el trabajo y mantén visibles las responsabilidades de cada integrante.
+      </p></z-card-content
+    >
+    <z-card-footer class="mt-auto"><z-badge zType="secondary">Próximamente</z-badge></z-card-footer>
+  </z-card>
+</section>
