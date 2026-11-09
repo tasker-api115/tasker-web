@@ -234,6 +234,26 @@ docs/qa/evidencias/hu-40/
 
 Si se guarda evidencia adicional de redirección, asignarle `EV-HU40-04` y describir el método usado. Verificar que las imágenes no revelen contraseñas, tokens ni datos sensibles.
 
+
+### Evidencias visuales
+
+**EV-HU40-01 — Inicio de sesión válido**
+
+![Inicio de sesión válido](evidencias/hu-40/EV-HU40-01-login-valido.png)
+
+**EV-HU40-02 — Credenciales incorrectas**
+
+![Credenciales incorrectas](evidencias/hu-40/EV-HU40-02-login-invalido.png)
+
+**EV-HU40-03 — Cierre de sesión**
+
+![Pantalla después del cierre de sesión](evidencias/hu-40/EV-HU40-03-cierre-sesion.png)
+
+**EV-HU40-05 — Correo no registrado**
+
+![Correo no registrado](evidencias/hu-40/EV-HU40-05-login-correo-no-registrado.png)
+
+
 ## 5. Dependencias y acciones pendientes
 
 1. **HU-54:** implementar el registro de usuarios y reejecutar `CP-AUT-01` y `CP-AUT-02`.
