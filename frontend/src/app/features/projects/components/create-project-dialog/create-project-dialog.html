@@ -1,0 +1,107 @@
+<z-dialog
+  [(zVisible)]="open"
+  [zClosable]="!saving()"
+  [zMaskClosable]="!saving()"
+  class="sm:max-w-lg"
+>
+  <z-dialog-header>
+    <z-dialog-title>Crear proyecto</z-dialog-title>
+    <z-dialog-description>Define la información del proyecto.</z-dialog-description>
+  </z-dialog-header>
+
+  <form
+    id="create-project-form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate
+    [attr.aria-busy]="saving()"
+  >
+    <z-field-group>
+      <z-field [attr.data-invalid]="nameInvalid || null">
+        <label z-field-label for="project-name">
+          Nombre <span class="text-muted-foreground">(obligatorio)</span>
+        </label>
+        <input
+          z-input
+          id="project-name"
+          type="text"
+          formControlName="name"
+          autocomplete="off"
+          placeholder="Nombre del proyecto"
+          required
+          [attr.aria-invalid]="nameInvalid || null"
+          [attr.aria-describedby]="nameInvalid ? 'project-name-error' : null"
+        />
+        @if (nameInvalid) {
+          <z-field-error id="project-name-error" class="field-message">
+            Ingresa el nombre del proyecto.
+          </z-field-error>
+        }
+      </z-field>
+
+      <z-field>
+        <label z-field-label for="project-description">Descripción</label>
+        <textarea
+          z-textarea
+          id="project-description"
+          formControlName="description"
+          rows="3"
+          placeholder="Descripción del proyecto"
+        ></textarea>
+      </z-field>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <z-field>
+          <label z-field-label for="project-start-date">Fecha de inicio</label>
+          <input z-input id="project-start-date" type="date" formControlName="startDate" />
+        </z-field>
+
+        <z-field [attr.data-invalid]="dateRangeInvalid || null">
+          <label z-field-label for="project-end-date">Fecha de finalización</label>
+          <input
+            z-input
+            id="project-end-date"
+            type="date"
+            formControlName="endDate"
+            [attr.min]="form.controls.startDate.value || null"
+            [attr.aria-invalid]="dateRangeInvalid || null"
+            [attr.aria-describedby]="dateRangeInvalid ? 'project-end-date-error' : null"
+          />
+          @if (dateRangeInvalid) {
+            <z-field-error id="project-end-date-error" class="field-message">
+              No puede ser anterior a la fecha de inicio.
+            </z-field-error>
+          }
+        </z-field>
+      </div>
+
+      @if (saveError(); as message) {
+        <div
+          role="alert"
+          class="field-message rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive"
+        >
+          {{ message }}
+        </div>
+      }
+    </z-field-group>
+  </form>
+
+  <z-dialog-footer>
+    <button z-button zType="outline" type="button" z-dialog-close [zDisabled]="saving()">
+      Cancelar
+    </button>
+    <button
+      z-button
+      type="submit"
+      form="create-project-form"
+      [zLoading]="saving()"
+      [zDisabled]="saving()"
+      [attr.aria-busy]="saving()"
+    >
+      @if (!saving()) {
+        <ng-icon name="lucidePlus" aria-hidden="true" />
+      }
+      {{ saving() ? 'Guardando…' : 'Crear proyecto' }}
+    </button>
+  </z-dialog-footer>
+</z-dialog>

@@ -1,6 +1,6 @@
 # Tasker — Frontend / HU-16
 
-Base Angular con tema Orbit Dark, siguiendo el DESIGN.md proporcionado. Incluye rutas Inicio, Tareas y 404, configuración de entornos y componentes Zard. No implementa autenticación, persistencia ni CRUD.
+Base Angular con tema Orbit Dark, siguiendo el DESIGN.md proporcionado. Incluye rutas Inicio, Proyectos, Tareas y 404, configuración de entornos y componentes Zard. La autenticación (HU-19/HU-20) y la creación de proyectos (HU-21) usan Supabase.
 
 ## Requisitos y ejecución
 
@@ -14,7 +14,7 @@ npm ci
 npm start
 ```
 
-Abrir http://localhost:4200. No requiere Angular CLI global ni iniciar Supabase para navegar por estas pantallas.
+Abrir http://localhost:4200. No requiere Angular CLI global. Iniciar sesión y Proyectos usan el Supabase configurado en `environment.development.ts`, con la migración inicial aplicada y los usuarios de prueba de [docs/test-users.md](../docs/test-users.md).
 
 ## Entornos independientes
 

@@ -1,0 +1,83 @@
+<div class="projects-header">
+  <app-page-heading
+    eyebrow="Espacio de trabajo"
+    heading="Proyectos"
+    description="Consulta y administra los proyectos a los que tienes acceso."
+  />
+  <button z-button zSize="lg" type="button" (click)="openCreate()">
+    <ng-icon name="lucidePlus" aria-hidden="true" /> Crear proyecto
+  </button>
+</div>
+
+<p class="sr-only" aria-live="polite">{{ announcement() }}</p>
+
+@switch (store.status()) {
+  @case ('error') {
+    <z-empty
+      zIcon="lucideCircleAlert"
+      zTitle="No se pudieron cargar los proyectos"
+      zDescription="Vuelve a intentarlo. Tus datos no se han modificado."
+      role="alert"
+    >
+      <button z-button zType="outline" type="button" (click)="retry()">
+        <ng-icon name="lucideRefreshCcw" aria-hidden="true" /> Reintentar
+      </button>
+    </z-empty>
+  }
+  @case ('ready') {
+    @if (store.projects().length === 0) {
+      <z-empty
+        zIcon="lucideFolderOpen"
+        zTitle="Todavía no hay proyectos"
+        zDescription="Aquí aparecerán los proyectos a los que tengas acceso."
+      >
+        <button z-button type="button" (click)="openCreate()">
+          <ng-icon name="lucidePlus" aria-hidden="true" /> Crear proyecto
+        </button>
+      </z-empty>
+    } @else {
+      <ul class="project-grid" aria-label="Proyectos">
+        @for (project of store.projects(); track project.id) {
+          <li class="project-item" [attr.data-new]="project.id === lastCreatedId() || null">
+            <z-card [class]="project.id === lastCreatedId() ? 'h-full ring-primary/60' : 'h-full'">
+              <z-card-header>
+                <z-badge zType="secondary" class="mb-2 w-fit">
+                  {{ isOwner(project) ? 'Propietario' : 'Integrante' }}
+                </z-badge>
+                <h2 z-card-title [zTitle]="project.name"></h2>
+                @if (project.description) {
+                  <p z-card-description [zDescription]="project.description"></p>
+                }
+              </z-card-header>
+              <z-card-content class="mt-auto">
+                <dl class="grid grid-cols-2 gap-4">
+                  <div>
+                    <dt class="text-xs text-muted-foreground">Inicio</dt>
+                    <dd>
+                      <time [attr.datetime]="project.startDate">{{
+                        formatDate(project.startDate)
+                      }}</time>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs text-muted-foreground">Finalización</dt>
+                    <dd>
+                      <time [attr.datetime]="project.endDate">{{
+                        formatDate(project.endDate)
+                      }}</time>
+                    </dd>
+                  </div>
+                </dl>
+              </z-card-content>
+            </z-card>
+          </li>
+        }
+      </ul>
+    }
+  }
+  @default {
+    <p class="text-sm text-muted-foreground" role="status">Cargando proyectos…</p>
+  }
+}
+
+<app-create-project-dialog [(open)]="createOpen" (created)="onCreated($event)" />
