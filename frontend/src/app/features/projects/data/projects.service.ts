@@ -12,12 +12,22 @@ export type CreateProjectResult =
   | { readonly ok: true; readonly project: Project }
   | { readonly ok: false; readonly reason: 'not-authenticated' | 'not-configured' | 'unknown' };
 
+export type UpdateProjectResult =
+  | { readonly ok: true; readonly project: Project }
+  | {
+      readonly ok: false;
+      readonly reason: 'not-authenticated' | 'not-configured' | 'not-allowed' | 'unknown';
+    };
+
+/** Código de PostgREST cuando `.single()` no recibe filas: RLS lo ocultó o ya no existe. */
+const NO_ROWS_CODE = 'PGRST116';
+
 /**
  * Acceso a los proyectos del usuario en Supabase y estado compartido del listado.
  *
  * Los permisos los garantizan las políticas RLS de `public.proyecto`: solo se leen
- * proyectos propios o donde el usuario es integrante, y solo se insertan con el
- * usuario autenticado como propietario.
+ * proyectos propios o donde el usuario es integrante, solo se insertan con el usuario
+ * autenticado como propietario y solo se actualizan según `proyecto_editar`.
  */
 @Injectable({ providedIn: 'root' })
 export class ProjectsService {
@@ -86,6 +96,47 @@ export class ProjectsService {
       if (this.statusState() === 'idle') {
         this.statusState.set('ready');
       }
+      return { ok: true, project };
+    } catch {
+      return { ok: false, reason: 'unknown' };
+    }
+  }
+
+  /**
+   * Guarda los datos editables de un proyecto y reemplaza su versión en el listado.
+   *
+   * La política RLS `proyecto_editar` decide quién puede actualizar; si no se actualiza
+   * ninguna fila, el proyecto no existe o el usuario no tiene permiso.
+   */
+  async update(projectId: string, draft: ProjectDraft): Promise<UpdateProjectResult> {
+    if (!this.client) {
+      return { ok: false, reason: 'not-configured' };
+    }
+    if (!this.currentUserId()) {
+      return { ok: false, reason: 'not-authenticated' };
+    }
+
+    try {
+      const { data, error } = await this.client
+        .from('proyecto')
+        .update({
+          nombre: draft.name,
+          descripcion: draft.description,
+          fecha_inicio: draft.startDate,
+          fecha_fin: draft.endDate,
+        })
+        .eq('id_proyecto', projectId)
+        .select(PROJECT_COLUMNS)
+        .single<ProjectRow>();
+
+      if (error?.code === NO_ROWS_CODE) {
+        return { ok: false, reason: 'not-allowed' };
+      }
+      if (error || !data) {
+        return { ok: false, reason: 'unknown' };
+      }
+      const project = toProject(data);
+      this.projectsState.update((list) => list.map((p) => (p.id === project.id ? project : p)));
       return { ok: true, project };
     } catch {
       return { ok: false, reason: 'unknown' };

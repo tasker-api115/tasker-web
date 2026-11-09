@@ -1,6 +1,6 @@
 # Tasker — Frontend / HU-16
 
-Base Angular con tema Orbit Dark, siguiendo el DESIGN.md proporcionado. Incluye rutas Inicio, Proyectos, Tareas y 404, configuración de entornos y componentes Zard. La autenticación (HU-19/HU-20) y la creación de proyectos (HU-21) usan Supabase.
+Base Angular con tema Orbit Dark, siguiendo el DESIGN.md proporcionado. Incluye rutas Inicio, Proyectos, Tareas y 404, configuración de entornos y componentes Zard. La autenticación (HU-19/HU-20) y la creación y edición de proyectos (HU-21/HU-24) usan Supabase.
 
 ## Requisitos y ejecución
 

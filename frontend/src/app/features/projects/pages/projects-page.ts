@@ -3,6 +3,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideCircleAlert,
   lucideFolderOpen,
+  lucidePencil,
   lucidePlus,
   lucideRefreshCcw,
 } from '@ng-icons/lucide';
@@ -12,6 +13,7 @@ import { ZardCardImports } from '@/shared/components/card/card.imports';
 import { ZardEmptyComponent } from '@/shared/components/empty/empty.component';
 import { PageHeading } from '@/shared/components/page-heading/page-heading';
 import { CreateProjectDialog } from '../components/create-project-dialog/create-project-dialog';
+import { EditProjectDialog } from '../components/edit-project-dialog/edit-project-dialog';
 import { Project } from '../data/project.model';
 import { ProjectsService } from '../data/projects.service';
 import { formatProjectDate } from '../utils/format-project-date';
@@ -19,8 +21,8 @@ import { formatProjectDate } from '../utils/format-project-date';
 /**
  * Página de proyectos.
  *
- * HU-21 aporta el botón y el modal de creación, y la actualización del listado al crear.
- * El listado completo (progreso, acciones por proyecto) corresponde a HU-22.
+ * HU-21 aporta la creación y HU-24 la edición; ambas actualizan el listado sin recargar.
+ * El listado completo (progreso, consultar, eliminar) corresponde a HU-22, HU-23 y HU-25.
  */
 @Component({
   selector: 'app-projects-page',
@@ -32,9 +34,16 @@ import { formatProjectDate } from '../utils/format-project-date';
     ZardCardImports,
     ZardEmptyComponent,
     CreateProjectDialog,
+    EditProjectDialog,
   ],
   viewProviders: [
-    provideIcons({ lucidePlus, lucideFolderOpen, lucideCircleAlert, lucideRefreshCcw }),
+    provideIcons({
+      lucidePlus,
+      lucidePencil,
+      lucideFolderOpen,
+      lucideCircleAlert,
+      lucideRefreshCcw,
+    }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './projects-page.html',
@@ -44,7 +53,12 @@ export class ProjectsPage {
   protected readonly store = inject(ProjectsService);
 
   protected readonly createOpen = signal(false);
+  protected readonly editOpen = signal(false);
+  protected readonly editingProject = signal<Project | null>(null);
+  /** Proyecto recién creado: entra con animación. */
   protected readonly lastCreatedId = signal<string | null>(null);
+  /** Último proyecto creado o editado: se resalta para ubicarlo en el listado. */
+  protected readonly highlightedId = signal<string | null>(null);
   protected readonly announcement = signal('');
   protected readonly formatDate = formatProjectDate;
 
@@ -56,13 +70,25 @@ export class ProjectsPage {
     this.createOpen.set(true);
   }
 
+  /** Solo el propietario ve la opción; RLS vuelve a validar el permiso al guardar. */
+  protected openEdit(project: Project): void {
+    this.editingProject.set(project);
+    this.editOpen.set(true);
+  }
+
   protected retry(): void {
     void this.store.load();
   }
 
   protected onCreated(project: Project): void {
     this.lastCreatedId.set(project.id);
+    this.highlightedId.set(project.id);
     this.announcement.set(`Proyecto «${project.name}» creado.`);
+  }
+
+  protected onUpdated(project: Project): void {
+    this.highlightedId.set(project.id);
+    this.announcement.set(`Proyecto «${project.name}» actualizado.`);
   }
 
   protected isOwner(project: Project): boolean {

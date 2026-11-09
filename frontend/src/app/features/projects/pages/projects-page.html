@@ -39,7 +39,7 @@
       <ul class="project-grid" aria-label="Proyectos">
         @for (project of store.projects(); track project.id) {
           <li class="project-item" [attr.data-new]="project.id === lastCreatedId() || null">
-            <z-card [class]="project.id === lastCreatedId() ? 'h-full ring-primary/60' : 'h-full'">
+            <z-card [class]="project.id === highlightedId() ? 'h-full ring-primary/60' : 'h-full'">
               <z-card-header>
                 <z-badge zType="secondary" class="mb-2 w-fit">
                   {{ isOwner(project) ? 'Propietario' : 'Integrante' }}
@@ -69,6 +69,20 @@
                   </div>
                 </dl>
               </z-card-content>
+              @if (isOwner(project)) {
+                <z-card-footer zFooterBorder>
+                  <button
+                    z-button
+                    zType="ghost"
+                    zSize="sm"
+                    type="button"
+                    [attr.aria-label]="'Editar proyecto ' + project.name"
+                    (click)="openEdit(project)"
+                  >
+                    <ng-icon name="lucidePencil" aria-hidden="true" /> Editar
+                  </button>
+                </z-card-footer>
+              }
             </z-card>
           </li>
         }
@@ -81,3 +95,8 @@
 }
 
 <app-create-project-dialog [(open)]="createOpen" (created)="onCreated($event)" />
+<app-edit-project-dialog
+  [(open)]="editOpen"
+  [project]="editingProject()"
+  (updated)="onUpdated($event)"
+/>
