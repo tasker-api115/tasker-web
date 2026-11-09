@@ -14,6 +14,18 @@
     </h1>
     <p class="mt-2 mb-6 text-sm text-muted-foreground">Accede a tu espacio de trabajo.</p>
 
+    @if (showConfirmationNotice) {
+      <div
+        role="status"
+        class="mb-4 rounded-md border border-border bg-muted p-3 text-sm"
+      >
+        Solicitud recibida. Si el registro corresponde a una cuenta nueva,
+        recibirás un correo para confirmarla antes de iniciar sesión.
+        Revisa también la carpeta de spam. Si ya tienes una cuenta,
+        puedes iniciar sesión.
+      </div>
+    }
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
         <label for="email" class="text-sm font-medium">Correo electrónico</label>
@@ -76,5 +88,11 @@
         {{ loading() ? 'Iniciando sesión…' : 'Iniciar sesión' }}
       </button>
     </form>
+    <p class="mt-6 text-center text-sm text-muted-foreground">
+      ¿No tienes una cuenta?
+      <a z-button zType="link" routerLink="/registro">
+        Crear cuenta
+      </a>
+    </p>
   </section>
 </main>
