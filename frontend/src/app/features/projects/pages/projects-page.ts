@@ -1,3 +1,4 @@
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -6,6 +7,7 @@ import {
   lucidePencil,
   lucidePlus,
   lucideRefreshCcw,
+  lucideTrash2,
 } from '@ng-icons/lucide';
 import { ZardBadgeComponent } from '@/shared/components/badge/badge.component';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
@@ -14,6 +16,7 @@ import { ZardEmptyComponent } from '@/shared/components/empty/empty.component';
 import { PageHeading } from '@/shared/components/page-heading/page-heading';
 import { CreateProjectDialog } from '../components/create-project-dialog/create-project-dialog';
 import { EditProjectDialog } from '../components/edit-project-dialog/edit-project-dialog';
+import { DeleteProjectDialog } from '../components/delete-project-dialog/delete-project-dialog';
 import { Project } from '../data/project.model';
 import { ProjectsService } from '../data/projects.service';
 import { formatProjectDate } from '../utils/format-project-date';
@@ -35,6 +38,7 @@ import { formatProjectDate } from '../utils/format-project-date';
     ZardEmptyComponent,
     CreateProjectDialog,
     EditProjectDialog,
+    DeleteProjectDialog,
   ],
   viewProviders: [
     provideIcons({
@@ -43,6 +47,7 @@ import { formatProjectDate } from '../utils/format-project-date';
       lucideFolderOpen,
       lucideCircleAlert,
       lucideRefreshCcw,
+      lucideTrash2,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,10 +60,16 @@ export class ProjectsPage {
   protected readonly createOpen = signal(false);
   protected readonly editOpen = signal(false);
   protected readonly editingProject = signal<Project | null>(null);
+
+  protected readonly deleteOpen = signal(false);
+  protected readonly deletingProject = signal<Project | null>(null);
+
   /** Proyecto recién creado: entra con animación. */
   protected readonly lastCreatedId = signal<string | null>(null);
+
   /** Último proyecto creado o editado: se resalta para ubicarlo en el listado. */
   protected readonly highlightedId = signal<string | null>(null);
+
   protected readonly announcement = signal('');
   protected readonly formatDate = formatProjectDate;
 
@@ -76,6 +87,12 @@ export class ProjectsPage {
     this.editOpen.set(true);
   }
 
+  /** Solo el propietario ve la opción; RLS vuelve a validar el permiso al eliminar. */
+  protected openDelete(project: Project): void {
+    this.deletingProject.set(project);
+    this.deleteOpen.set(true);
+  }
+
   protected retry(): void {
     void this.store.load();
   }
@@ -89,6 +106,14 @@ export class ProjectsPage {
   protected onUpdated(project: Project): void {
     this.highlightedId.set(project.id);
     this.announcement.set(`Proyecto «${project.name}» actualizado.`);
+  }
+
+  protected onDeleted(project: Project): void {
+    if (this.highlightedId() === project.id) {
+      this.highlightedId.set(null);
+    }
+
+    this.announcement.set(`Proyecto «${project.name}» eliminado.`);
   }
 
   protected isOwner(project: Project): boolean {
