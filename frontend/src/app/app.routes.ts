@@ -28,6 +28,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/home/pages/home-page').then((m) => m.HomePage),
       },
       {
+        path: 'proyectos',
+        title: 'Proyectos | Tasker',
+        loadComponent: () =>
+          import('./features/projects/pages/projects-page').then((m) => m.ProjectsPage),
+      },
+      {
         path: 'tareas',
         title: 'Tareas | Tasker',
         loadComponent: () => import('./features/tasks/pages/tasks-page').then((m) => m.TasksPage),
