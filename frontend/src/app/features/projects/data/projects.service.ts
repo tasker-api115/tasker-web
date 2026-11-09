@@ -46,11 +46,13 @@ export class ProjectsService {
       this.statusState.set('error');
       return;
     }
+
     this.statusState.set('loading');
+
     try {
       const { data, error } = await this.client
         .from('proyecto')
-        .select(PROJECT_COLUMNS)
+        .select(`${PROJECT_COLUMNS}, tarea(estado)`)
         .order('created_at', { ascending: false })
         .returns<ProjectRow[]>();
 
@@ -58,6 +60,7 @@ export class ProjectsService {
         this.statusState.set('error');
         return;
       }
+
       this.projectsState.set(data.map(toProject));
       this.statusState.set('ready');
     } catch {
@@ -70,7 +73,9 @@ export class ProjectsService {
     if (!this.client) {
       return { ok: false, reason: 'not-configured' };
     }
+
     const ownerId = this.currentUserId();
+
     if (!ownerId) {
       return { ok: false, reason: 'not-authenticated' };
     }
@@ -91,11 +96,18 @@ export class ProjectsService {
       if (error || !data) {
         return { ok: false, reason: 'unknown' };
       }
+
       const project = toProject(data);
-      this.projectsState.update((list) => [project, ...list.filter((p) => p.id !== project.id)]);
+
+      this.projectsState.update((list) => [
+        project,
+        ...list.filter((p) => p.id !== project.id),
+      ]);
+
       if (this.statusState() === 'idle') {
         this.statusState.set('ready');
       }
+
       return { ok: true, project };
     } catch {
       return { ok: false, reason: 'unknown' };
@@ -112,6 +124,7 @@ export class ProjectsService {
     if (!this.client) {
       return { ok: false, reason: 'not-configured' };
     }
+
     if (!this.currentUserId()) {
       return { ok: false, reason: 'not-authenticated' };
     }
@@ -132,11 +145,17 @@ export class ProjectsService {
       if (error?.code === NO_ROWS_CODE) {
         return { ok: false, reason: 'not-allowed' };
       }
+
       if (error || !data) {
         return { ok: false, reason: 'unknown' };
       }
+
       const project = toProject(data);
-      this.projectsState.update((list) => list.map((p) => (p.id === project.id ? project : p)));
+
+      this.projectsState.update((list) =>
+        list.map((p) => (p.id === project.id ? project : p))
+      );
+
       return { ok: true, project };
     } catch {
       return { ok: false, reason: 'unknown' };
