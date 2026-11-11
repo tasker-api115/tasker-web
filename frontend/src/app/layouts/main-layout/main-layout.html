@@ -23,6 +23,20 @@
         <a
           z-button
           zSize="lg"
+          routerLink="/proyectos"
+          routerLinkActive
+          #projects="routerLinkActive"
+          [zType]="projects.isActive ? 'secondary' : 'ghost'"
+          ariaCurrentWhenActive="page"
+        >
+          <ng-icon name="lucideFolder" aria-hidden="true" /> Proyectos
+          @if (projects.isActive) {
+            <ng-icon name="lucideCheck" class="ml-auto" aria-hidden="true" />
+          }
+        </a>
+        <a
+          z-button
+          zSize="lg"
           routerLink="/tareas"
           routerLinkActive
           #tasks="routerLinkActive"
