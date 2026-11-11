@@ -1,0 +1,180 @@
+<main class="flex min-h-screen items-center justify-center p-4">
+  <section
+    class="w-full max-w-[400px] rounded-xl border border-border bg-card p-6 text-card-foreground"
+    aria-labelledby="register-title"
+  >
+    <img
+      src="brand/tasker-logo-dark.svg"
+      alt="Tasker"
+      class="mx-auto mb-6 h-8 w-auto"
+      width="120"
+    />
+
+    <h1
+      id="register-title"
+      class="text-[28px] font-bold leading-tight tracking-tight"
+    >
+      Crea tu cuenta
+    </h1>
+
+    <p class="mt-2 mb-6 text-sm text-muted-foreground">
+      Regístrate para comenzar a utilizar Tasker.
+    </p>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      [attr.aria-busy]="loading()"
+      novalidate
+    >
+      <fieldset
+        class="m-0 flex min-w-0 flex-col gap-4 border-0 p-0"
+        [disabled]="loading()"
+      >
+        <legend class="sr-only">Datos de registro</legend>
+
+        <div class="flex flex-col gap-2">
+          <label for="full-name" class="text-sm font-medium">
+            Nombre completo
+          </label>
+
+          <input
+            id="full-name"
+            type="text"
+            formControlName="fullName"
+            autocomplete="name"
+            placeholder="Escribe tu nombre completo"
+            required
+            [class]="inputClasses"
+            [attr.aria-invalid]="isInvalid('fullName') ? 'true' : null"
+            [attr.aria-describedby]="
+              isInvalid('fullName') ? 'full-name-error' : null
+            "
+          />
+
+          @if (isInvalid('fullName')) {
+            <p id="full-name-error" class="text-sm text-destructive">
+              Ingresa tu nombre completo.
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="register-email" class="text-sm font-medium">
+            Correo electrónico
+          </label>
+
+          <input
+            id="register-email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="nombre@ejemplo.com"
+            required
+            [class]="inputClasses"
+            [attr.aria-invalid]="isInvalid('email') ? 'true' : null"
+            [attr.aria-describedby]="
+              isInvalid('email') ? 'register-email-error' : null
+            "
+          />
+
+          @if (isInvalid('email')) {
+            <p id="register-email-error" class="text-sm text-destructive">
+              @if (form.controls.email.hasError('required')) {
+                Ingresa tu correo electrónico.
+              } @else {
+                Ingresa un correo electrónico válido.
+              }
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="register-password" class="text-sm font-medium">
+            Contraseña
+          </label>
+
+          <input
+            id="register-password"
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+            placeholder="Crea una contraseña"
+            required
+            [class]="inputClasses"
+            [attr.aria-invalid]="isInvalid('password') ? 'true' : null"
+            [attr.aria-describedby]="
+              isInvalid('password') ? 'register-password-error' : null
+            "
+          />
+
+          @if (isInvalid('password')) {
+            <p id="register-password-error" class="text-sm text-destructive">
+              Ingresa una contraseña.
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="confirm-password" class="text-sm font-medium">
+            Confirmar contraseña
+          </label>
+
+          <input
+            id="confirm-password"
+            type="password"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+            placeholder="Repite tu contraseña"
+            required
+            [class]="inputClasses"
+            [attr.aria-invalid]="confirmationInvalid ? 'true' : null"
+            [attr.aria-describedby]="
+              confirmationInvalid ? 'confirm-password-error' : null
+            "
+          />
+
+          @if (confirmationInvalid) {
+            <p id="confirm-password-error" class="text-sm text-destructive">
+              @if (form.controls.confirmPassword.hasError('required')) {
+                Confirma tu contraseña.
+              } @else {
+                Las contraseñas no coinciden.
+              }
+            </p>
+          }
+        </div>
+
+        @if (errorMessage(); as message) {
+          <div
+            role="alert"
+            class="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive"
+          >
+            {{ message }}
+          </div>
+        }
+
+        <button
+          z-button
+          zSize="lg"
+          type="submit"
+          class="w-full"
+          [zLoading]="loading()"
+          [disabled]="loading()"
+        >
+          {{ loading() ? 'Creando cuenta…' : 'Crear cuenta' }}
+        </button>
+      </fieldset>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-muted-foreground">
+      ¿Ya tienes una cuenta?
+      <a
+        routerLink="/login"
+        class="font-medium text-primary underline-offset-4 hover:underline"
+      >
+        Inicia sesión
+      </a>
+    </p>
+  </section>
+</main>

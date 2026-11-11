@@ -10,6 +10,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/pages/login-page').then((m) => m.LoginPage),
   },
   {
+  path: 'registro',
+  title: 'Crear cuenta | Tasker',
+  canActivate: [guestGuard],
+  loadComponent: () =>
+    import('./features/auth/pages/register-page').then((m) => m.RegisterPage),
+},
+  {
     path: '',
     component: MainLayout,
     canActivate: [authGuard],
