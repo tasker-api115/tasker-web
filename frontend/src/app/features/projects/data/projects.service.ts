@@ -1,3 +1,4 @@
+
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { AuthService } from '../../../core/auth/auth.service';
 import { SUPABASE_CLIENT } from '../../../core/supabase/supabase-client';
@@ -18,6 +19,21 @@ export type UpdateProjectResult =
       readonly ok: false;
       readonly reason: 'not-authenticated' | 'not-configured' | 'not-allowed' | 'unknown';
     };
+
+export type DeleteProjectResult =
+  | { readonly ok: true }
+  | {
+      readonly ok: false;
+      readonly reason:
+        | 'not-authenticated'
+        | 'not-configured'
+        | 'not-allowed'
+        | 'has-tasks'
+        | 'unknown';
+    };
+
+/** Código de PostgreSQL cuando una relación (por ejemplo, tareas) impide borrar. */
+const FOREIGN_KEY_VIOLATION_CODE = '23503';
 
 /** Código de PostgREST cuando `.single()` no recibe filas: RLS lo ocultó o ya no existe. */
 const NO_ROWS_CODE = 'PGRST116';
@@ -157,6 +173,50 @@ export class ProjectsService {
       );
 
       return { ok: true, project };
+    } catch {
+      return { ok: false, reason: 'unknown' };
+    }
+  }
+
+  /**
+   * Elimina un proyecto y lo quita del listado.
+   *
+   * La política RLS `proyecto_eliminar` solo deja borrar al propietario; si no se borra
+   * ninguna fila, el proyecto ya no existe o el usuario no tiene permiso.
+   */
+  async remove(projectId: string): Promise<DeleteProjectResult> {
+    if (!this.client) {
+      return { ok: false, reason: 'not-configured' };
+    }
+
+    if (!this.currentUserId()) {
+      return { ok: false, reason: 'not-authenticated' };
+    }
+
+    try {
+      const { data, error } = await this.client
+        .from('proyecto')
+        .delete()
+        .eq('id_proyecto', projectId)
+        .select('id_proyecto');
+
+      if (error?.code === FOREIGN_KEY_VIOLATION_CODE) {
+        return { ok: false, reason: 'has-tasks' };
+      }
+
+      if (error) {
+        return { ok: false, reason: 'unknown' };
+      }
+
+      if (!data || data.length === 0) {
+        return { ok: false, reason: 'not-allowed' };
+      }
+
+      this.projectsState.update((list) =>
+        list.filter((p) => p.id !== projectId)
+      );
+
+      return { ok: true };
     } catch {
       return { ok: false, reason: 'unknown' };
     }

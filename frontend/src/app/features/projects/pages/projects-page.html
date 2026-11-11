@@ -110,6 +110,17 @@
                   >
                     <ng-icon name="lucidePencil" aria-hidden="true" /> Editar
                   </button>
+
+                  <button
+                    z-button
+                    zType="destructive"
+                    zSize="sm"
+                    type="button"
+                    [attr.aria-label]="'Eliminar proyecto ' + project.name"
+                    (click)="openDelete(project)"
+                  >
+                    <ng-icon name="lucideTrash2" aria-hidden="true" /> Eliminar
+                  </button>
                 </z-card-footer>
               }
             </z-card>
@@ -135,4 +146,10 @@
   [(open)]="editOpen"
   [project]="editingProject()"
   (updated)="onUpdated($event)"
+/>
+
+<app-delete-project-dialog
+  [(open)]="deleteOpen"
+  [project]="deletingProject()"
+  (deleted)="onDeleted($event)"
 />
