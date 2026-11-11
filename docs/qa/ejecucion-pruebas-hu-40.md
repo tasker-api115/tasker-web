@@ -4,270 +4,335 @@
 **Historia:** HU-40 — Pruebas de autenticación  
 **Responsable:** QA  
 **Tipo de ejecución:** Manual, desde la interfaz web de Angular  
-**Versión del registro:** 1.0   
-**Ejecutor:** Responsable QA   
-**Servicio de autenticación:** Supabase alojado compartido por el equipo  
-**Navegador:** Brave (versión pendiente de registrar)  
+**Versión del registro:** 1.1  
+**Fecha de actualización:** 11 de noviembre de 2026  
+**Fecha y hora de ejecución:** Según fechas de las capturas de cada ciclo  
+**Ejecutor:** Responsable de QA  
+**Rama y commit del frontend:** Pendientes de registrar  
+**Aplicación:** `http://localhost:4200`  
+**Servicio de autenticación:** Supabase alojado, compartido por el equipo  
+**Navegador:** Brave  
 **Sistema operativo:** Windows  
 **Referencia de diseño de pruebas:** HU-39, casos `CP-AUT-01` a `CP-AUT-05`  
-**Referencia de datos:** HU-53, catálogo `DS-01`, `DS-05`, `DS-07` (versión documental QA53-1.2)  
+**Referencia de datos:** HU-53, datasets `DS-01`, `DS-05` y `DS-07` (QA53-1.2)
 
-> **Alcance de este registro:** Los resultados se basan en las capturas y observaciones compartidas por QA. No se ha acreditado la ejecución del script de restauración de HU-53 ni se conoce el commit exacto del frontend probado. Las cuentas empleadas fueron las identidades de prueba existentes documentadas en HU-52. Los estados pendientes y bloqueados no constituyen pruebas aprobadas.
+## 1. Objetivo y alcance
 
-## 1. Criterios de aceptación y trazabilidad
+Documentar los resultados de las pruebas de autenticación de Tasker conforme a HU-40, utilizando los casos definidos en el Plan Maestro de Pruebas HU-39 y los datasets relacionados de HU-53.
 
-| Criterio de HU-40 | Caso de HU-39 o ampliación | Dataset | Resultado |
+La ejecución comprende el inicio de sesión válido e inválido, cierre de sesión, protección de rutas y registro de usuarios. También se identifica el estado de la verificación de sesiones expiradas.
+
+Las pruebas se realizaron en la aplicación Angular conectada al Supabase compartido del equipo. Se utilizaron identidades de prueba y se registraron los resultados observados mediante capturas de pantalla.
+
+El presente documento recoge los resultados reportados por QA. La incorporación de las nuevas capturas de registro al repositorio y la identificación del commit exacto del frontend deben comprobarse durante la revisión.
+
+## 2. Criterios de aceptación y trazabilidad
+
+| Criterio de HU-40 | Caso de prueba | Dataset | Estado |
 |---|---|---|---|
-| Inicio de sesión válido | `CP-AUT-03` | `DS-01` | Aprobado según ejecución reportada |
-| Inicio de sesión con credenciales incorrectas | `CP-AUT-04` | `DS-01` (entrada negativa de `DS-07`) | Aprobado |
-| Cierre de sesión | `CP-AUT-05`, verificación A | `DS-01` | Aprobado según ejecución reportada |
-| Protección de rutas | `CP-AUT-05`, verificación B | `DS-01` | Aprobado según ejecución reportada |
-| Sesión expirada | `EXT-AUT-01` (ampliación propuesta en HU-53) | `DS-07` | Pendiente de validación |
-| Registro válido desde login (HU-54) | `CP-AUT-01` | `DS-01` | Bloqueado |
-| Registro inválido o duplicado (HU-54) | `CP-AUT-02` | `DS-05` | Bloqueado |
-| Resultados documentados | Este registro y sus evidencias | — | Documentado con limitaciones |
+| Inicio de sesión válido | CP-AUT-03 | DS-01 | Aprobado |
+| Inicio de sesión con credenciales incorrectas | CP-AUT-04 | DS-01, DS-07 | Aprobado |
+| Cierre de sesión | CP-AUT-05, verificación A | DS-01 | Aprobado |
+| Protección de rutas | CP-AUT-05, verificación B | DS-01 | Aprobado |
+| Sesión expirada | EXT-AUT-01 | DS-07 | Pendiente |
+| Registro válido desde el login | CP-AUT-01 | DS-01 | Aprobado |
+| Registro inválido | CP-AUT-02 | DS-05 | Aprobado |
+| Documentación de resultados | Este registro | — | Documentado |
 
-`CP-AUT-05` contiene dos verificaciones —cierre de sesión y protección de ruta—, por lo que **las siete verificaciones de los criterios de HU-40 corresponden a seis fichas de casos**, cinco originales de HU-39 y una ampliación propuesta. `EXT-AUT-01` no forma parte de los 45 escenarios originales de HU-39 hasta que se apruebe su incorporación.
+`CP-AUT-05` cubre dos comprobaciones: cierre de sesión y protección de rutas.
 
-## 2. Fichas de ejecución
+`EXT-AUT-01` es una ampliación propuesta para cubrir explícitamente las sesiones expiradas. No se incorpora a los 45 casos originales de HU-39 sin su actualización o aprobación correspondiente.
 
-### CP-AUT-03 — Inicio de sesión con credenciales válidas
-
-**Historia / criterio:** HU-40 · **Prioridad:** Crítica (C) · **Procedimiento:** versión 1.0
-
-| Campo | Registro |
-|---|---|
-| Identificador | `CP-AUT-03` |
-| Ejecutado por / fecha y hora | Responsable QA / pendiente de registrar |
-| Entorno / versión | Angular `localhost:4200`; Supabase compartido / commit pendiente de identificar |
-| Navegador | Brave; versión pendiente de registrar |
-| Dataset | DS-01 — Identidades (cuenta existente de HU-52) (HU-53 QA53-1.2; ejecución del SQL no acreditada) |
-| Precondiciones | Tasker disponible en `/login`; sesión anterior cerrada; cuenta de prueba `ana@example.com` habilitada en Supabase. |
-| Resultado esperado | Se establece una sesión autenticada y el usuario puede acceder a `/inicio`. |
-| Resultado observado | QA reportó un inicio de sesión correcto y compartió una captura de Tasker en `localhost:4200/inicio` con el botón **Cerrar sesión** visible. La captura no muestra la identidad de la cuenta autenticada. |
-| Estado | **Aprobado según ejecución reportada** |
-| Evidencia | EV-HU40-01 — captura de `/inicio` luego de autenticación. |
-| Incidencia / dependencia | No se confirmó defecto. |
-| Reinicio y observaciones | Para dejar evidencia completamente verificable, asociar fecha, commit y registro de autenticación no sensible; no mostrar tokens ni contraseñas. |
-
-**Pasos del procedimiento:**
-
-1. Abrir `http://localhost:4200/login`.
-2. Introducir el correo de prueba válido y su contraseña vigente.
-3. Seleccionar **Iniciar sesión**.
-4. Observar la URL y la pantalla de destino.
-
-
-### CP-AUT-04 — Intento de inicio de sesión con credenciales incorrectas
-
-**Historia / criterio:** HU-40 · **Prioridad:** Alta (A) · **Procedimiento:** versión 1.0
-
-| Campo | Registro |
-|---|---|
-| Identificador | `CP-AUT-04` |
-| Ejecutado por / fecha y hora | Responsable QA / pendiente de registrar |
-| Entorno / versión | Angular `localhost:4200`; Supabase compartido / commit pendiente de identificar |
-| Navegador | Brave; versión pendiente de registrar |
-| Dataset | DS-01; entrada negativa definida en DS-07 (HU-53 QA53-1.2; ejecución del SQL no acreditada) |
-| Precondiciones | Formulario `/login` disponible y sesión no autenticada. |
-| Resultado esperado | Se rechaza el inicio de sesión sin crear una sesión y se muestra un error controlado. |
-| Resultado observado | La interfaz permaneció en `/login` y mostró: «Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo». Se aportaron capturas para `ana@example.com` con contraseña incorrecta y para `test@example.com`. |
-| Estado | **Aprobado** |
-| Evidencia | EV-HU40-02 — login inválido con `ana@example.com`; EV-HU40-05 — intento adicional con `test@example.com`. |
-| Incidencia / dependencia | No se confirmó defecto. |
-| Reinicio y observaciones | El intento con `test@example.com` es una prueba adicional de **login inválido**, no de registro inválido. |
-
-**Pasos del procedimiento:**
-
-1. Abrir `/login`.
-2. Introducir `ana@example.com` con una contraseña incorrecta.
-3. Seleccionar **Iniciar sesión**.
-4. Observar el mensaje y comprobar que no se acceda a `/inicio`.
-5. Opcional: repetir con una identidad no registrada, como `test@example.com`, sin crear la cuenta.
-
-
-### CP-AUT-05 — Cierre de sesión y acceso a ruta protegida
-
-**Historia / criterio:** HU-40 · **Prioridad:** Alta (A) · **Procedimiento:** versión 1.0
-
-| Campo | Registro |
-|---|---|
-| Identificador | `CP-AUT-05` |
-| Ejecutado por / fecha y hora | Responsable QA / pendiente de registrar |
-| Entorno / versión | Angular `localhost:4200`; Supabase compartido / commit pendiente de identificar |
-| Navegador | Brave; versión pendiente de registrar |
-| Dataset | DS-01 — Identidades (HU-53 QA53-1.2; ejecución del SQL no acreditada) |
-| Precondiciones | Usuario autenticado y con acceso a `/inicio`. |
-| Resultado esperado | La sesión deja de estar activa y el acceso directo a `/inicio` requiere autenticación; la aplicación puede redirigir al login sin aviso adicional. |
-| Resultado observado | QA reportó que al cerrar sesión regresó a `/login`. También indicó que, al intentar entrar directamente a `/inicio` sin sesión, Tasker lo redirigió automáticamente a `/login`, sin mostrar otro aviso. La captura recibida de login documenta el estado final, pero no permite demostrar por sí sola la navegación desde `/inicio`. |
-| Estado | **Aprobado según ejecución reportada** |
-| Evidencia | EV-HU40-03 — pantalla `/login` después de cerrar sesión; EV-HU40-04 — redirección a `/login` reportada (captura final equivalente). |
-| Incidencia / dependencia | No se confirmó defecto. |
-| Reinicio y observaciones | Es recomendable guardar un video corto o registro de navegación con la URL solicitada `/inicio` y la URL final `/login`, sin incluir datos de sesión. |
-
-**Pasos del procedimiento:**
-
-1. Desde `/inicio`, seleccionar **Cerrar sesión**.
-2. Comprobar que la aplicación regresa a `/login`.
-3. Tras cerrar sesión, escribir directamente `http://localhost:4200/inicio` en la barra de direcciones.
-4. Pulsar Enter y observar el comportamiento.
-
+## 3. Fichas de ejecución de pruebas
 
 ### CP-AUT-01 — Registro de cuenta con datos válidos
 
-**Historia / criterio:** HU-40 · **Prioridad:** Alta (A) · **Procedimiento:** versión 1.0
+**Historia / criterio:** HU-40, registro de usuarios desde el login  
+**Prioridad:** Alta  
+**Dataset:** DS-01  
+**Estado:** Aprobado según ejecución reportada por QA
 
 | Campo | Registro |
 |---|---|
-| Identificador | `CP-AUT-01` |
-| Ejecutado por / fecha y hora | Responsable QA / pendiente de registrar |
-| Entorno / versión | Angular `localhost:4200`; Supabase compartido / commit pendiente de identificar |
-| Navegador | Brave; versión pendiente de registrar |
-| Dataset | DS-01 — Identidad temporal por crear durante la prueba (HU-53 QA53-1.2; ejecución del SQL no acreditada) |
-| Precondiciones | Implementación del registro desde el login según HU-54 y autorización del equipo para crear una cuenta temporal en Supabase compartido. |
-| Resultado esperado | Se crea la cuenta conforme al flujo de HU-54 y se aplica la confirmación de correo solo cuando corresponda. |
-| Resultado observado | QA informó que la función de registro de usuarios aún no está implementada. No fue posible realizar el procedimiento. |
-| Estado | **Bloqueado** |
-| Evidencia | No existe evidencia de ejecución de registro; dependencia HU-54 informada por QA. |
-| Incidencia / dependencia | Dependencia funcional HU-54, no se atribuye defecto de HU-40 sin verificar fechas de entrega y alcance. |
-| Reinicio y observaciones | Reejecutar cuando HU-54 esté disponible. Coordinar cuenta temporal y limpieza con backend. |
+| Identificador | CP-AUT-01 |
+| Objetivo | Verificar que un usuario pueda registrarse mediante el formulario de Tasker. |
+| Precondiciones | Formulario de registro implementado y disponible; servicio Supabase accesible. |
+| Resultado esperado | El sistema acepta datos válidos y procesa el registro conforme al flujo implementado. |
+| Resultado obtenido | QA confirmó la implementación de la funcionalidad, realizó la prueba de registro válido y reportó un resultado satisfactorio. |
+| Estado | Aprobado |
+| Evidencia | EV-HU40-06 — captura del registro válido. |
+| Incidencia | No se reportaron defectos durante la ejecución. |
 
-**Pasos del procedimiento:**
+**Procedimiento de prueba:**
 
-1. Abrir `/login`.
-2. Seleccionar la opción de registro, una vez disponible.
-3. Introducir datos válidos con correo ficticio nuevo.
-4. Enviar el formulario y comprobar el flujo y las confirmaciones aprobadas.
+1. Acceder a la pantalla de inicio de sesión de Tasker.
+2. Seleccionar la opción de registro de usuario.
+3. Completar los campos con datos ficticios válidos.
+4. Enviar el formulario de registro.
+5. Comprobar el resultado y el comportamiento del sistema.
 
+**Observación:** El resultado fue confirmado por QA. La captura debe incorporarse a GitHub para respaldar la aprobación y verificar el mensaje o comportamiento exacto mostrado por la aplicación.
 
-### CP-AUT-02 — Registro con datos inválidos o cuenta duplicada
+### CP-AUT-02 — Registro con datos inválidos
 
-**Historia / criterio:** HU-40 · **Prioridad:** Alta (A) · **Procedimiento:** versión 1.0
-
-| Campo | Registro |
-|---|---|
-| Identificador | `CP-AUT-02` |
-| Ejecutado por / fecha y hora | Responsable QA / pendiente de registrar |
-| Entorno / versión | Angular `localhost:4200`; Supabase compartido / commit pendiente de identificar |
-| Navegador | Brave; versión pendiente de registrar |
-| Dataset | DS-05 — Entradas inválidas; DS-01 como referencia de cuenta ya existente (HU-53 QA53-1.2; ejecución del SQL no acreditada) |
-| Precondiciones | Formulario de registro de HU-54 implementado y reglas de validación aprobadas. |
-| Resultado esperado | Las entradas inválidas o duplicadas se rechazan de manera controlada, sin exponer información sensible. |
-| Resultado observado | QA confirmó que el registro de nuevos usuarios no está implementado. La captura con `test@example.com` corresponde al formulario de **inicio de sesión**, por lo que no constituye evidencia de este caso. |
-| Estado | **Bloqueado** |
-| Evidencia | Sin evidencia de ejecución de registro inválido. |
-| Incidencia / dependencia | Dependencia HU-54; no corresponde inventar un resultado de registro. |
-| Reinicio y observaciones | Ejecutar solo cuando esté disponible la funcionalidad; no modificar datos reales del Supabase compartido. |
-
-**Pasos del procedimiento:**
-
-1. Abrir el formulario de registro.
-2. Intentar enviar entradas inválidas o incompletas conforme a las reglas aprobadas.
-3. Intentar registrar un correo ya existente sin modificar esa cuenta.
-4. Verificar los mensajes de rechazo y que no se haya creado indebidamente un usuario.
-
-
-### EXT-AUT-01 — Comportamiento ante una sesión expirada o invalidada
-
-**Historia / criterio:** HU-40 · **Prioridad:** Alta (propuesta; pendiente de aprobación en HU-39) · **Procedimiento:** versión 1.0
+**Historia / criterio:** HU-40, validaciones del registro de usuarios  
+**Prioridad:** Alta  
+**Dataset:** DS-05  
+**Estado:** Aprobado según ejecución reportada por QA
 
 | Campo | Registro |
 |---|---|
-| Identificador | `EXT-AUT-01` |
-| Ejecutado por / fecha y hora | Responsable QA / pendiente de registrar |
-| Entorno / versión | Angular `localhost:4200`; Supabase compartido / commit pendiente de identificar |
-| Navegador | Brave; versión pendiente de registrar |
-| Dataset | DS-07 — Sesión caducada sin posibilidad de renovación (HU-53 QA53-1.2; ejecución del SQL no acreditada) |
-| Precondiciones | Mecanismo de autenticación y renovación de tokens conocido; escenario controlado aprobado por backend para el Supabase compartido. |
-| Resultado esperado | Ante una **sesión realmente inválida y no renovable**, se niega el acceso a recursos protegidos y se exige autenticación. La mera caducidad de un token que pueda renovarse automáticamente no equivale a una sesión terminada. |
-| Resultado observado | QA indicó que no encontró una configuración explícita de límite activo de sesión en Angular. No se ejecutó una invalidación o expiración controlada, por lo que no existe resultado funcional comprobado. |
-| Estado | **Pendiente** |
-| Evidencia | Sin captura ni evidencia funcional de sesión expirada. |
-| Incidencia / dependencia | Requiere definición de procedimiento de prueba junto con backend; no hay defecto confirmado. |
-| Reinicio y observaciones | No modificar límites globales ni revocar sesiones de otros integrantes en el Supabase compartido. |
+| Identificador | CP-AUT-02 |
+| Objetivo | Comprobar que el formulario de registro controle los datos inválidos. |
+| Precondiciones | Formulario de registro disponible y reglas de validación implementadas. |
+| Resultado esperado | El sistema rechaza las entradas que incumplen las validaciones y evita un registro indebido. |
+| Resultado obtenido | QA confirmó que la funcionalidad de registro inválido fue implementada, ejecutada y aprobada. |
+| Estado | Aprobado |
+| Evidencia | EV-HU40-07 — captura de registro inválido. |
+| Incidencia | No se reportaron defectos durante la ejecución. |
 
-**Pasos del procedimiento:**
+**Procedimiento de prueba:**
+
+1. Acceder al formulario de registro.
+2. Introducir datos que incumplan las validaciones del formulario.
+3. Intentar enviar el registro.
+4. Comprobar el mensaje o comportamiento de validación.
+5. Verificar que el sistema no acepte indebidamente los datos ingresados.
+
+**Observación:** La evidencia debe permitir identificar qué validación se comprobó. La captura anterior con `test@example.com` en la pantalla de login sigue correspondiendo a CP-AUT-04 y no sustituye esta prueba.
+
+No se declara ejecutado un escenario específico de correo duplicado o longitud máxima si no existe evidencia de su comprobación.
+
+### CP-AUT-03 — Inicio de sesión con credenciales válidas
+
+**Historia / criterio:** HU-40, inicio de sesión válido  
+**Prioridad:** Crítica  
+**Dataset:** DS-01  
+**Estado:** Aprobado
+
+| Campo | Registro |
+|---|---|
+| Identificador | CP-AUT-03 |
+| Objetivo | Comprobar el acceso de un usuario registrado. |
+| Precondiciones | Usuario existente en Supabase y sesión anterior cerrada. |
+| Datos de prueba | `ana@example.com` y su contraseña de prueba vigente. |
+| Resultado esperado | El usuario se autentica correctamente y accede a `/inicio`. |
+| Resultado obtenido | Se logró iniciar sesión y acceder al dashboard de Tasker. |
+| Estado | Aprobado |
+| Evidencia | EV-HU40-01 — captura de la pantalla principal de Tasker. |
+| Incidencia | No se identificaron defectos. |
+
+**Procedimiento de prueba:**
+
+1. Acceder a `http://localhost:4200/login`.
+2. Ingresar las credenciales válidas de la cuenta de prueba.
+3. Seleccionar **Iniciar sesión**.
+4. Verificar el acceso a `/inicio`.
+5. Comprobar la visualización de la pantalla principal.
+
+**Observación:** La captura muestra la aplicación en `/inicio` y la opción de cerrar sesión.
+
+### CP-AUT-04 — Inicio de sesión con credenciales incorrectas
+
+**Historia / criterio:** HU-40, rechazo de credenciales inválidas  
+**Prioridad:** Alta  
+**Dataset:** DS-01 y DS-07  
+**Estado:** Aprobado
+
+| Campo | Registro |
+|---|---|
+| Identificador | CP-AUT-04 |
+| Objetivo | Verificar que el sistema impida iniciar sesión con credenciales incorrectas. |
+| Precondiciones | Formulario de inicio de sesión disponible. |
+| Datos de prueba | Correo válido con contraseña incorrecta y prueba adicional con `test@example.com`. |
+| Resultado esperado | Se rechaza el acceso y se muestra un mensaje controlado. |
+| Resultado obtenido | El sistema permaneció en `/login` y mostró un mensaje de credenciales incorrectas. |
+| Estado | Aprobado |
+| Evidencias | EV-HU40-02 y EV-HU40-05. |
+| Incidencia | No se identificaron defectos. |
+
+**Procedimiento de prueba:**
+
+1. Acceder al formulario de inicio de sesión.
+2. Introducir un correo de prueba con contraseña incorrecta.
+3. Seleccionar **Iniciar sesión**.
+4. Comprobar el rechazo del acceso.
+5. Repetir el intento con `test@example.com`.
+
+**Mensaje observado:**
+
+> Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.
+
+El sistema no permitió ingresar al dashboard con las credenciales utilizadas.
+
+### CP-AUT-05 — Cierre de sesión y protección de rutas
+
+**Historia / criterio:** HU-40, cierre de sesión y protección de rutas  
+**Prioridad:** Alta  
+**Dataset:** DS-01  
+**Estado:** Aprobado
+
+| Campo | Registro |
+|---|---|
+| Identificador | CP-AUT-05 |
+| Objetivo | Verificar que el cierre de sesión impida continuar accediendo a rutas protegidas. |
+| Precondiciones | Usuario autenticado y con acceso a `/inicio`. |
+| Resultado esperado | Al cerrar sesión, el usuario regresa al login. Si intenta acceder directamente a una ruta protegida, el sistema solicita autenticación. |
+| Resultado obtenido | Después de cerrar sesión se regresó a `/login`. Al intentar ingresar directamente a `/inicio`, Tasker redirigió automáticamente a `/login`. |
+| Estado | Aprobado |
+| Evidencias | EV-HU40-03 y EV-HU40-04 (resultado reportado). |
+| Incidencia | No se identificaron defectos. |
+
+**Procedimiento de prueba:**
+
+1. Iniciar sesión con una cuenta válida.
+2. Acceder a `/inicio`.
+3. Seleccionar **Cerrar sesión**.
+4. Comprobar el regreso a `/login`.
+5. Intentar acceder directamente a `http://localhost:4200/inicio`.
+6. Verificar la redirección al formulario de inicio de sesión.
+
+**Observación:** El sistema no mostró un mensaje adicional al redirigir. Esto no constituye un defecto, porque la protección de rutas se realizó mediante redirección y el criterio de aceptación no exige un aviso específico.
+
+La redirección fue confirmada mediante la ejecución reportada por QA, aunque no existe una captura independiente del proceso de navegación.
+
+### EXT-AUT-01 — Comportamiento ante una sesión expirada
+
+**Historia / criterio:** HU-40, sesiones expiradas  
+**Prioridad:** Alta (ampliación propuesta)  
+**Dataset:** DS-07  
+**Estado:** Pendiente de validación
+
+| Campo | Registro |
+|---|---|
+| Identificador | EXT-AUT-01 |
+| Objetivo | Comprobar el comportamiento de Tasker cuando una sesión deja de ser válida. |
+| Precondiciones | Mecanismo de expiración o invalidación de sesión identificado y procedimiento de prueba autorizado. |
+| Resultado esperado | Ante una sesión inválida que no pueda renovarse, el sistema impide el acceso a recursos protegidos y requiere autenticación. |
+| Resultado obtenido | No se ejecutó una prueba de expiración efectiva. QA informó que no se implementó un límite explícito de duración o inactividad de sesión en Tasker. |
+| Estado | Pendiente de validación |
+| Evidencia | No disponible. |
+| Incidencia | Pendiente de aclaración y validación con backend. |
+
+**Procedimiento propuesto:**
 
 1. Iniciar sesión con una cuenta de QA.
-2. Provocar, mediante un procedimiento autorizado, que la sesión sea inválida o no renovable.
-3. Intentar abrir `/inicio` y realizar una operación protegida.
-4. Observar si la aplicación exige autenticación y evita el acceso protegido.
+2. Identificar el mecanismo real de expiración y renovación de sesión.
+3. Provocar de forma controlada una sesión inválida o no renovable.
+4. Intentar acceder a `/inicio`.
+5. Comprobar que el sistema impida el acceso protegido y solicite autenticación.
 
-## 3. Resumen de ejecución
+**Observación técnica:**
 
-**Inventario base de HU-39 para autenticación:** cinco casos (`CP-AUT-01` a `CP-AUT-05`).
+No existe una implementación explícita de límite de sesión en Tasker, según la revisión reportada por QA. Sin embargo, Supabase Auth administra tokens con expiración y puede renovarlos automáticamente.
 
-| Estado | Casos originales HU-39 |
-|---|---:|
-| Aprobados | 3 (`CP-AUT-03`, `CP-AUT-04`, `CP-AUT-05`) |
-| Fallidos | 0 confirmados |
-| Bloqueados | 2 (`CP-AUT-01`, `CP-AUT-02`) |
-| **Total** | **5** |
+Por ello, la ausencia de un tiempo límite configurado en Angular no permite concluir que la expiración de los tokens no funcione. La prueba permanece pendiente hasta definir qué comportamiento debe verificarse y ejecutarlo de forma controlada.
 
-**Ampliación de cobertura:** un caso propuesto, `EXT-AUT-01`, pendiente de ejecutar; no se incorpora al total de los 45 casos originales.
+No se clasifica como aprobada ni fallida.
 
-**Desglose de los siete criterios/comprobaciones solicitados en HU-40:** cuatro satisfactorios (login válido, login inválido, cierre de sesión y rutas protegidas), uno pendiente (sesión expirada) y dos bloqueados (registro válido e inválido). Esta desagregación no debe confundirse con el conteo de las fichas de HU-39, porque `CP-AUT-05` cubre dos comprobaciones.
+## 4. Resumen de ejecución
 
-No se calcula una tasa de aprobación definitiva de HU-40 ni se declara cobertura completa: existen escenarios no ejecutados y falta identificar el build/commit probado. Tampoco se han confirmado defectos funcionales con las evidencias disponibles.
+### 4.1. Casos originales del Plan Maestro de Pruebas
 
-## 4. Inventario y resguardo de evidencias
+| Estado | Cantidad | Identificadores |
+|---|---:|---|
+| Aprobados | 5 | CP-AUT-01, CP-AUT-02, CP-AUT-03, CP-AUT-04, CP-AUT-05 |
+| Fallidos | 0 | Ninguno confirmado |
+| Bloqueados | 0 | Ninguno |
+| Total | 5 | — |
 
-| ID | Contenido de la evidencia recibida o reportada | Asociación |
+Los cinco casos originales de autenticación definidos en HU-39 fueron reportados como aprobados por QA.
+
+### 4.2. Comprobaciones de los criterios de HU-40
+
+| Comprobación | Estado |
+|---|---|
+| Inicio de sesión válido | Aprobada |
+| Inicio de sesión inválido | Aprobada |
+| Cierre de sesión | Aprobada |
+| Protección de rutas | Aprobada |
+| Registro válido | Aprobada |
+| Registro inválido | Aprobada |
+| Sesión expirada | Pendiente |
+
+**Resultado general:** seis comprobaciones satisfactorias y una pendiente de validación.
+
+El caso EXT-AUT-01 no se suma al total de los cinco casos originales de HU-39.
+
+## 5. Inventario de evidencias
+
+| Identificador | Descripción | Caso |
 |---|---|---|
-| `EV-HU40-01` | Captura de `localhost:4200/inicio`, con pantalla principal y botón «Cerrar sesión». | `CP-AUT-03` |
-| `EV-HU40-02` | Captura de `/login` con `ana@example.com` y mensaje de credenciales incorrectas. | `CP-AUT-04` |
-| `EV-HU40-03` | Captura de `/login` sin mensaje de error, compartida para el cierre de sesión. | `CP-AUT-05`, cierre |
-| `EV-HU40-04` | Redirección desde `/inicio` hacia `/login` reportada por QA; la captura del estado final es equivalente a `EV-HU40-03`. | `CP-AUT-05`, ruta protegida |
-| `EV-HU40-05` | Captura de `/login` con `test@example.com` y rechazo de credenciales. | `CP-AUT-04`, prueba adicional |
+| EV-HU40-01 | Pantalla principal de Tasker después del inicio de sesión válido. | CP-AUT-03 |
+| EV-HU40-02 | Rechazo de inicio de sesión con credenciales incorrectas. | CP-AUT-04 |
+| EV-HU40-03 | Pantalla `/login` después del cierre de sesión. | CP-AUT-05 |
+| EV-HU40-04 | Redirección de `/inicio` a `/login` sin autenticación, confirmada mediante el resultado reportado. No existe captura independiente. | CP-AUT-05 |
+| EV-HU40-05 | Rechazo de autenticación utilizando `test@example.com`. | CP-AUT-04 |
+| EV-HU40-06 | Captura del registro válido de usuario, tomada por QA. | CP-AUT-01 |
+| EV-HU40-07 | Captura del registro inválido de usuario, tomada por QA. | CP-AUT-02 |
 
-Las capturas fueron proporcionadas durante la revisión; su incorporación efectiva al repositorio o Jira **está pendiente**. No se debe inventar una captura separada para `EV-HU40-04`.
+### 5.1. Ubicación de evidencias
 
-**Ubicación propuesta de archivos, si el equipo autoriza incorporarlos al repositorio:**
+Las capturas deben incorporarse en:
 
 ```text
 docs/qa/evidencias/hu-40/
-  EV-HU40-01-login-valido.png
-  EV-HU40-02-login-invalido.png
-  EV-HU40-03-cierre-sesion.png
-  EV-HU40-05-login-correo-no-registrado.png
 ```
 
-Si se guarda evidencia adicional de redirección, asignarle `EV-HU40-04` y describir el método usado. Verificar que las imágenes no revelen contraseñas, tokens ni datos sensibles.
+Con los siguientes nombres:
 
+```text
+EV-HU40-01-login-valido.png
+EV-HU40-02-login-invalido.png
+EV-HU40-03-cierre-sesion.png
+EV-HU40-05-login-correo-no-registrado.png
+EV-HU40-06-registro-valido.png
+EV-HU40-07-registro-invalido.png
+```
 
-### Evidencias visuales
+Las evidencias EV-HU40-06 y EV-HU40-07 fueron reportadas como capturadas por QA. Su contenido exacto y su incorporación al repositorio quedan sujetos a verificación.
 
-**EV-HU40-01 — Inicio de sesión válido**
+No se asigna un archivo de imagen a EV-HU40-04 porque la comprobación fue reportada mediante la navegación, sin captura independiente.
 
-![Inicio de sesión válido](evidencias/hu-40/EV-HU40-01-login-valido.png)
+Antes de subir las imágenes, verificar que no incluyan contraseñas, claves de API, tokens o información sensible.
 
-**EV-HU40-02 — Credenciales incorrectas**
+## 6. Defectos, dependencias y pendientes
 
-![Credenciales incorrectas](evidencias/hu-40/EV-HU40-02-login-invalido.png)
+### 6.1. Defectos
 
-**EV-HU40-03 — Cierre de sesión**
+No se reportaron defectos funcionales confirmados durante las pruebas ejecutadas y aprobadas.
 
-![Pantalla después del cierre de sesión](evidencias/hu-40/EV-HU40-03-cierre-sesion.png)
+No se registran defectos ficticios para los escenarios que no fueron ejecutados.
 
-**EV-HU40-05 — Correo no registrado**
+### 6.2. Sesiones expiradas
 
-![Correo no registrado](evidencias/hu-40/EV-HU40-05-login-correo-no-registrado.png)
+El único criterio de aceptación funcional pendiente corresponde al comportamiento ante sesiones expiradas.
 
+Se requiere:
 
-## 5. Dependencias y acciones pendientes
+1. Confirmar con backend si Tasker debe establecer un límite propio de duración o inactividad.
+2. Revisar el comportamiento de Supabase Auth respecto a la renovación e invalidación de sesiones.
+3. Definir un procedimiento reproducible que no afecte las cuentas o sesiones de otros integrantes.
+4. Ejecutar la prueba y registrar las evidencias correspondientes.
 
-1. **HU-54:** implementar el registro de usuarios y reejecutar `CP-AUT-01` y `CP-AUT-02`.
-2. **Backend / autenticación:** acordar un procedimiento seguro de expiración o invalidación de sesión en el Supabase compartido y ejecutar `EXT-AUT-01`.
-3. **Identificación del build:** registrar rama, hash de commit, fecha y hora de la campaña, y versión del navegador para reproducibilidad.
-4. **Evidencia de ruta protegida:** si se requiere prueba visual independiente, capturar la navegación desde `/inicio` sin sesión y la URL final `/login`.
-5. **Trazabilidad formal:** vincular este registro con la clave real de Jira de HU-40 y con las incidencias que lleguen a confirmarse. Los bloqueos por falta de implementación no se contabilizan automáticamente como defectos.
-6. **Dataset:** confirmar si se ejecutó la restauración HU-53. La autenticación observada usó las cuentas preexistentes de HU-52, lo cual es válido para estos casos sin afirmar que se restauraron los proyectos QA53.
+### 6.3. Registro y reproducibilidad
 
-## 6. Estado y recomendación de QA
+Antes de cerrar formalmente la ejecución se deberá:
 
-**Estado:** ejecución parcial documentada.
+- Registrar el commit y la rama del frontend utilizados.
+- Confirmar las fechas y horas de las ejecuciones.
+- Verificar la incorporación de las capturas EV-HU40-06 y EV-HU40-07.
+- Vincular los resultados al ticket de HU-40 en Jira.
+- Registrar la decisión del equipo sobre el criterio de sesiones expiradas.
 
-Los casos originales `CP-AUT-03`, `CP-AUT-04` y `CP-AUT-05` presentan resultados favorables según las evidencias y observaciones reportadas. La sesión expirada continúa sin probarse; los dos casos de registro están bloqueados por HU-54.
+## 7. Estado de HU-40
 
-**Decisión:** no declarar HU-40 completamente aprobada ni cerrar sus criterios de aceptación. El registro puede incorporarse a GitHub y someterse a revisión como resultado parcial, dejando pendientes y dependencias visibles. Su aprobación final requiere la reejecución de los casos faltantes o una decisión formal y documentada del responsable del proyecto.
+**Estado:** ejecución de los cinco casos originales completada, con un criterio adicional pendiente de validación.
 
+Los casos CP-AUT-01 a CP-AUT-05 presentan resultados satisfactorios según las ejecuciones reportadas por QA.
+
+Las funcionalidades de registro válido e inválido ya se encuentran implementadas y fueron reportadas como aprobadas.
+
+El criterio sobre sesiones expiradas permanece pendiente porque no se ha probado una expiración efectiva y no existe una configuración explícita de límite de sesión implementada en Tasker, según la revisión realizada.
+
+El informe puede actualizarse y presentarse a revisión, pero no debe declararse totalmente cumplido el criterio de sesiones expiradas sin su validación o una decisión formal del equipo sobre el alcance.
