@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-} from '@angular/core';
-
-import { Project } from '../../data/project.model';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-project-kanban',
@@ -14,6 +8,4 @@ import { Project } from '../../data/project.model';
   templateUrl: './project-kanban.html',
   styleUrl: '../project-detail-content.css',
 })
-export class ProjectKanban {
-  readonly project = input.required<Project>();
-}
+export class ProjectKanban {}

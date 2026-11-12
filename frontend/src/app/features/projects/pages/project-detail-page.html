@@ -67,10 +67,13 @@
             }
 
             <div
-            class="project-section"
-            [hidden]="activeSection() !== 'kanban'"
+              class="project-section"
+              [hidden]="activeSection() !== 'kanban'"
             >
-            <app-create-task-dialog [project]="data.project" />
+              <app-create-task-dialog
+                [project]="data.project"
+                (created)="onTaskCreated($event)"
+              />
             </div>
         </div>
         }
@@ -176,7 +179,7 @@
         aria-labelledby="project-kanban-button"
         [hidden]="activeSection() !== 'kanban'"
       >
-        <app-project-kanban [project]="data.project" />
+        <app-project-kanban />
       </section>
 
       <app-edit-project-dialog

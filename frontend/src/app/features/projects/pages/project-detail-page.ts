@@ -29,6 +29,7 @@ import { ProjectDetail } from '../data/project-detail.model';
 import { ProjectDetailService } from '../data/project-detail.service';
 import { ProjectsService } from '../data/projects.service';
 import { CreateTaskDialog } from '../../projects/components/create-task-dialog/create-task-dialog';
+import { CreatedProjectTask } from '../../projects/data/task-create.model';
 
 type DetailStatus = 'loading' | 'ready' | 'error' | 'unavailable';
 type DetailSection = 'summary' | 'members' | 'kanban';
@@ -197,5 +198,27 @@ export class ProjectDetailPage {
 
     this.detail.set(result.detail);
     this.status.set('ready');
+  }
+
+  protected onTaskCreated(task: CreatedProjectTask): void {
+    if (this.detail()?.project.id !== task.projectId) {
+      return;
+    }
+
+    this.detail.update((current) => {
+      if (!current || current.project.id !== task.projectId) {
+        return current;
+      }
+
+      return {
+        ...current,
+        tasks: [
+          ...current.tasks.filter((existing) => existing.id !== task.id),
+          task,
+        ].sort((a, b) => a.number - b.number),
+      };
+    });
+
+    this.announcement.set(`Tarea «${task.name}» creada.`);
   }
 }
