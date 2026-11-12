@@ -34,12 +34,6 @@ export const routes: Routes = [
           import('./features/projects/pages/projects-page').then((m) => m.ProjectsPage),
       },
       {
-        path: 'proyectos/:projectId/tablero',
-        title: 'Tablero Kanban | Tasker',
-        loadComponent: () =>
-          import('./features/tasks/pages/task-board-page').then((m) => m.TaskBoardPage),
-      },
-      {
         path: 'proyectos/:projectId',
         title: 'Detalle del proyecto | Tasker',
         loadComponent: () =>

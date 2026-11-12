@@ -179,7 +179,7 @@
         aria-labelledby="project-kanban-button"
         [hidden]="activeSection() !== 'kanban'"
       >
-        <app-project-kanban />
+      <app-project-kanban [projectId]="data.project.id" [tasks]="data.tasks" />
       </section>
 
       <app-edit-project-dialog

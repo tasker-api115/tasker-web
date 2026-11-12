@@ -5,29 +5,29 @@ import { Task, TaskRow, toTask } from './task.model';
 const TASK_COLUMNS =
   'id_tarea, id_proyecto, numero_tarea, nombre, descripcion, fecha_inicio, fecha_fin, estado, complejidad, ejecuta(id_usuario, usuario(nombre, apellido))';
 
-export type TasksStatus = 'idle' | 'loading' | 'ready' | 'error';
+export type TaskBoardStatus = 'idle' | 'loading' | 'ready' | 'error';
 
-/**
- * Acceso a las tareas de un proyecto en Supabase.
- * Los permisos de lectura los garantiza la política RLS `tarea_acceso` (solo integrantes).
- */
+/** Lectura de las tareas de un proyecto para el tablero Kanban. RLS: `tarea_acceso`. */
 @Injectable({ providedIn: 'root' })
-export class TasksService {
+export class TaskBoardService {
   private readonly client = inject(SUPABASE_CLIENT);
 
   private readonly tasksState = signal<readonly Task[]>([]);
-  private readonly statusState = signal<TasksStatus>('idle');
+  private readonly statusState = signal<TaskBoardStatus>('idle');
 
   readonly tasks = this.tasksState.asReadonly();
   readonly status = this.statusState.asReadonly();
 
-  async loadByProject(projectId: string): Promise<void> {
+  /** Con `silent` se recarga sin vaciar el tablero ni mostrar "Cargando…". */
+  async loadByProject(projectId: string, silent = false): Promise<void> {
     if (!this.client) {
       this.statusState.set('error');
       return;
     }
-    this.tasksState.set([]);
-    this.statusState.set('loading');
+    if (!silent) {
+      this.tasksState.set([]);
+      this.statusState.set('loading');
+    }
     try {
       const { data, error } = await this.client
         .from('tarea')
@@ -37,13 +37,17 @@ export class TasksService {
         .returns<TaskRow[]>();
 
       if (error || !data) {
-        this.statusState.set('error');
+        if (!silent) {
+          this.statusState.set('error');
+        }
         return;
       }
       this.tasksState.set(data.map(toTask));
       this.statusState.set('ready');
     } catch {
-      this.statusState.set('error');
+      if (!silent) {
+        this.statusState.set('error');
+      }
     }
   }
 }
