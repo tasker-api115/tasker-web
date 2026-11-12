@@ -1,0 +1,192 @@
+<nav class="project-breadcrumb" aria-label="Ruta de navegación">
+  <a routerLink="/proyectos">Proyectos</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">Detalle</span>
+</nav>
+
+<p class="sr-only" aria-live="polite">{{ announcement() }}</p>
+
+@switch (status()) {
+  @case ('loading') {
+    <p role="status" class="state-message">
+      Cargando información del proyecto…
+    </p>
+  }
+
+  @case ('error') {
+    <section class="detail-panel" role="alert">
+      <h1 class="panel-title">No se pudo cargar el proyecto</h1>
+      <p class="state-message">{{ errorMessage() }}</p>
+
+      <button
+        z-button
+        zType="outline"
+        type="button"
+        (click)="retry()"
+      >
+        Reintentar
+      </button>
+    </section>
+  }
+
+  @case ('unavailable') {
+    <section class="detail-panel">
+      <h1 class="panel-title">Proyecto no disponible</h1>
+
+      <p class="state-message">
+        El proyecto no existe o no tienes permiso para consultarlo.
+      </p>
+
+      <a z-button zType="outline" routerLink="/proyectos">
+        Volver a proyectos
+      </a>
+    </section>
+  }
+
+  @case ('ready') {
+    @if (detail(); as data) {
+      <header class="project-heading">
+        <div class="project-heading-text">
+          <h1>{{ data.project.name }}</h1>
+          <p>{{ data.project.description || 'Sin descripción.' }}</p>
+        </div>
+
+        @if (isOwner()) {
+        <div class="project-actions">
+            @if (activeSection() !== 'kanban') {
+            <button
+                z-button
+                zType="outline"
+                zSize="sm"
+                type="button"
+                (click)="openEdit()"
+            >
+                <ng-icon name="lucidePencil" aria-hidden="true" />
+                Editar
+            </button>
+            }
+
+            <div
+              class="project-section"
+              [hidden]="activeSection() !== 'kanban'"
+            >
+              <app-create-task-dialog
+                [project]="data.project"
+                (created)="onTaskCreated($event)"
+              />
+            </div>
+        </div>
+        }
+      </header>
+
+      <nav class="project-sections" aria-label="Secciones del proyecto">
+        <button
+          id="project-summary-button"
+          type="button"
+          class="section-link"
+          aria-controls="project-summary-section"
+          [class.is-active]="activeSection() === 'summary'"
+          [attr.aria-current]="
+            activeSection() === 'summary' ? 'true' : null
+          "
+          (click)="selectSection('summary')"
+        >
+          <ng-icon name="lucideLayoutDashboard" aria-hidden="true" />
+          Resumen
+        </button>
+
+        <button
+          id="project-members-button"
+          type="button"
+          class="section-link"
+          aria-controls="project-members-section"
+          [class.is-active]="activeSection() === 'members'"
+          [attr.aria-current]="
+            activeSection() === 'members' ? 'true' : null
+          "
+          (click)="selectSection('members')"
+        >
+          <ng-icon name="lucideUsers" aria-hidden="true" />
+          Integrantes
+        </button>
+
+        <button
+          id="project-kanban-button"
+          type="button"
+          class="section-link"
+          aria-controls="project-kanban-section"
+          [class.is-active]="activeSection() === 'kanban'"
+          [attr.aria-current]="
+            activeSection() === 'kanban' ? 'true' : null
+          "
+          (click)="selectSection('kanban')"
+        >
+          <ng-icon name="lucideColumns3" aria-hidden="true" />
+          Tablero Kanban
+        </button>
+
+        <button
+          type="button"
+          class="section-link"
+          disabled
+          title="Todavía no disponible"
+        >
+          <ng-icon name="lucideCalendarDays" aria-hidden="true" />
+          Cronograma
+        </button>
+
+        <button
+          type="button"
+          class="section-link"
+          disabled
+          title="Todavía no disponible"
+        >
+          <ng-icon
+            name="lucideChartNoAxesCombined"
+            aria-hidden="true"
+          />
+          Reportes
+        </button>
+      </nav>
+
+      <section
+        id="project-summary-section"
+        class="project-section"
+        aria-labelledby="project-summary-button"
+        [hidden]="activeSection() !== 'summary'"
+      >
+        <app-project-summary
+          [detail]="data"
+          [isOwner]="isOwner()"
+        />
+      </section>
+
+      <section
+        id="project-members-section"
+        class="project-section"
+        aria-labelledby="project-members-button"
+        [hidden]="activeSection() !== 'members'"
+      >
+        <app-project-members
+          [members]="data.members"
+          [isOwner]="isOwner()"
+        />
+      </section>
+
+      <section
+        id="project-kanban-section"
+        class="project-section"
+        aria-labelledby="project-kanban-button"
+        [hidden]="activeSection() !== 'kanban'"
+      >
+        <app-project-kanban />
+      </section>
+
+      <app-edit-project-dialog
+        [(open)]="editOpen"
+        [project]="data.project"
+        (updated)="onUpdated($event)"
+      />
+    }
+  }
+}
