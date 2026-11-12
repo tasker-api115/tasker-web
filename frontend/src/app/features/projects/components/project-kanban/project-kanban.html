@@ -59,8 +59,17 @@
               </header>
               <ul class="m-0 flex list-none flex-col gap-3 p-0">
                 @for (task of column.tasks; track task.id) {
-                  <li class="rounded-xl border bg-card p-4">
-                    <h3 class="mb-3 font-medium">{{ task.name }}</h3>
+                  <li class="relative rounded-xl border bg-card p-4 hover:bg-muted/40">
+                    <h3 class="mb-3 font-medium">
+                      <button
+                        type="button"
+                        class="text-left after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring"
+                        [attr.aria-label]="'Ver detalle de la tarea ' + task.name"
+                        (click)="openDetail(task)"
+                      >
+                        {{ task.name }}
+                      </button>
+                    </h3>
                     <div class="mb-3 flex items-center justify-between gap-2">
                       <z-badge zType="secondary">{{ column.title }}</z-badge>
                       <span class="flex items-center gap-1 text-sm text-muted-foreground">
@@ -101,4 +110,6 @@
       <p class="text-sm text-muted-foreground" role="status">Cargando tareas…</p>
     }
   }
+
+  <app-task-detail-dialog [(open)]="detailOpen" [task]="selectedTask()" />
 </section>
