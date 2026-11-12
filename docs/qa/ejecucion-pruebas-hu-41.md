@@ -5,9 +5,9 @@
 **Enlace:** https://api-proyecto-disc01.atlassian.net/browse/SCRUM-57  
 **Responsable:** QA  
 **Tipo de ejecución:** Pruebas funcionales manuales  
-**Versión del registro:** 1.0  
-**Fecha de elaboración:** 11 de noviembre de 2026  
-**Fecha y hora de ejecución:** Pendientes de registrar  
+**Versión del registro:** 1.1  
+**Fecha de actualización:** 12 de noviembre de 2026  
+**Fecha y hora de ejecución:** Pendientes de registrar según las ejecuciones realizadas  
 **Ejecutor:** Responsable de QA  
 **Rama y commit del frontend probado:** Pendientes de registrar  
 **Aplicación:** Angular, `http://localhost:4200`  
@@ -16,49 +16,51 @@
 **Navegador y versión:** Pendientes de registrar  
 **Plan de referencia:** HU-39 — Plan Maestro de Pruebas  
 **Datos de referencia:** HU-53 — DS-00, DS-01, DS-02, DS-03, DS-04 y DS-05  
-**Estado:** Ejecución parcial
+**Estado:** Ejecución parcial con cinco funcionalidades aprobadas
 
 ## 1. Objetivo
 
-Registrar la ejecución de las pruebas funcionales de gestión de proyectos de Tasker, de acuerdo con los criterios de aceptación de HU-41.
+Documentar los resultados de las pruebas funcionales de gestión de proyectos de Tasker, conforme a los criterios de aceptación de HU-41.
 
-El alcance comprende creación, consulta, edición, eliminación, validaciones de formularios, permisos del propietario y administración de integrantes, incluyendo las restricciones establecidas por HU-51.
+Las pruebas comprenden la creación, consulta, edición y eliminación de proyectos, las validaciones de formularios, los permisos del propietario y la administración de integrantes, incluyendo las restricciones definidas en HU-51.
 
-Las pruebas se documentan mediante las fichas del Anexo A del Plan Maestro de Pruebas HU-39, vinculando los casos a los datasets definidos en HU-53.
+Los resultados se registran mediante las fichas de ejecución establecidas en el Anexo A del Plan Maestro de Pruebas HU-39, relacionando los escenarios con los datasets definidos en HU-53.
 
 ## 2. Alcance y condiciones de ejecución
 
-Las pruebas se realizaron manualmente desde la aplicación Angular conectada al servicio compartido de Supabase.
+Las pruebas se realizaron manualmente desde la aplicación Angular conectada al Supabase compartido del equipo.
 
-Según los resultados comunicados por QA, las funcionalidades de creación de proyectos, edición y validación de formularios están implementadas y fueron aprobadas durante la ejecución.
+Durante la ejecución inicial se aprobaron las funcionalidades de creación de proyectos, edición y validación de formularios.
 
-Las funcionalidades de consulta independiente de proyectos, eliminación, verificación de permisos del propietario y administración de integrantes no están implementadas en la versión evaluada, por lo que sus casos correspondientes permanecen bloqueados.
+Posteriormente, el equipo implementó las funcionalidades de consulta y eliminación de proyectos. QA confirmó su ejecución y aprobación, por lo que los casos CP-PRO-02 y CP-PRO-04 se actualizan a estado aprobado en esta versión del registro.
 
-Se dispone de una captura para cada una de las tres funcionalidades aprobadas. Las capturas no se han incorporado todavía a este registro y deberán adjuntarse en el repositorio.
+Las funcionalidades relacionadas con los permisos del propietario y la administración de integrantes continúan sin estar disponibles para su validación funcional completa. Por ello, los casos correspondientes se mantienen bloqueados.
 
-No se ha confirmado la restauración previa de los datasets SQL de HU-53. Por tanto, las referencias DS indican los datos requeridos por cada caso, sin afirmar que todos los fixtures fueron cargados durante esta ejecución.
+El registro inicial cuenta con tres capturas, asociadas a creación, edición y validación de formularios. Para consulta y eliminación se reservan dos nuevas referencias de evidencia, cuya incorporación al repositorio deberá comprobarse.
+
+No se ha confirmado la ejecución previa de los scripts de restauración de HU-53. Las referencias DS identifican los datos requeridos por cada escenario, sin afirmar que todos los fixtures fueron restaurados antes de las pruebas.
 
 ## 3. Matriz de trazabilidad
 
 | Criterio de aceptación | Caso de prueba | Dataset | Estado |
 |---|---|---|---|
 | Creación de proyectos | CP-PRO-01 | DS-00, DS-01 | Aprobado |
-| Consulta de proyectos | CP-PRO-02 | DS-02 | Bloqueado |
+| Consulta de proyectos | CP-PRO-02 | DS-02 | Aprobado |
 | Edición de proyectos | CP-PRO-03 | DS-02 | Aprobado |
-| Eliminación de proyectos | CP-PRO-04 | DS-02 | Bloqueado |
-| Acceso a proyectos ajenos | CP-PRO-05 | DS-02, DS-03 | Bloqueado |
-| Validación de formularios | EXT-PRO-01 | DS-05 | Aprobado |
+| Eliminación de proyectos | CP-PRO-04 | DS-02 | Aprobado |
+| Acceso y restricciones sobre proyectos ajenos | CP-PRO-05 | DS-02, DS-03 | Bloqueado |
+| Validaciones de formularios | EXT-PRO-01 | DS-05 | Aprobado |
 | Agregar integrantes | CP-INT-01 | DS-01, DS-03 | Bloqueado |
 | Asignación de tareas a integrantes | CP-INT-02 | DS-03, DS-04 | Bloqueado |
 | Quitar integrantes | CP-INT-03 | DS-03 | Bloqueado |
 | Administración de integrantes sin permisos | CP-INT-04 | DS-03 | Bloqueado |
-| Registro de defectos | Sección 6 de este documento | — | Documentado |
+| Registro de defectos | Sección 6 | — | Documentado |
 
-Los casos CP-PRO-01 a CP-PRO-05 y CP-INT-01 a CP-INT-04 pertenecen al inventario original de HU-39.
+Los casos CP-PRO-01 a CP-PRO-05 y CP-INT-01 a CP-INT-04 corresponden al inventario original de HU-39.
 
-CP-INT-02 es un caso relacionado también con HU-42, por lo que su ejecución deberá coordinarse con las pruebas de asignación de tareas.
+CP-INT-02 también está relacionado con HU-42 y su ejecución deberá coordinarse con las pruebas de asignación de tareas.
 
-EXT-PRO-01 es una ampliación documental para identificar de manera independiente las validaciones de formularios. No se incorpora a los 45 casos originales de HU-39 sin la aprobación correspondiente.
+EXT-PRO-01 es un caso complementario utilizado para documentar de manera independiente las validaciones de formularios. No se incorpora al total original de 45 casos de HU-39 sin aprobación de la ampliación.
 
 ## 4. Fichas de ejecución
 
@@ -67,7 +69,7 @@ EXT-PRO-01 es una ampliación documental para identificar de manera independient
 **Historia:** SCRUM-57 / HU-41  
 **Módulo:** Gestión de proyectos  
 **Prioridad:** Alta  
-**Estado:** Aprobado según ejecución reportada por QA
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
@@ -75,67 +77,73 @@ EXT-PRO-01 es una ampliación documental para identificar de manera independient
 | Módulo y prioridad | Gestión de proyectos / Alta |
 | Ejecutado por / fecha y hora | QA / fecha y hora pendientes de registrar |
 | Build / commit / navegador | Commit y versión del navegador pendientes |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-00, DS-01 (HU-53 QA53-1.2) |
+| Entorno / dataset | Angular y Supabase compartido / DS-00, DS-01 |
 | Precondiciones | Usuario autenticado y formulario de creación disponible |
-| Pasos ejecutados | Acceso al formulario, ingreso de datos válidos, envío y comprobación del resultado |
-| Resultado esperado | El proyecto se crea correctamente, aparece en la aplicación y conserva sus datos después de recargar |
-| Resultado observado | QA confirmó que la creación de proyectos funciona correctamente y reportó el caso como aprobado |
+| Resultado esperado | El sistema permite crear un proyecto con datos válidos y conserva la información registrada |
+| Resultado observado | QA confirmó que la creación de proyectos funciona correctamente y aprobó el caso |
 | Estado | Aprobado |
-| Evidencia / defecto | EV-HU41-01 / sin defecto reportado |
-| Observaciones / próxima acción | Incorporar captura; confirmar persistencia después de recargar si todavía no se verificó |
+| Evidencia | EV-HU41-01 — creación de proyecto |
+| Defectos | No se reportaron |
+| Observaciones | Confirmar la persistencia después de recargar, si esta comprobación no fue realizada |
 
 **Procedimiento de prueba:**
 
 1. Iniciar sesión con una cuenta de prueba autorizada.
 2. Acceder al formulario de creación de proyectos.
-3. Completar los campos obligatorios con datos válidos.
-4. Seleccionar la opción para guardar o crear el proyecto.
-5. Comprobar que la aplicación confirme la operación o muestre el proyecto creado.
-6. Verificar su persistencia después de recargar la página.
+3. Completar los campos requeridos con datos válidos.
+4. Seleccionar la opción para crear el proyecto.
+5. Verificar que la aplicación confirme la operación o muestre el proyecto creado.
+6. Comprobar que los datos registrados sean correctos.
+7. Verificar su persistencia después de recargar la aplicación.
 
-**Resultado registrado:** Aprobado según QA. La captura disponible respalda el resultado visual de la operación; la persistencia tras recargar debe confirmarse con evidencia o registro de ejecución si no fue comprobada.
+**Resultado:** Aprobado según la ejecución reportada por QA.
+
+La evidencia disponible corresponde a una captura de la creación del proyecto. No se declara verificada la persistencia tras recargar si no se registró esa comprobación.
 
 ### CP-PRO-02 — Consulta de proyectos
 
 **Historia:** SCRUM-57 / HU-41  
 **Módulo:** Gestión de proyectos  
 **Prioridad:** Alta  
-**Estado:** Bloqueado
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
 | ID del caso / historia | CP-PRO-02 / HU-41 |
 | Módulo y prioridad | Gestión de proyectos / Alta |
-| Ejecutado por / fecha y hora | QA / no ejecutado |
-| Build / commit / navegador | Versión evaluada; commit pendiente |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-02 |
-| Precondiciones | Usuario autenticado con proyectos asociados |
-| Pasos previstos | Acceder al listado, seleccionar un proyecto y consultar sus datos |
-| Resultado esperado | Se muestran los proyectos autorizados y el detalle seleccionado con información correcta |
-| Resultado observado | QA informó que la funcionalidad de consulta de proyectos no está implementada |
-| Estado | Bloqueado |
-| Evidencia / defecto | No disponible / dependencia de implementación |
-| Observaciones / próxima acción | Ejecutar cuando se encuentre disponible la consulta de lista y detalle |
+| Ejecutado por / fecha y hora | QA / fecha y hora pendientes de registrar |
+| Build / commit / navegador | Commit y versión del navegador pendientes |
+| Entorno / dataset | Angular y Supabase compartido / DS-02 |
+| Precondiciones | Usuario autenticado con acceso a proyectos existentes |
+| Resultado esperado | El usuario puede consultar los proyectos autorizados y visualizar correctamente la información disponible |
+| Resultado observado | La funcionalidad de consulta fue implementada y QA confirmó su funcionamiento satisfactorio |
+| Estado | Aprobado |
+| Evidencia | EV-HU41-04 — consulta de proyectos, pendiente de incorporar al repositorio |
+| Defectos | No se reportaron |
+| Observaciones | Registrar la pantalla y los datos específicos comprobados durante la consulta |
 
-**Procedimiento pendiente:**
+**Procedimiento de prueba:**
 
-1. Iniciar sesión con una cuenta autorizada.
-2. Acceder al listado de proyectos.
-3. Verificar los proyectos visibles.
-4. Seleccionar un proyecto.
-5. Revisar sus datos.
-6. Comprobar la información después de actualizar la vista.
+1. Iniciar sesión con un usuario que tenga proyectos asociados.
+2. Acceder a la sección de proyectos.
+3. Utilizar la funcionalidad de consulta disponible.
+4. Comprobar que la aplicación muestre los proyectos correspondientes al usuario.
+5. Seleccionar un proyecto, cuando la interfaz permita consultar su detalle.
+6. Verificar que la información visualizada corresponda al proyecto seleccionado.
+7. Comprobar que la consulta funcione correctamente después de actualizar la pantalla, cuando corresponda.
 
-**Resultado registrado:** No ejecutado por ausencia de la funcionalidad de consulta.
+**Resultado:** Aprobado según la ejecución reportada por QA.
 
-La posibilidad de abrir un formulario de edición no sustituye automáticamente la prueba de consulta de listado y detalle.
+**Actualización de la versión 1.1:** El caso deja de estar bloqueado porque la consulta ya fue implementada y aprobada.
+
+La aprobación funcional reportada no sustituye la prueba independiente de acceso a proyectos ajenos, que permanece bloqueada en CP-PRO-05.
 
 ### CP-PRO-03 — Edición de proyectos
 
 **Historia:** SCRUM-57 / HU-41  
 **Módulo:** Gestión de proyectos  
 **Prioridad:** Alta  
-**Estado:** Aprobado según ejecución reportada por QA
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
@@ -143,63 +151,66 @@ La posibilidad de abrir un formulario de edición no sustituye automáticamente 
 | Módulo y prioridad | Gestión de proyectos / Alta |
 | Ejecutado por / fecha y hora | QA / fecha y hora pendientes de registrar |
 | Build / commit / navegador | Commit y versión del navegador pendientes |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-02 |
+| Entorno / dataset | Angular y Supabase compartido / DS-02 |
 | Precondiciones | Proyecto existente y usuario con acceso a su edición |
-| Pasos ejecutados | Acceso al formulario de edición, modificación de datos y guardado |
-| Resultado esperado | Los cambios permitidos se guardan y se mantienen después de recargar |
-| Resultado observado | QA confirmó el funcionamiento de la edición de proyectos y reportó el caso como aprobado |
+| Resultado esperado | El sistema permite modificar los campos autorizados y guardar los cambios |
+| Resultado observado | QA confirmó que la edición funciona correctamente y aprobó el caso |
 | Estado | Aprobado |
-| Evidencia / defecto | EV-HU41-02 / sin defecto reportado |
-| Observaciones / próxima acción | Incorporar captura y confirmar persistencia de cambios cuando corresponda |
+| Evidencia | EV-HU41-02 — edición de proyecto |
+| Defectos | No se reportaron |
+| Observaciones | La verificación de permisos de edición sigue pendiente |
 
 **Procedimiento de prueba:**
 
 1. Iniciar sesión con una cuenta de prueba.
 2. Acceder a un proyecto existente.
 3. Abrir el formulario de edición.
-4. Modificar un dato permitido del proyecto.
+4. Modificar un dato permitido.
 5. Guardar los cambios.
-6. Comprobar el resultado mostrado.
-7. Recargar la página y verificar que el dato actualizado se conserva.
+6. Comprobar que la aplicación muestre la información actualizada.
+7. Verificar la persistencia de los cambios después de recargar, cuando corresponda.
 
-**Resultado registrado:** Aprobado según QA.
+**Resultado:** Aprobado según QA.
 
-La comprobación de edición funcional no demuestra por sí sola que los usuarios sin permisos tengan prohibido editar. Esa restricción continúa pendiente de prueba.
+La aprobación de la edición funcional no demuestra que las cuentas sin permisos tengan restringida esta operación.
 
 ### CP-PRO-04 — Eliminación de proyectos
 
 **Historia:** SCRUM-57 / HU-41  
 **Módulo:** Gestión de proyectos  
 **Prioridad:** Media  
-**Estado:** Bloqueado
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
 | ID del caso / historia | CP-PRO-04 / HU-41 |
 | Módulo y prioridad | Gestión de proyectos / Media |
-| Ejecutado por / fecha y hora | QA / no ejecutado |
-| Build / commit / navegador | Versión evaluada; commit pendiente |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-02 |
-| Precondiciones | Proyecto de prueba disponible y mecanismo de eliminación implementado |
-| Pasos previstos | Solicitar eliminación, confirmar y comprobar su efecto |
-| Resultado esperado | La eliminación aplica las confirmaciones y restricciones aprobadas, sin afectar datos ajenos |
-| Resultado observado | QA informó que la eliminación de proyectos no está implementada |
-| Estado | Bloqueado |
-| Evidencia / defecto | No disponible / dependencia de implementación |
-| Observaciones / próxima acción | Ejecutar cuando se implemente la eliminación, utilizando un proyecto descartable de QA |
+| Ejecutado por / fecha y hora | QA / fecha y hora pendientes de registrar |
+| Build / commit / navegador | Commit y versión del navegador pendientes |
+| Entorno / dataset | Angular y Supabase compartido / DS-02 |
+| Precondiciones | Proyecto descartable de prueba disponible y funcionalidad de eliminación implementada |
+| Resultado esperado | El sistema permite eliminar el proyecto seleccionado mediante el procedimiento autorizado y refleja correctamente el resultado |
+| Resultado observado | La funcionalidad de eliminación fue implementada y QA confirmó su ejecución satisfactoria |
+| Estado | Aprobado |
+| Evidencia | EV-HU41-05 — eliminación de proyecto, pendiente de incorporar al repositorio |
+| Defectos | No se reportaron |
+| Observaciones | Registrar el proyecto descartable utilizado y la comprobación posterior a la eliminación |
 
-**Procedimiento pendiente:**
+**Procedimiento de prueba:**
 
-1. Acceder con una cuenta autorizada.
-2. Seleccionar un proyecto descartable de prueba.
-3. Utilizar la opción de eliminación.
-4. Comprobar el mecanismo de confirmación, si corresponde.
-5. Confirmar la operación.
-6. Verificar que el resultado coincide con el comportamiento aprobado.
+1. Iniciar sesión con una cuenta autorizada para la operación funcional.
+2. Acceder a un proyecto descartable destinado a pruebas.
+3. Seleccionar la opción de eliminar proyecto.
+4. Comprobar el mecanismo de confirmación, si está contemplado en la interfaz.
+5. Confirmar la eliminación.
+6. Verificar que el proyecto eliminado deje de aparecer como disponible.
+7. Comprobar el resultado después de actualizar la vista.
 
-**Resultado registrado:** No ejecutado.
+**Resultado:** Aprobado según la ejecución reportada por QA.
 
-No se eliminó ningún proyecto como parte de este caso.
+**Actualización de la versión 1.1:** El caso deja de estar bloqueado porque la eliminación ya fue implementada y aprobada.
+
+La eliminación funcional no demuestra por sí sola que un usuario no propietario tenga impedida esta operación. Los permisos correspondientes siguen pendientes de validación.
 
 ### CP-PRO-05 — Acceso a proyectos ajenos
 
@@ -214,62 +225,63 @@ No se eliminó ningún proyecto como parte de este caso.
 | Módulo y prioridad | Gestión de proyectos y seguridad / Crítica |
 | Ejecutado por / fecha y hora | QA / no ejecutado |
 | Build / commit / navegador | Versión evaluada; commit pendiente |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-02, DS-03 |
-| Precondiciones | Proyectos con propietarios distintos y usuario ajeno al proyecto consultado |
-| Pasos previstos | Acceder con identidad externa e intentar consultar información restringida |
-| Resultado esperado | El usuario ajeno no puede consultar datos privados del proyecto desde la interfaz ni mediante acceso no privilegiado a la API |
-| Resultado observado | QA indicó que las funcionalidades necesarias para verificar permisos de propietario y acceso entre proyectos no están implementadas |
+| Entorno / dataset | Angular y Supabase compartido / DS-02, DS-03 |
+| Precondiciones | Proyectos con propietarios distintos y cuenta externa al proyecto evaluado |
+| Resultado esperado | Los usuarios ajenos no pueden acceder ni modificar información privada de proyectos sin autorización |
+| Resultado observado | Aunque la consulta y eliminación están implementadas, QA informó que las restricciones de propietario todavía no están disponibles para una validación funcional completa |
 | Estado | Bloqueado |
-| Evidencia / defecto | No disponible / dependencia de implementación |
-| Observaciones / próxima acción | Coordinar pruebas de interfaz y políticas RLS con backend |
+| Evidencia | No disponible |
+| Defectos | No se confirmó defecto de seguridad mediante ejecución |
+| Observaciones | Coordinar la prueba de permisos y políticas RLS con backend |
 
 **Procedimiento pendiente:**
 
-1. Preparar dos proyectos con propietarios distintos.
-2. Iniciar sesión con una cuenta ajena a uno de los proyectos.
-3. Intentar consultar la información de ese proyecto.
-4. Comprobar la restricción en la interfaz.
-5. Verificar, utilizando únicamente credenciales no privilegiadas, que la API tampoco expone la información restringida.
+1. Preparar proyectos con propietarios diferentes.
+2. Iniciar sesión con un usuario ajeno al proyecto evaluado.
+3. Intentar consultar su información restringida.
+4. Intentar acceder a las operaciones de modificación o eliminación, cuando corresponda.
+5. Verificar que la interfaz rechace las operaciones no autorizadas.
+6. Comprobar mediante una sesión no privilegiada que Supabase también aplique las restricciones correspondientes.
 
-**Resultado registrado:** No ejecutado.
+**Resultado:** No ejecutado.
 
-El hecho de no disponer de una pantalla de consulta no demuestra que las políticas RLS funcionen correctamente.
+La disponibilidad de las operaciones de consulta y eliminación no implica que estén implementados o comprobados sus controles de autorización.
 
-### EXT-PRO-01 — Validación de formularios de proyectos
+### EXT-PRO-01 — Validaciones de formularios de proyectos
 
 **Historia:** SCRUM-57 / HU-41  
 **Módulo:** Formularios de proyectos  
-**Prioridad:** Alta, ampliación propuesta  
-**Estado:** Aprobado según ejecución reportada por QA
+**Prioridad:** Alta, caso complementario  
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
 | ID del caso / historia | EXT-PRO-01 / HU-41 |
-| Módulo y prioridad | Validaciones de formularios / Alta |
+| Módulo y prioridad | Formularios de proyectos / Alta |
 | Ejecutado por / fecha y hora | QA / fecha y hora pendientes de registrar |
 | Build / commit / navegador | Commit y versión del navegador pendientes |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-05 |
+| Entorno / dataset | Angular y Supabase compartido / DS-05 |
 | Precondiciones | Formulario de proyectos disponible |
-| Pasos ejecutados | Se probó una validación del formulario mediante una entrada que incumple sus reglas |
-| Resultado esperado | La aplicación aplica las restricciones definidas y evita el envío de valores inválidos |
-| Resultado observado | QA informó que las validaciones del formulario están implementadas y reportó la prueba como aprobada |
+| Resultado esperado | El formulario aplica las validaciones definidas y no acepta indebidamente datos inválidos |
+| Resultado observado | QA confirmó que las validaciones están implementadas y reportó un resultado satisfactorio |
 | Estado | Aprobado |
-| Evidencia / defecto | EV-HU41-03 / sin defecto reportado |
-| Observaciones / próxima acción | Registrar el campo, valor inválido y mensaje exacto que aparecen en la captura |
+| Evidencia | EV-HU41-03 — validación de formulario |
+| Defectos | No se reportaron |
+| Observaciones | Identificar en el registro el campo validado y el resultado concreto mostrado por la aplicación |
 
 **Procedimiento de prueba:**
 
 1. Acceder al formulario de creación o edición de proyectos.
-2. Introducir un valor que incumpla una validación definida.
-3. Intentar continuar con la operación.
-4. Observar la respuesta del formulario.
-5. Comprobar que la operación inválida no se acepta indebidamente.
+2. Introducir un valor que incumpla una regla de validación.
+3. Intentar enviar o guardar el formulario.
+4. Comprobar el comportamiento de la interfaz.
+5. Verificar que no se acepte indebidamente la operación inválida.
 
-**Resultado registrado:** Aprobado según QA.
+**Resultado:** Aprobado según QA.
 
-No se especifica el campo ni el mensaje exacto porque esa información no se proporcionó en el registro. Tampoco se declara que todas las reglas de validación posibles hayan sido probadas con una sola captura.
+La aprobación corresponde a las validaciones ejecutadas. No se afirma que todas las posibles entradas límite hayan sido comprobadas.
 
-Los límites máximos de caracteres deberán contrastarse con las reglas vigentes de Angular o Jira. La migración de PostgreSQL no establece longitudes máximas explícitas para los campos de tipo `text`.
+Los valores máximos de longitud deberán contrastarse con las reglas reales de Angular o Jira. El esquema PostgreSQL utiliza campos `text` sin longitudes máximas explícitas para los campos relacionados.
 
 ### CP-INT-01 — Agregar integrantes a un proyecto
 
@@ -283,15 +295,14 @@ Los límites máximos de caracteres deberán contrastarse con las reglas vigente
 | ID del caso / historia | CP-INT-01 / HU-41 |
 | Módulo y prioridad | Integrantes / Alta |
 | Ejecutado por / fecha y hora | QA / no ejecutado |
-| Build / commit / navegador | Versión evaluada; commit pendiente |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-01, DS-03 |
-| Precondiciones | Proyecto existente, cuenta propietaria y usuario de prueba disponible |
-| Pasos previstos | Agregar un integrante desde la cuenta propietaria |
-| Resultado esperado | La membresía se registra y el usuario adquiere los permisos correspondientes |
-| Resultado observado | QA informó que la incorporación de integrantes no está implementada |
+| Entorno / dataset | Angular y Supabase compartido / DS-01, DS-03 |
+| Precondiciones | Proyecto existente, cuenta propietaria y usuario disponible |
+| Resultado esperado | El propietario puede agregar integrantes y la membresía queda registrada |
+| Resultado observado | QA informó que la incorporación de integrantes todavía no está implementada |
 | Estado | Bloqueado |
-| Evidencia / defecto | No disponible / dependencia de HU-51 |
-| Observaciones / próxima acción | Ejecutar cuando esté disponible la administración de integrantes |
+| Evidencia | No disponible |
+| Defectos | No aplica; escenario sin ejecución |
+| Próxima acción | Ejecutar cuando esté disponible la funcionalidad de HU-51 |
 
 **Procedimiento pendiente:**
 
@@ -299,10 +310,10 @@ Los límites máximos de caracteres deberán contrastarse con las reglas vigente
 2. Abrir un proyecto de prueba.
 3. Acceder a la administración de integrantes.
 4. Seleccionar un usuario de prueba.
-5. Agregarlo al proyecto.
-6. Verificar la membresía y su persistencia.
+5. Incorporarlo al proyecto.
+6. Verificar la membresía creada y su persistencia.
 
-**Resultado registrado:** No ejecutado.
+**Resultado:** No ejecutado.
 
 ### CP-INT-02 — Asignación de tareas a integrantes
 
@@ -315,28 +326,27 @@ Los límites máximos de caracteres deberán contrastarse con las reglas vigente
 |---|---|
 | ID del caso / historia | CP-INT-02 / HU-41, HU-42 |
 | Módulo y prioridad | Integrantes y asignaciones / Alta |
-| Ejecutado por / fecha y hora | QA / no ejecutado |
-| Build / commit / navegador | Versión evaluada; commit pendiente |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-03, DS-04 |
+| Ejecutado por / fecha y hora | QA / no ejecutado dentro de HU-41 |
+| Entorno / dataset | Angular y Supabase compartido / DS-03, DS-04 |
 | Precondiciones | Proyecto con integrantes y tarea disponible |
-| Pasos previstos | Asignar una tarea a un integrante permitido |
-| Resultado esperado | La relación entre tarea y responsable se registra y persiste |
-| Resultado observado | No se realizó este escenario dentro de HU-41; las funcionalidades relacionadas con integrantes se reportaron como no implementadas |
+| Resultado esperado | La asignación de un responsable válido se registra y persiste |
+| Resultado observado | No se ejecutó el escenario en HU-41 por la falta de disponibilidad de las funciones relacionadas con integrantes |
 | Estado | Bloqueado |
-| Evidencia / defecto | No disponible |
-| Observaciones / próxima acción | Coordinar con HU-42 una vez implementadas las funcionalidades necesarias |
+| Evidencia | No disponible |
+| Defectos | No aplica; escenario sin ejecución |
+| Próxima acción | Coordinar su ejecución con HU-42 cuando estén disponibles las funciones necesarias |
 
 **Procedimiento pendiente:**
 
-1. Preparar un proyecto con un integrante.
-2. Acceder a una tarea del proyecto.
-3. Seleccionar el responsable.
+1. Preparar un proyecto con integrantes.
+2. Acceder a una tarea.
+3. Seleccionar a un responsable autorizado.
 4. Guardar la asignación.
-5. Verificar que el responsable seleccionado se mantiene.
+5. Comprobar que la relación se conserva correctamente.
 
-**Resultado registrado:** No ejecutado.
+**Resultado:** No ejecutado.
 
-Este caso se conserva por trazabilidad con HU-39 y HU-53. Su ejecución funcional corresponde también al alcance de HU-42.
+Se mantiene este caso por trazabilidad con HU-39, considerando que también corresponde al alcance de HU-42.
 
 ### CP-INT-03 — Quitar integrantes de un proyecto
 
@@ -350,26 +360,25 @@ Este caso se conserva por trazabilidad con HU-39 y HU-53. Su ejecución funciona
 | ID del caso / historia | CP-INT-03 / HU-41 |
 | Módulo y prioridad | Integrantes / Media |
 | Ejecutado por / fecha y hora | QA / no ejecutado |
-| Build / commit / navegador | Versión evaluada; commit pendiente |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-03 |
+| Entorno / dataset | Angular y Supabase compartido / DS-03 |
 | Precondiciones | Proyecto con integrantes y cuenta propietaria |
-| Pasos previstos | Retirar un integrante y verificar el efecto de la operación |
-| Resultado esperado | Solo el propietario realiza la eliminación de la membresía y se aplican las restricciones correspondientes |
-| Resultado observado | QA informó que la eliminación de integrantes no está implementada |
+| Resultado esperado | El propietario puede retirar integrantes y se actualizan correctamente las membresías |
+| Resultado observado | QA informó que la eliminación de integrantes todavía no está implementada |
 | Estado | Bloqueado |
-| Evidencia / defecto | No disponible / dependencia de HU-51 |
-| Observaciones / próxima acción | Ejecutar cuando se implemente la funcionalidad |
+| Evidencia | No disponible |
+| Defectos | No aplica; escenario sin ejecución |
+| Próxima acción | Ejecutar cuando esté disponible la administración de integrantes |
 
 **Procedimiento pendiente:**
 
-1. Iniciar sesión con la cuenta propietaria del proyecto.
-2. Acceder al listado de integrantes.
+1. Iniciar sesión con la cuenta propietaria.
+2. Acceder al listado de integrantes del proyecto.
 3. Seleccionar un integrante de prueba.
-4. Solicitar su eliminación del proyecto.
+4. Solicitar su retiro.
 5. Confirmar la operación cuando corresponda.
-6. Comprobar que la membresía fue retirada.
+6. Verificar que la membresía fue retirada.
 
-**Resultado registrado:** No ejecutado.
+**Resultado:** No ejecutado.
 
 ### CP-INT-04 — Administración de integrantes por usuario no autorizado
 
@@ -383,26 +392,25 @@ Este caso se conserva por trazabilidad con HU-39 y HU-53. Su ejecución funciona
 | ID del caso / historia | CP-INT-04 / HU-41 |
 | Módulo y prioridad | Integrantes y seguridad / Crítica |
 | Ejecutado por / fecha y hora | QA / no ejecutado |
-| Build / commit / navegador | Versión evaluada; commit pendiente |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-03 |
-| Precondiciones | Proyecto con propietario e integrante sin privilegios de propietario |
-| Pasos previstos | Intentar agregar o quitar integrantes desde una cuenta no propietaria |
-| Resultado esperado | El usuario no autorizado no puede administrar integrantes desde Angular ni mediante solicitudes no privilegiadas a Supabase |
-| Resultado observado | QA informó que las funciones necesarias para comprobar estos permisos no están implementadas |
+| Entorno / dataset | Angular y Supabase compartido / DS-03 |
+| Precondiciones | Proyecto con propietario e integrante sin permisos de propietario |
+| Resultado esperado | Los usuarios no propietarios no pueden agregar ni quitar integrantes |
+| Resultado observado | Las funciones y restricciones correspondientes a la administración de integrantes todavía no están disponibles para su comprobación |
 | Estado | Bloqueado |
-| Evidencia / defecto | No disponible / dependencia de HU-51 |
-| Observaciones / próxima acción | Verificar restricciones de interfaz y RLS cuando el flujo esté disponible |
+| Evidencia | No disponible |
+| Defectos | No se confirmó ningún defecto de autorización |
+| Próxima acción | Ejecutar pruebas de interfaz y RLS cuando se integre HU-51 |
 
 **Procedimiento pendiente:**
 
 1. Preparar un proyecto con propietario e integrante.
-2. Iniciar sesión como integrante que no sea propietario.
+2. Iniciar sesión con una cuenta que no sea propietaria.
 3. Intentar agregar otro integrante.
-4. Intentar retirar a un integrante existente.
-5. Verificar el rechazo de las operaciones.
-6. Comprobar que las membresías no se alteraron.
+4. Intentar quitar un integrante existente.
+5. Verificar que ambas operaciones sean rechazadas.
+6. Comprobar que las membresías originales no se modificaron.
 
-**Resultado registrado:** No ejecutado.
+**Resultado:** No ejecutado.
 
 ## 5. Resumen de ejecución
 
@@ -410,14 +418,12 @@ Este caso se conserva por trazabilidad con HU-39 y HU-53. Su ejecución funciona
 
 | Estado | Cantidad | Casos |
 |---|---:|---|
-| Aprobados | 2 | CP-PRO-01, CP-PRO-03 |
-| Bloqueados | 7 | CP-PRO-02, CP-PRO-04, CP-PRO-05, CP-INT-01, CP-INT-02, CP-INT-03, CP-INT-04 |
+| Aprobados | 4 | CP-PRO-01, CP-PRO-02, CP-PRO-03, CP-PRO-04 |
+| Bloqueados | 5 | CP-PRO-05, CP-INT-01, CP-INT-02, CP-INT-03, CP-INT-04 |
 | Fallidos | 0 | Ninguno confirmado |
 | Total | 9 | — |
 
-De los nueve casos originales relacionados con la gestión de proyectos e integrantes, dos fueron reportados como aprobados y siete permanecen bloqueados.
-
-CP-INT-02 comparte alcance con HU-42 y se incluye para conservar la trazabilidad definida en HU-39.
+De los nueve casos originales relacionados con la gestión de proyectos e integrantes, cuatro fueron aprobados según QA y cinco permanecen bloqueados.
 
 ### 5.2. Caso complementario
 
@@ -425,79 +431,78 @@ CP-INT-02 comparte alcance con HU-42 y se incluye para conservar la trazabilidad
 |---|---|---|
 | EXT-PRO-01 | Validaciones de formularios | Aprobado |
 
-Este caso no forma parte del inventario original de 45 casos de HU-39.
+EXT-PRO-01 se registra por separado y no modifica el total de los casos originales de HU-39.
 
 ### 5.3. Resultado por funcionalidad
 
 | Funcionalidad | Resultado |
 |---|---|
 | Creación de proyectos | Aprobada |
+| Consulta de proyectos | Aprobada |
 | Edición de proyectos | Aprobada |
-| Validación de formularios | Aprobada |
-| Consulta de proyectos | Bloqueada |
-| Eliminación de proyectos | Bloqueada |
-| Permisos del propietario | Bloqueada |
-| Agregar integrantes | Bloqueada |
-| Quitar integrantes | Bloqueada |
-| Autorización de integrantes no propietarios | Bloqueada |
+| Eliminación de proyectos | Aprobada |
+| Validaciones de formularios | Aprobada |
+| Acceso restringido a proyectos ajenos | Bloqueada |
+| Incorporación de integrantes | Bloqueada |
+| Asignación de tareas a integrantes | Bloqueada dentro de HU-41 |
+| Retiro de integrantes | Bloqueada |
+| Restricción de administración a usuarios no propietarios | Bloqueada |
 
-**Resultado general:** tres funcionalidades con resultados favorables y el resto de las comprobaciones pendientes por falta de implementación.
+**Resultado general:** cinco funcionalidades o escenarios con resultados favorables y cinco casos pendientes de ejecución por falta de implementación de permisos e integrantes.
 
-No se declara un porcentaje de aprobación global de HU-41 porque varias funcionalidades exigidas por sus criterios de aceptación todavía no están disponibles.
+No se calcula una tasa de aprobación global definitiva de HU-41 porque permanecen criterios de aceptación sin verificar.
 
 ## 6. Registro de defectos y bloqueos
 
 ### 6.1. Defectos confirmados
 
-Durante las pruebas reportadas como ejecutadas no se comunicaron defectos funcionales confirmados.
+No se reportaron defectos funcionales confirmados en las pruebas ejecutadas.
 
-No se asignaron identificadores de defectos ficticios en Jira.
+La aprobación de creación, consulta, edición, eliminación y validaciones de formularios se registra conforme a los resultados comunicados por QA.
 
-### 6.2. Funcionalidades no disponibles
+No se crean identificadores ficticios de defectos en Jira.
+
+### 6.2. Funcionalidades bloqueadas
 
 | Bloqueo | Casos afectados | Situación |
 |---|---|---|
-| Consulta de proyectos | CP-PRO-02 | No implementada |
-| Eliminación de proyectos | CP-PRO-04 | No implementada |
-| Comprobación de acceso a proyectos ajenos | CP-PRO-05 | No verificada por falta de funcionalidad |
+| Restricciones de acceso y permisos del propietario | CP-PRO-05 | Pendientes de implementación o validación |
 | Incorporación de integrantes | CP-INT-01 | No implementada |
-| Asignación a integrantes | CP-INT-02 | No ejecutada; alcance relacionado con HU-42 |
+| Asignación de tareas a integrantes | CP-INT-02 | No ejecutada en HU-41; vinculada con HU-42 |
 | Retiro de integrantes | CP-INT-03 | No implementada |
-| Permisos de administración de integrantes | CP-INT-04 | No verificables mediante el flujo funcional |
+| Administración por usuarios no propietarios | CP-INT-04 | No implementada o no verificable mediante el flujo actual |
 
-La ausencia de implementación se documenta como un bloqueo de ejecución. Su clasificación definitiva como defecto, tarea pendiente o incumplimiento de alcance corresponde a la revisión de las historias de desarrollo en Jira.
+Las funcionalidades de consulta y eliminación ya no se incluyen entre los bloqueos, porque fueron implementadas y aprobadas.
+
+Los casos bloqueados no se contabilizan como fallidos. Su clasificación definitiva como tareas pendientes, dependencias o defectos deberá determinarse conforme al estado de las historias de implementación en Jira.
 
 ## 7. Inventario de evidencias
 
-Se cuenta con tres capturas reportadas por QA.
-
-| ID | Evidencia | Caso | Estado |
+| ID | Evidencia | Caso relacionado | Situación |
 |---|---|---|---|
-| EV-HU41-01 | Creación de proyecto | CP-PRO-01 | Captura tomada; pendiente de adjuntar |
-| EV-HU41-02 | Edición de proyecto | CP-PRO-03 | Captura tomada; pendiente de adjuntar |
-| EV-HU41-03 | Validación de formulario | EXT-PRO-01 | Captura tomada; pendiente de adjuntar |
+| EV-HU41-01 | Creación de proyecto | CP-PRO-01 | Captura disponible |
+| EV-HU41-02 | Edición de proyecto | CP-PRO-03 | Captura disponible |
+| EV-HU41-03 | Validación de formulario | EXT-PRO-01 | Captura disponible |
+| EV-HU41-04 | Consulta de proyectos | CP-PRO-02 | Captura disponible |
+| EV-HU41-05 | Eliminación de proyecto | CP-PRO-04 | Captura disponible |
 
 ### 7.1. Ubicación en el repositorio
 
-Las evidencias se almacenarán en:
+Las capturas se almacenarán en:
 
-```text
-docs/qa/evidencias/hu-41/
-```
+`docs/qa/evidencias/hu-41/`
 
-Con estos nombres:
+Nombres establecidos:
 
-```text
-EV-HU41-01-creacion-proyecto.png
-EV-HU41-02-edicion-proyecto.png
-EV-HU41-03-validacion-formulario.png
-```
+- `EV-HU41-01-creacion-proyecto.png`
+- `EV-HU41-02-edicion-proyecto.png`
+- `EV-HU41-03-validacion-formulario.png`
+- `EV-HU41-04-consulta-proyecto.png`
+- `EV-HU41-05-eliminacion-proyecto.png`
 
-Antes de subir las capturas, comprobar que no contienen contraseñas, claves API, tokens ni información sensible.
+Si las capturas reales están en formato JPG, se debe conservar su extensión correspondiente y actualizar los enlaces.
 
-Las capturas deben corresponder a la ejecución realizada. No se crearán imágenes para funcionalidades bloqueadas con el propósito de aparentar resultados.
-
-### 7.2. Referencias de evidencias visuales
+### 7.2. Evidencias visuales
 
 **EV-HU41-01 — Creación de proyecto**
 
@@ -511,29 +516,40 @@ Las capturas deben corresponder a la ejecución realizada. No se crearán imáge
 
 ![Validación de formulario](evidencias/hu-41/EV-HU41-03-validacion-formulario.png)
 
-Estas referencias funcionarán cuando las capturas estén incorporadas en la ruta indicada y sus nombres coincidan exactamente.
+**EV-HU41-04 — Consulta de proyectos**
+
+![Consulta de proyectos](evidencias/hu-41/EV-HU41-04-consulta-proyecto.png)
+
+**EV-HU41-05 — Eliminación de proyecto**
+
+![Eliminación de proyecto](evidencias/hu-41/EV-HU41-05-eliminacion-proyecto.png)
+
 
 ## 8. Dependencias y acciones pendientes
 
-1. Implementar la consulta independiente de proyectos, incluyendo listado y detalle.
-2. Implementar la eliminación de proyectos conforme a las reglas aprobadas.
-3. Habilitar la administración de integrantes definida en HU-51.
-4. Validar que únicamente el propietario pueda agregar y quitar integrantes, mediante interfaz y controles de Supabase.
-5. Comprobar el aislamiento de información entre propietarios y proyectos.
-6. Coordinar la asignación de responsables con HU-42.
-7. Ejecutar nuevamente los casos bloqueados una vez integradas las funcionalidades.
-8. Completar el commit, fecha, hora y navegador de la ejecución para permitir su reproducción.
-9. Confirmar las verificaciones de persistencia de creación y edición si no se realizaron anteriormente.
-10. Registrar en Jira los defectos que se encuentren durante las próximas ejecuciones.
+1. Implementar o habilitar las restricciones de acceso que permitan verificar los permisos del propietario.
+2. Implementar las operaciones de agregar y quitar integrantes conforme a HU-51.
+3. Verificar que solamente el propietario pueda administrar los integrantes.
+4. Comprobar el acceso a proyectos ajenos mediante la interfaz y las políticas RLS de Supabase.
+5. Coordinar la asignación de responsables con las pruebas de HU-42.
+6. Ejecutar nuevamente los cinco casos bloqueados cuando estén disponibles las funcionalidades correspondientes.
+7. Incorporar las evidencias EV-HU41-04 y EV-HU41-05 de consulta y eliminación.
+8. Registrar la fecha, hora, rama y commit del frontend utilizado en las pruebas.
+9. Confirmar las comprobaciones de persistencia y resultados posteriores a la recarga cuando no se hayan registrado.
+10. Incorporar en Jira los defectos que se detecten durante las próximas ejecuciones.
 
 ## 9. Estado de HU-41
 
-**Estado:** ejecución parcial documentada.
+**Estado:** ejecución parcial actualizada.
 
-La creación de proyectos, la edición y las validaciones de formularios fueron reportadas como aprobadas por QA, con una captura disponible para cada funcionalidad.
+Las funcionalidades de creación, consulta, edición, eliminación y validaciones de formularios fueron reportadas como implementadas, probadas y aprobadas por QA.
 
-No fue posible ejecutar las comprobaciones de consulta, eliminación, permisos y administración de integrantes porque las funcionalidades correspondientes no estaban implementadas en la versión evaluada.
+La consulta y eliminación dejaron de ser bloqueos en la versión 1.1 del registro.
 
-No se reportaron defectos confirmados en las operaciones ejecutadas. Los escenarios no disponibles se mantienen bloqueados para su posterior ejecución.
+Los casos relacionados con permisos de propietario, acceso a proyectos ajenos y administración de integrantes permanecen bloqueados por no estar implementadas o disponibles las funcionalidades necesarias para su validación.
 
-Este registro puede incorporarse al repositorio y presentarse a revisión, pero no constituye una aprobación funcional completa de HU-41. Su cierre requiere resolver o aceptar formalmente los bloqueos pendientes conforme al procedimiento del proyecto.
+No se reportaron defectos confirmados en las pruebas ejecutadas.
+
+El documento puede incorporarse al repositorio y presentarse a revisión como registro actualizado. La historia todavía no debe declararse completamente aprobada, porque permanecen criterios de aceptación pendientes.
+ bloqueados. Se registraron tres evidencias disponibles. |
+| 1.1 | 12/11/2026 | Actualización de CP-PRO-02 y CP-PRO-04 como aprobados por implementación y validación de consulta y eliminación. Se actualizó la matriz de trazabilidad, las fichas, el resumen de ejecución, los bloqueos y el inventario de evidencias. Permanecen pendientes las pruebas de permisos e integrantes. |
