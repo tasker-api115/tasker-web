@@ -20,6 +20,7 @@ import { DeleteProjectDialog } from '../components/delete-project-dialog/delete-
 import { Project } from '../data/project.model';
 import { ProjectsService } from '../data/projects.service';
 import { formatProjectDate } from '../utils/format-project-date';
+import { RouterLink } from '@angular/router';
 
 /**
  * Página de proyectos.
@@ -30,6 +31,7 @@ import { formatProjectDate } from '../utils/format-project-date';
 @Component({
   selector: 'app-projects-page',
   imports: [
+    RouterLink,
     NgIcon,
     PageHeading,
     ZardButtonComponent,

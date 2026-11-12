@@ -98,8 +98,18 @@
                 </div>
               </z-card-content>
 
-              @if (isOwner(project)) {
-                <z-card-footer zFooterBorder>
+              <z-card-footer zFooterBorder class="flex flex-wrap gap-2">
+                <a
+                  z-button
+                  zType="outline"
+                  zSize="sm"
+                  [routerLink]="['/proyectos', project.id]"
+                  [attr.aria-label]="'Ver detalles del proyecto ' + project.name"
+                >
+                  Ver detalles
+                </a>
+
+                @if (isOwner(project)) {
                   <button
                     z-button
                     zType="ghost"
@@ -110,7 +120,6 @@
                   >
                     <ng-icon name="lucidePencil" aria-hidden="true" /> Editar
                   </button>
-
                   <button
                     z-button
                     zType="destructive"
@@ -121,8 +130,8 @@
                   >
                     <ng-icon name="lucideTrash2" aria-hidden="true" /> Eliminar
                   </button>
-                </z-card-footer>
-              }
+                }
+              </z-card-footer>
             </z-card>
           </li>
         }
@@ -136,6 +145,12 @@
     </p>
   }
 }
+
+<app-delete-project-dialog
+  [(open)]="deleteOpen"
+  [project]="deletingProject()"
+  (deleted)="onDeleted($event)"
+/>
 
 <app-create-project-dialog
   [(open)]="createOpen"
