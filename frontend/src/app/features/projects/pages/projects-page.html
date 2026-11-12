@@ -1,3 +1,4 @@
+
 <div class="projects-header">
   <app-page-heading
     eyebrow="Espacio de trabajo"
@@ -24,6 +25,7 @@
       </button>
     </z-empty>
   }
+
   @case ('ready') {
     @if (store.projects().length === 0) {
       <z-empty
@@ -44,33 +46,70 @@
                 <z-badge zType="secondary" class="mb-2 w-fit">
                   {{ isOwner(project) ? 'Propietario' : 'Integrante' }}
                 </z-badge>
+
                 <h2 z-card-title [zTitle]="project.name"></h2>
+
                 @if (project.description) {
                   <p z-card-description [zDescription]="project.description"></p>
                 }
               </z-card-header>
+
               <z-card-content class="mt-auto">
                 <dl class="grid grid-cols-2 gap-4">
                   <div>
                     <dt class="text-xs text-muted-foreground">Inicio</dt>
                     <dd>
-                      <time [attr.datetime]="project.startDate">{{
-                        formatDate(project.startDate)
-                      }}</time>
+                      <time [attr.datetime]="project.startDate">
+                        {{ formatDate(project.startDate) }}
+                      </time>
                     </dd>
                   </div>
+
                   <div>
                     <dt class="text-xs text-muted-foreground">Finalización</dt>
                     <dd>
-                      <time [attr.datetime]="project.endDate">{{
-                        formatDate(project.endDate)
-                      }}</time>
+                      <time [attr.datetime]="project.endDate">
+                        {{ formatDate(project.endDate) }}
+                      </time>
                     </dd>
                   </div>
                 </dl>
+
+                <!-- Avance del proyecto -->
+                <div class="mt-4">
+                  <div class="mb-2 flex items-center justify-between text-xs">
+                    <span class="text-muted-foreground">Avance del proyecto</span>
+                    <span class="font-medium">{{ project.progress }} %</span>
+                  </div>
+
+                  <div
+                    class="h-2 w-full overflow-hidden rounded-full bg-muted"
+                    role="progressbar"
+                    aria-label="Avance del proyecto"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    [attr.aria-valuenow]="project.progress"
+                  >
+                    <div
+                      class="h-full rounded-full bg-primary"
+                      [style.width.%]="project.progress"
+                    ></div>
+                  </div>
+                </div>
               </z-card-content>
-              @if (isOwner(project)) {
-                <z-card-footer zFooterBorder>
+
+              <z-card-footer zFooterBorder class="flex flex-wrap gap-2">
+                <a
+                  z-button
+                  zType="outline"
+                  zSize="sm"
+                  [routerLink]="['/proyectos', project.id]"
+                  [attr.aria-label]="'Ver detalles del proyecto ' + project.name"
+                >
+                  Ver detalles
+                </a>
+
+                @if (isOwner(project)) {
                   <button
                     z-button
                     zType="ghost"
@@ -81,22 +120,51 @@
                   >
                     <ng-icon name="lucidePencil" aria-hidden="true" /> Editar
                   </button>
-                </z-card-footer>
-              }
+                  <button
+                    z-button
+                    zType="destructive"
+                    zSize="sm"
+                    type="button"
+                    [attr.aria-label]="'Eliminar proyecto ' + project.name"
+                    (click)="openDelete(project)"
+                  >
+                    <ng-icon name="lucideTrash2" aria-hidden="true" /> Eliminar
+                  </button>
+                }
+              </z-card-footer>
             </z-card>
           </li>
         }
       </ul>
     }
   }
+
   @default {
-    <p class="text-sm text-muted-foreground" role="status">Cargando proyectos…</p>
+    <p class="text-sm text-muted-foreground" role="status">
+      Cargando proyectos…
+    </p>
   }
 }
 
-<app-create-project-dialog [(open)]="createOpen" (created)="onCreated($event)" />
+<app-delete-project-dialog
+  [(open)]="deleteOpen"
+  [project]="deletingProject()"
+  (deleted)="onDeleted($event)"
+/>
+
+<app-create-project-dialog
+  [(open)]="createOpen"
+  (created)="onCreated($event)"
+/>
+
 <app-edit-project-dialog
   [(open)]="editOpen"
   [project]="editingProject()"
   (updated)="onUpdated($event)"
+/>
+
+<app-delete-project-dialog
+  [(open)]="deleteOpen"
+  [project]="deletingProject()"
+  (deleted)="onDeleted($event)"
 />

@@ -10,6 +10,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/pages/login-page').then((m) => m.LoginPage),
   },
   {
+  path: 'registro',
+  title: 'Crear cuenta | Tasker',
+  canActivate: [guestGuard],
+  loadComponent: () =>
+    import('./features/auth/pages/register-page').then((m) => m.RegisterPage),
+},
+  {
     path: '',
     component: MainLayout,
     canActivate: [authGuard],
@@ -25,12 +32,6 @@ export const routes: Routes = [
         title: 'Proyectos | Tasker',
         loadComponent: () =>
           import('./features/projects/pages/projects-page').then((m) => m.ProjectsPage),
-      },
-      {
-        path: 'proyectos/:projectId/tablero',
-        title: 'Tablero Kanban | Tasker',
-        loadComponent: () =>
-          import('./features/tasks/pages/task-board-page').then((m) => m.TaskBoardPage),
       },
       {
         path: 'tareas',

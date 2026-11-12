@@ -1,0 +1,88 @@
+<div class="project-detail-grid">
+  <div class="project-main-column">
+    <section class="detail-panel" aria-label="Información del proyecto">
+      <h2 class="panel-title">Información del proyecto</h2>
+
+      <dl class="project-info-grid">
+        <div>
+          <dt>Propietario</dt>
+          <dd>{{ detail().ownerName }}</dd>
+        </div>
+
+        <div>
+          <dt>Tu rol</dt>
+          <dd>{{ isOwner() ? 'Propietario' : 'Integrante' }}</dd>
+        </div>
+
+        <div>
+          <dt>Inicio</dt>
+          <dd>{{ formatDate(detail().project.startDate) }}</dd>
+        </div>
+
+        <div>
+          <dt>Finalización</dt>
+          <dd>{{ formatDate(detail().project.endDate) }}</dd>
+        </div>
+      </dl>
+
+      <div class="project-progress-block">
+        <div class="progress-heading">
+          <span>Avance del proyecto</span>
+          <span>{{ progress().percentage }} %</span>
+        </div>
+
+        <progress
+          class="project-progress"
+          max="100"
+          [value]="progress().percentage"
+          aria-label="Avance del proyecto"
+        ></progress>
+
+        <p class="progress-caption">
+          {{ progress().completed }} de {{ progress().total }}
+          tareas completadas
+        </p>
+
+        @if (detail().tasks.length !== progress().total) {
+          <p class="progress-caption">
+            Las tareas canceladas no se incluyen en el cálculo.
+          </p>
+        }
+      </div>
+    </section>
+
+    <section class="detail-panel" aria-label="Tareas del proyecto">
+      <h2 class="panel-title">Tareas del proyecto</h2>
+
+      @if (detail().tasks.length === 0) {
+        <p class="empty-message">
+          Todavía no hay tareas asociadas al proyecto.
+        </p>
+      } @else {
+        <ul class="project-task-list">
+          @for (task of detail().tasks; track task.id) {
+            <li class="project-task">
+              <div class="task-heading">
+                <h3>{{ task.name }}</h3>
+
+                <span class="task-status">
+                  {{ statusLabel(task.status) }}
+                </span>
+              </div>
+
+              <p class="task-description">
+                #{{ task.number }} · Fecha límite:
+                {{ formatDate(task.endDate) }}
+              </p>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+
+  <app-project-members
+    [members]="detail().members"
+    [isOwner]="isOwner()"
+  />
+</div>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { AuthService } from '../../../core/auth/auth.service';
 
@@ -12,7 +12,7 @@ const INPUT_CLASSES =
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, ZardButtonComponent],
+  imports: [ReactiveFormsModule, RouterLink, ZardButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './login-page.html',
 })
@@ -67,4 +67,7 @@ export class LoginPage {
         : 'No pudimos iniciar sesión. Inténtalo de nuevo en unos minutos.',
     );
   }
+
+  protected readonly showConfirmationNotice =
+  inject(ActivatedRoute).snapshot.queryParamMap.get('registro') === 'confirmar';
 }
