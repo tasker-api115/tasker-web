@@ -1,4 +1,12 @@
+
 <section aria-label="Tablero Kanban">
+
+  @if (deletedNotice(); as notice) {
+    <div role="status" class="mb-4 rounded-md border bg-card p-3 text-sm">
+      <strong>Tarea eliminada</strong> · {{ notice }}
+    </div>
+  }
+
   <div class="mb-6 flex flex-wrap items-center gap-3">
     <div class="relative w-full max-w-sm">
       <ng-icon
@@ -17,6 +25,7 @@
         (input)="onSearch($event)"
       />
     </div>
+
     @if (searching()) {
       <button z-button zType="ghost" zSize="sm" type="button" (click)="clearSearch()">
         Limpiar
@@ -37,6 +46,7 @@
         </button>
       </z-empty>
     }
+
     @case ('ready') {
       @if (store.tasks().length === 0) {
         <z-empty
@@ -46,17 +56,31 @@
         />
       } @else {
         @if (searching()) {
-          <p class="mb-4 text-sm text-muted-foreground" aria-live="polite">{{ resultsLabel() }}</p>
+          <p class="mb-4 text-sm text-muted-foreground" aria-live="polite">
+            {{ resultsLabel() }}
+          </p>
         }
+
         <div class="flex gap-6 overflow-x-auto pb-4">
           @for (column of columns(); track column.status) {
-            <section class="min-w-64 flex-1" [attr.aria-labelledby]="'col-' + column.status">
+            <section
+              class="min-w-64 flex-1"
+              [attr.aria-labelledby]="'col-' + column.status"
+            >
               <header class="mb-3 flex items-center justify-between">
-                <h2 class="flex items-center gap-2 text-sm font-medium" [id]="'col-' + column.status">
-                  <ng-icon [name]="column.icon" aria-hidden="true" /> {{ column.title }}
+                <h2
+                  class="flex items-center gap-2 text-sm font-medium"
+                  [id]="'col-' + column.status"
+                >
+                  <ng-icon [name]="column.icon" aria-hidden="true" />
+                  {{ column.title }}
                 </h2>
-                <span class="rounded-md bg-muted px-2 py-0.5 text-xs">{{ column.tasks.length }}</span>
+
+                <span class="rounded-md bg-muted px-2 py-0.5 text-xs">
+                  {{ column.tasks.length }}
+                </span>
               </header>
+
               <ul class="m-0 flex list-none flex-col gap-3 p-0">
                 @for (task of column.tasks; track task.id) {
                   <li class="relative rounded-xl border bg-card p-4 hover:bg-muted/40">
@@ -70,15 +94,24 @@
                         {{ task.name }}
                       </button>
                     </h3>
+
                     <div class="mb-3 flex items-center justify-between gap-2">
-                      <z-badge zType="secondary">{{ column.title }}</z-badge>
+                      <z-badge zType="secondary">
+                        {{ column.title }}
+                      </z-badge>
+
                       <span class="flex items-center gap-1 text-sm text-muted-foreground">
                         <ng-icon name="lucideCalendar" aria-hidden="true" />
-                        <time [attr.datetime]="task.dueDate">{{ formatDate(task.dueDate) }}</time>
+                        <time [attr.datetime]="task.dueDate">
+                          {{ formatDate(task.dueDate) }}
+                        </time>
                       </span>
                     </div>
+
                     @if (task.assignees.length === 0) {
-                      <p class="text-sm text-muted-foreground">Sin responsable</p>
+                      <p class="text-sm text-muted-foreground">
+                        Sin responsable
+                      </p>
                     } @else {
                       <ul class="m-0 flex list-none flex-col gap-1 p-0">
                         @for (assignee of task.assignees; track assignee.id) {
@@ -86,16 +119,19 @@
                             <span
                               class="flex size-7 items-center justify-center rounded-full bg-muted text-xs"
                               aria-hidden="true"
-                              >{{ assignee.initials }}</span
                             >
+                              {{ assignee.initials }}
+                            </span>
                             {{ assignee.name }}
                           </li>
                         }
                       </ul>
                     }
+
                     @if (task.overdue) {
                       <p class="mt-3 flex items-center gap-1 text-sm text-destructive">
-                        <ng-icon name="lucideCircleAlert" aria-hidden="true" /> Vencida
+                        <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+                        Vencida
                       </p>
                     }
                   </li>
@@ -106,10 +142,25 @@
         </div>
       }
     }
+
     @default {
-      <p class="text-sm text-muted-foreground" role="status">Cargando tareas…</p>
+      <p class="text-sm text-muted-foreground" role="status">
+        Cargando tareas…
+      </p>
     }
   }
 
-  <app-task-detail-dialog [(open)]="detailOpen" [task]="selectedTask()" />
+  <app-task-detail-dialog
+    [(open)]="detailOpen"
+    [task]="selectedTask()"
+    [canDelete]="isOwner()"
+    (deleteRequested)="requestDelete($event)"
+  />
+
+  <app-delete-task-dialog
+    [(open)]="deleteOpen"
+    [task]="selectedTask()"
+    (deleted)="onDeleted($event)"
+  />
+
 </section>

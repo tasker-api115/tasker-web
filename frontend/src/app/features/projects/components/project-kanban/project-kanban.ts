@@ -1,3 +1,4 @@
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,10 +6,13 @@ import {
   effect,
   inject,
   input,
+  output,
   signal,
   untracked,
 } from '@angular/core';
+
 import { NgIcon, provideIcons } from '@ng-icons/core';
+
 import {
   lucideCalendar,
   lucideCircleAlert,
@@ -21,11 +25,15 @@ import {
   lucideSearch,
   lucideSquareCheck,
 } from '@ng-icons/lucide';
+
 import { ZardBadgeComponent } from '@/shared/components/badge/badge.component';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { ZardEmptyComponent } from '@/shared/components/empty/empty.component';
 import { ZardInputComponent } from '@/shared/components/input/input.component';
+
 import { TaskDetailDialog } from '../../../tasks/components/task-detail-dialog/task-detail-dialog';
+import { DeleteTaskDialog } from '../../../tasks/components/delete-task-dialog/delete-task-dialog';
+
 import { Task, TaskStatus } from '../../../tasks/data/task.model';
 import { TaskBoardService } from '../../../tasks/data/task-board.service';
 import { ProjectTask } from '../../data/project-detail.model';
@@ -61,6 +69,7 @@ function normalize(value: string): string {
   imports: [
     NgIcon,
     TaskDetailDialog,
+    DeleteTaskDialog,
     ZardBadgeComponent,
     ZardButtonComponent,
     ZardEmptyComponent,
@@ -87,43 +96,68 @@ export class ProjectKanban {
   protected readonly store = inject(TaskBoardService);
 
   readonly projectId = input.required<string>();
+
   /** Tareas del detalle: cuando cambian (por ejemplo, al crear una tarea) el tablero se recarga. */
   readonly tasks = input<readonly ProjectTask[]>([]);
+
+  /** Solo el propietario puede eliminar tareas. */
+  readonly isOwner = input(false);
+
+  /** Se emite con el id de la tarea eliminada para que la página actualice sus datos. */
+  readonly taskDeleted = output<string>();
 
   private loadedProjectId: string | null = null;
 
   protected readonly searchTerm = signal('');
   protected readonly detailOpen = signal(false);
   protected readonly selectedTask = signal<Task | null>(null);
+  protected readonly deleteOpen = signal(false);
+  protected readonly deletedNotice = signal<string | null>(null);
+
   protected readonly formatDate = formatProjectDate;
 
-  protected readonly searching = computed(() => normalize(this.searchTerm()).length > 0);
+  protected readonly searching = computed(
+    () => normalize(this.searchTerm()).length > 0
+  );
 
   private readonly filteredTasks = computed(() => {
     const term = normalize(this.searchTerm());
     const tasks = this.store.tasks();
-    return term ? tasks.filter((task) => normalize(task.name).includes(term)) : tasks;
+
+    return term
+      ? tasks.filter((task) => normalize(task.name).includes(term))
+      : tasks;
   });
 
   protected readonly columns = computed(() =>
     COLUMNS.map((column) => ({
       ...column,
-      tasks: this.filteredTasks().filter((task) => task.status === column.status),
-    })),
+      tasks: this.filteredTasks().filter(
+        (task) => task.status === column.status
+      ),
+    }))
   );
 
   protected readonly resultsLabel = computed(() => {
-    const total = this.columns().reduce((sum, column) => sum + column.tasks.length, 0);
+    const total = this.columns().reduce(
+      (sum, column) => sum + column.tasks.length,
+      0
+    );
+
     if (total === 0) {
       return 'No se encontraron tareas. Prueba con otro título o limpia la búsqueda.';
     }
-    return total === 1 ? '1 tarea encontrada' : `${total} tareas encontradas`;
+
+    return total === 1
+      ? '1 tarea encontrada'
+      : `${total} tareas encontradas`;
   });
 
   constructor() {
     effect(() => {
       const id = this.projectId();
-      this.tasks(); // dependencia reactiva: recarga cuando cambia la lista del detalle
+      this.tasks();
+
       untracked(() => {
         const silent = this.loadedProjectId === id;
         this.loadedProjectId = id;
@@ -145,7 +179,19 @@ export class ProjectKanban {
   }
 
   protected openDetail(task: Task): void {
+    this.deletedNotice.set(null);
     this.selectedTask.set(task);
     this.detailOpen.set(true);
+  }
+
+  protected requestDelete(task: Task): void {
+    this.selectedTask.set(task);
+    this.detailOpen.set(false);
+    this.deleteOpen.set(true);
+  }
+
+  protected onDeleted(task: Task): void {
+    this.deletedNotice.set(`«${task.name}» ya no aparece en el tablero.`);
+    this.taskDeleted.emit(task.id);
   }
 }

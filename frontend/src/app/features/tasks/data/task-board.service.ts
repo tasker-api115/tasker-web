@@ -1,3 +1,4 @@
+
 import { Injectable, inject, signal } from '@angular/core';
 import { SUPABASE_CLIENT } from '../../../core/supabase/supabase-client';
 import { Task, TaskRow, toTask } from './task.model';
@@ -7,7 +8,24 @@ const TASK_COLUMNS =
 
 export type TaskBoardStatus = 'idle' | 'loading' | 'ready' | 'error';
 
-/** Lectura de las tareas de un proyecto para el tablero Kanban. RLS: `tarea_acceso`. */
+export type DeleteTaskResult =
+  | { readonly ok: true }
+  | {
+      readonly ok: false;
+      readonly reason:
+        | 'not-configured'
+        | 'not-allowed'
+        | 'has-dependencies'
+        | 'unknown';
+    };
+
+/** Código de PostgreSQL cuando otra tabla (dependencias) impide borrar. */
+const FOREIGN_KEY_VIOLATION_CODE = '23503';
+
+/**
+ * Lectura de las tareas de un proyecto para el tablero Kanban.
+ * RLS: `tarea_acceso`.
+ */
 @Injectable({ providedIn: 'root' })
 export class TaskBoardService {
   private readonly client = inject(SUPABASE_CLIENT);
@@ -24,10 +42,12 @@ export class TaskBoardService {
       this.statusState.set('error');
       return;
     }
+
     if (!silent) {
       this.tasksState.set([]);
       this.statusState.set('loading');
     }
+
     try {
       const { data, error } = await this.client
         .from('tarea')
@@ -42,12 +62,51 @@ export class TaskBoardService {
         }
         return;
       }
+
       this.tasksState.set(data.map(toTask));
       this.statusState.set('ready');
     } catch {
       if (!silent) {
         this.statusState.set('error');
       }
+    }
+  }
+
+  /**
+   * Elimina una tarea (HU-29). Sus asignaciones se borran en cascada.
+   * Si no se borra ninguna fila, la tarea ya no existe o el usuario no tiene permiso.
+   */
+  async remove(taskId: string): Promise<DeleteTaskResult> {
+    if (!this.client) {
+      return { ok: false, reason: 'not-configured' };
+    }
+
+    try {
+      const { data, error } = await this.client
+        .from('tarea')
+        .delete()
+        .eq('id_tarea', taskId)
+        .select('id_tarea');
+
+      if (error?.code === FOREIGN_KEY_VIOLATION_CODE) {
+        return { ok: false, reason: 'has-dependencies' };
+      }
+
+      if (error) {
+        return { ok: false, reason: 'unknown' };
+      }
+
+      if (!data || data.length === 0) {
+        return { ok: false, reason: 'not-allowed' };
+      }
+
+      this.tasksState.update((list) =>
+        list.filter((task) => task.id !== taskId)
+      );
+
+      return { ok: true };
+    } catch {
+      return { ok: false, reason: 'unknown' };
     }
   }
 }

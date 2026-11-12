@@ -221,4 +221,11 @@ export class ProjectDetailPage {
 
     this.announcement.set(`Tarea «${task.name}» creada.`);
   }
+
+    protected onTaskDeleted(taskId: string): void {
+    this.detail.update((current) =>
+      current ? { ...current, tasks: current.tasks.filter((task) => task.id !== taskId) } : current,
+    );
+    this.announcement.set('Tarea eliminada.');
+  }
 }
