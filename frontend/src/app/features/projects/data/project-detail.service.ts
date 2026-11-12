@@ -116,6 +116,7 @@ export class ProjectDetailService {
         ),
       ]);
 
+      // MANEJO DE ERRORES RPC
       // Consultamos los correos de forma segura y los almacenamos en un mapa
       const emailMap = new Map<string, string>();
       try {
