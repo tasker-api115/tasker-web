@@ -1,0 +1,162 @@
+@if (isOwner()) {
+  <button
+    z-button
+    zSize="sm"
+    type="button"
+    aria-haspopup="dialog"
+    (click)="openDialog()"
+  >
+    <ng-icon name="lucidePlus" aria-hidden="true" />
+    Crear tarea
+  </button>
+
+  <z-dialog
+    [(zVisible)]="open"
+    [zClosable]="true"
+    [zMaskClosable]="true"
+    class="sm:max-w-md"
+  >
+    <z-dialog-header>
+      <z-dialog-title>Crear tarea</z-dialog-title>
+
+      <z-dialog-description>
+        {{ project().name }}
+      </z-dialog-description>
+    </z-dialog-header>
+
+    <!--
+      Alcance visual: todavía no se envía ninguna solicitud.
+      El proyecto al que pertenecerá la tarea está en project().id.
+    -->
+    <form
+      [formGroup]="form"
+      class="flex flex-col gap-4"
+      novalidate
+      (submit)="$event.preventDefault()"
+    >
+      <div class="flex flex-col gap-2">
+        <label for="create-task-name" class="text-sm font-medium">
+          Nombre
+        </label>
+
+        <input
+          id="create-task-name"
+          type="text"
+          formControlName="name"
+          placeholder="Nombre de la tarea"
+          [class]="inputClasses"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="create-task-description" class="text-sm font-medium">
+          Descripción
+        </label>
+
+        <textarea
+          id="create-task-description"
+          formControlName="description"
+          placeholder="Describe la tarea"
+          rows="3"
+          [class]="textareaClasses"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-2">
+          <label for="create-task-start-date" class="text-sm font-medium">
+            Fecha de inicio
+          </label>
+
+          <input
+            id="create-task-start-date"
+            type="date"
+            formControlName="startDate"
+            [class]="inputClasses"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="create-task-due-date" class="text-sm font-medium">
+            Fecha de entrega
+          </label>
+
+          <input
+            id="create-task-due-date"
+            type="date"
+            formControlName="dueDate"
+            [class]="inputClasses"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <span id="create-task-assignees-label" class="text-sm font-medium">
+          Responsables
+        </span>
+
+        <!-- TODO: conectar el selector de integrantes del proyecto. -->
+        <button
+          z-button
+          zType="outline"
+          type="button"
+          class="w-full"
+          [zDisabled]="true"
+          aria-labelledby="create-task-assignees-label create-task-assignees-button"
+          aria-describedby="create-task-assignees-help"
+        >
+          <ng-icon name="lucideUserPlus" aria-hidden="true" />
+          <span id="create-task-assignees-button">
+            Seleccionar integrantes
+          </span>
+        </button>
+
+        <p
+          id="create-task-assignees-help"
+          class="text-xs text-muted-foreground"
+        >
+          Integrantes de este proyecto. Selección todavía no disponible.
+        </p>
+      </div>
+
+      <span
+        class="w-fit rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground"
+      >
+        Estado · Por hacer
+      </span>
+
+      <p
+        id="create-task-integration-note"
+        class="text-xs leading-relaxed text-muted-foreground"
+      >
+        La creación de tareas todavía no está disponible.
+        Puedes cerrar esta ventana y volver a abrirla sin perder lo escrito
+        mientras permanezcas en esta pantalla.
+      </p>
+    </form>
+
+    <z-dialog-footer>
+      <button
+        z-button
+        zType="outline"
+        type="button"
+        z-dialog-close
+      >
+        Cancelar
+      </button>
+
+      <!--
+        TODO: habilitar al implementar validación y guardado.
+        No mostrar éxito ni cerrar el modal como si se hubiera creado una tarea.
+      -->
+      <button
+        z-button
+        type="button"
+        [zDisabled]="true"
+        aria-describedby="create-task-integration-note"
+      >
+        Crear tarea
+      </button>
+    </z-dialog-footer>
+  </z-dialog>
+}

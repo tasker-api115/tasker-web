@@ -7,105 +7,83 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { distinctUntilChanged, map } from 'rxjs';
-import { ZardBadgeComponent } from '@/shared/components/badge/badge.component';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { combineLatest } from 'rxjs';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  lucideLayoutDashboard,
+  lucideUsers,
+  lucideColumns3,
+  lucideCalendarDays,
+  lucideChartNoAxesCombined,
+  lucidePencil,
+} from '@ng-icons/lucide';
+
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
-import { ZardCardImports } from '@/shared/components/card/card.imports';
-import { PageHeading } from '@/shared/components/page-heading/page-heading';
+import { EditProjectDialog } from '../components/edit-project-dialog/edit-project-dialog';
+import { ProjectSummary } from '../components/project-summary/project-summary';
+import { ProjectMembers } from '../components/project-members/project-members';
+import { ProjectKanban } from '../components/project-kanban/project-kanban';
+import { Project } from '../data/project.model';
 import { ProjectDetail } from '../data/project-detail.model';
 import { ProjectDetailService } from '../data/project-detail.service';
-import { formatProjectDate } from '../utils/format-project-date';
+import { ProjectsService } from '../data/projects.service';
+import { CreateTaskDialog } from '../../projects/components/create-task-dialog/create-task-dialog';
 
 type DetailStatus = 'loading' | 'ready' | 'error' | 'unavailable';
-
-/**
- * TODO(integración frontend):
- * Reemplazar null por las rutas reales cuando estén disponibles.
- *
- * Estas funciones deben devolver los comandos para RouterLink,
- * incluyendo el identificador del proyecto.
- */
-const PROJECT_LINKS: {
-  kanban: ((projectId: string) => string[]) | null;
-  timeline: ((projectId: string) => string[]) | null;
-} = {
-  kanban: null,
-  timeline: null,
-};
-
-const STATUS_LABELS: Readonly<Record<string, string>> = {
-  pendiente: 'Por hacer',
-  en_progreso: 'En progreso',
-  en_revision: 'En revisión',
-  completada: 'Completada',
-  cancelada: 'Cancelada',
-};
-
-const PRIORITY_LABELS: Readonly<Record<string, string>> = {
-  baja: 'Baja',
-  media: 'Media',
-  alta: 'Alta',
-  urgente: 'Urgente',
-};
+type DetailSection = 'summary' | 'members' | 'kanban';
 
 @Component({
   selector: 'app-project-detail-page',
   standalone: true,
   imports: [
     RouterLink,
-    PageHeading,
+    NgIcon,
     ZardButtonComponent,
-    ZardBadgeComponent,
-    ZardCardImports,
+    EditProjectDialog,
+    ProjectSummary,
+    ProjectMembers,
+    ProjectKanban,
+    CreateTaskDialog,
+  ],
+  viewProviders: [
+    provideIcons({
+      lucideLayoutDashboard,
+      lucideUsers,
+      lucideColumns3,
+      lucideCalendarDays,
+      lucideChartNoAxesCombined,
+      lucidePencil,
+    }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './project-detail-page.html',
-  styleUrl: './project-detail-page.css',
+  styleUrl: '../components/project-detail-content.css',
 })
 export class ProjectDetailPage {
   private readonly service = inject(ProjectDetailService);
+  private readonly projects = inject(ProjectsService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  private projectId = '';
+  private projectId: string | null = null;
   private requestId = 0;
 
   protected readonly status = signal<DetailStatus>('loading');
   protected readonly detail = signal<ProjectDetail | null>(null);
   protected readonly errorMessage = signal('');
-  protected readonly formatDate = formatProjectDate;
+  protected readonly activeSection = signal<DetailSection>('summary');
+  protected readonly announcement = signal('');
+  protected readonly editOpen = signal(false);
 
-  protected readonly progress = computed(() => {
-    const tasks = this.detail()?.tasks ?? [];
+  protected readonly isOwner = computed(() => {
+    const project = this.detail()?.project;
 
-    // Regla provisional: confirmar con el equipo.
-    // Las tareas canceladas no participan en el cálculo.
-    const considered = tasks.filter((task) => task.status !== 'cancelada');
-    const completed = considered.filter(
-      (task) => task.status === 'completada',
-    ).length;
-
-    return {
-      total: considered.length,
-      completed,
-      percentage:
-        considered.length === 0
-          ? 0
-          : Math.round((completed / considered.length) * 100),
-    };
-  });
-
-  protected readonly kanbanLink = computed(() => {
-    const id = this.detail()?.project.id;
-
-    return id ? (PROJECT_LINKS.kanban?.(id) ?? null) : null;
-  });
-
-  protected readonly timelineLink = computed(() => {
-    const id = this.detail()?.project.id;
-
-    return id ? (PROJECT_LINKS.timeline?.(id) ?? null) : null;
+    return (
+      project !== undefined &&
+      project.ownerId === this.projects.currentUserId()
+    );
   });
 
   constructor() {
@@ -113,43 +91,89 @@ export class ProjectDetailPage {
       this.requestId++;
     });
 
-    this.route.paramMap
-      .pipe(
-        map((params) => params.get('projectId') ?? ''),
-        distinctUntilChanged(),
-        takeUntilDestroyed(),
-      )
-      .subscribe((projectId) => {
+    combineLatest([
+      this.route.paramMap,
+      this.route.queryParamMap,
+    ])
+      .pipe(takeUntilDestroyed())
+      .subscribe(([params, queryParams]) => {
+        const projectId = params.get('projectId') ?? '';
+        const section = queryParams.get('seccion');
+
+        this.activeSection.set(
+          section === 'kanban'
+            ? 'kanban'
+            : section === 'integrantes'
+              ? 'members'
+              : 'summary',
+        );
+
+        // Cambiar la pestaña no vuelve a consultar el proyecto.
+        if (projectId === this.projectId) {
+          return;
+        }
+
         this.projectId = projectId;
+        this.editOpen.set(false);
         void this.load();
       });
+  }
+
+  protected selectSection(section: DetailSection): void {
+    this.activeSection.set(section);
+
+    // Conserva la sección seleccionada al actualizar el navegador.
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        seccion:
+          section === 'summary'
+            ? null
+            : section === 'members'
+              ? 'integrantes'
+              : 'kanban',
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   protected retry(): void {
     void this.load();
   }
 
-  protected statusLabel(value: string): string {
-    return STATUS_LABELS[value] ?? 'Estado no reconocido';
+  protected openEdit(): void {
+    if (this.isOwner()) {
+      this.editOpen.set(true);
+    }
   }
 
-  protected priorityLabel(value: string): string {
-    return PRIORITY_LABELS[value] ?? 'Prioridad no reconocida';
+  protected onUpdated(project: Project): void {
+    this.detail.update((current) => {
+      if (!current || current.project.id !== project.id) {
+        return current;
+      }
+
+      return { ...current, project };
+    });
+
+    this.announcement.set('Información del proyecto actualizada.');
   }
 
   private async load(): Promise<void> {
     const requestId = ++this.requestId;
+    const projectId = this.projectId;
 
     this.detail.set(null);
     this.errorMessage.set('');
     this.status.set('loading');
 
-    if (!this.projectId) {
+    if (!projectId) {
       this.status.set('unavailable');
       return;
     }
 
-    const result = await this.service.load(this.projectId);
+    const result = await this.service.load(projectId);
 
     if (requestId !== this.requestId) {
       return;
@@ -164,7 +188,7 @@ export class ProjectDetailPage {
       this.errorMessage.set(
         result.reason === 'not-configured'
           ? 'El servicio de proyectos no está configurado.'
-          : 'No pudimos cargar la información del proyecto. Inténtalo nuevamente.',
+          : 'No pudimos cargar la información del proyecto.',
       );
 
       this.status.set('error');
