@@ -116,6 +116,23 @@ export class ProjectDetailService {
         ),
       ]);
 
+      // Consultamos los correos de forma segura y los almacenamos en un mapa
+      const emailMap = new Map<string, string>();
+      try {
+        // Se utiliza 'as any' localmente para evitar errores de tipado estricto si
+        // los tipos de Supabase aún no se han regenerado tras la migración.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: correos } = await (client as any).rpc('obtener_correos_proyecto', { p_id_proyecto: projectId });
+
+        if (correos) {
+          for (const item of correos) {
+            emailMap.set(item.id_usuario, item.correo);
+          }
+        }
+      } catch (e) {
+        console.warn('No se pudieron obtener los correos de los integrantes', e);
+      }
+
       const project = toProject(row);
       const members = new Map<string, ProjectMember>();
 
@@ -128,8 +145,8 @@ export class ProjectDetailService {
           // autorizada para integrantes de este proyecto.
           // public.usuario actualmente no tiene una columna de correo.
           // Sustituir null por el valor de esa consulta cuando esté disponible.
-          email: null,
-
+          // El correo ahora se asigna dinámicamente desde el mapa
+          email: emailMap.get(member.id_usuario) ?? null,
           role:
             member.id_usuario === project.ownerId
               ? 'Propietario'
@@ -147,7 +164,7 @@ export class ProjectDetailService {
       members.set(project.ownerId, {
         id: project.ownerId,
         name: ownerName,
-        email: ownerMember?.email ?? null,
+        email: emailMap.get(project.ownerId) ?? null,
         role: 'Propietario',
       });
 
