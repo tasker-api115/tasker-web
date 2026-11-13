@@ -74,3 +74,17 @@ export function toTask(row: TaskRow): Task {
     overdue: isOverdue(row.fecha_fin, row.estado),
   };
 }
+
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  pendiente: 'Por hacer',
+  en_progreso: 'En progreso',
+  en_revision: 'En revisión',
+  completada: 'Completada',
+  cancelada: 'Cancelada',
+};
+
+export const TASK_COMPLEXITY_LABELS: Record<TaskComplexity, string> = {
+  baja: 'Baja',
+  media: 'Media',
+  alta: 'Alta',
+};

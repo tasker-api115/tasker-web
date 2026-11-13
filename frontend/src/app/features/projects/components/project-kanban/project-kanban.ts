@@ -25,7 +25,8 @@ import { ZardBadgeComponent } from '@/shared/components/badge/badge.component';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { ZardEmptyComponent } from '@/shared/components/empty/empty.component';
 import { ZardInputComponent } from '@/shared/components/input/input.component';
-import { TaskStatus } from '../../../tasks/data/task.model';
+import { TaskDetailDialog } from '../../../tasks/components/task-detail-dialog/task-detail-dialog';
+import { Task, TaskStatus } from '../../../tasks/data/task.model';
 import { TaskBoardService } from '../../../tasks/data/task-board.service';
 import { ProjectTask } from '../../data/project-detail.model';
 import { formatProjectDate } from '../../utils/format-project-date';
@@ -53,12 +54,13 @@ function normalize(value: string): string {
     .trim();
 }
 
-/** Tablero Kanban del proyecto (HU-32 / SCRUM-46). */
+/** Tablero Kanban del proyecto (HU-32 / SCRUM-46) con detalle de tarea (HU-27 / SCRUM-40). */
 @Component({
   selector: 'app-project-kanban',
   standalone: true,
   imports: [
     NgIcon,
+    TaskDetailDialog,
     ZardBadgeComponent,
     ZardButtonComponent,
     ZardEmptyComponent,
@@ -91,6 +93,8 @@ export class ProjectKanban {
   private loadedProjectId: string | null = null;
 
   protected readonly searchTerm = signal('');
+  protected readonly detailOpen = signal(false);
+  protected readonly selectedTask = signal<Task | null>(null);
   protected readonly formatDate = formatProjectDate;
 
   protected readonly searching = computed(() => normalize(this.searchTerm()).length > 0);
@@ -138,5 +142,10 @@ export class ProjectKanban {
 
   protected retry(): void {
     void this.store.loadByProject(this.projectId());
+  }
+
+  protected openDetail(task: Task): void {
+    this.selectedTask.set(task);
+    this.detailOpen.set(true);
   }
 }
