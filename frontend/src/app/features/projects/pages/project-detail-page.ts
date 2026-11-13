@@ -1,3 +1,4 @@
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -30,6 +31,7 @@ import { ProjectDetailService } from '../data/project-detail.service';
 import { ProjectsService } from '../data/projects.service';
 import { CreateTaskDialog } from '../../projects/components/create-task-dialog/create-task-dialog';
 import { CreatedProjectTask } from '../../projects/data/task-create.model';
+import { TaskStatus } from '../../tasks/data/task.model';
 
 type DetailStatus = 'loading' | 'ready' | 'error' | 'unavailable';
 type DetailSection = 'summary' | 'members' | 'kanban';
@@ -222,10 +224,37 @@ export class ProjectDetailPage {
     this.announcement.set(`Tarea «${task.name}» creada.`);
   }
 
-    protected onTaskDeleted(taskId: string): void {
+  protected onTaskDeleted(taskId: string): void {
     this.detail.update((current) =>
-      current ? { ...current, tasks: current.tasks.filter((task) => task.id !== taskId) } : current,
+      current
+        ? {
+            ...current,
+            tasks: current.tasks.filter((task) => task.id !== taskId),
+          }
+        : current,
     );
+
     this.announcement.set('Tarea eliminada.');
+  }
+
+  /**
+   * Actualiza el estado de una tarea en el detalle del proyecto (HU-33).
+   */
+  protected onTaskStatusChanged(change: {
+    readonly id: string;
+    readonly status: TaskStatus;
+  }): void {
+    this.detail.update((current) =>
+      current
+        ? {
+            ...current,
+            tasks: current.tasks.map((task) =>
+              task.id === change.id
+                ? { ...task, status: change.status }
+                : task,
+            ),
+          }
+        : current,
+    );
   }
 }

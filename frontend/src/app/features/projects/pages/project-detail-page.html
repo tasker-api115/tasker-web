@@ -183,7 +183,8 @@
           [projectId]="data.project.id"
           [tasks]="data.tasks"
           [isOwner]="isOwner()"
-          (taskDeleted)="onTaskDeleted($event)" />
+          (taskDeleted)="onTaskDeleted($event)" 
+          (taskStatusChanged)="onTaskStatusChanged($event)"/>
       </section>
 
       <app-edit-project-dialog
