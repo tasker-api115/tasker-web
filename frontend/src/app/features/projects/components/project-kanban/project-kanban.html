@@ -1,4 +1,17 @@
 <section aria-label="Tablero Kanban">
+  @if (notice(); as notice) {
+    <div
+      class="mb-4 rounded-md border p-3 text-sm"
+      [class.border-destructive]="notice.kind === 'error'"
+      [attr.role]="notice.kind === 'error' ? 'alert' : 'status'"
+    >
+      <strong>{{ notice.title }}</strong>
+      @if (notice.text) {
+        · {{ notice.text }}
+      }
+    </div>
+  }
+
   <div class="mb-6 flex flex-wrap items-center gap-3">
     <div class="relative w-full max-w-sm">
       <ng-icon
@@ -48,7 +61,7 @@
         @if (searching()) {
           <p class="mb-4 text-sm text-muted-foreground" aria-live="polite">{{ resultsLabel() }}</p>
         }
-        <div class="flex gap-6 overflow-x-auto pb-4">
+        <div class="flex gap-6 overflow-x-auto pb-4" cdkDropListGroup>
           @for (column of columns(); track column.status) {
             <section class="min-w-64 flex-1" [attr.aria-labelledby]="'col-' + column.status">
               <header class="mb-3 flex items-center justify-between">
@@ -57,9 +70,21 @@
                 </h2>
                 <span class="rounded-md bg-muted px-2 py-0.5 text-xs">{{ column.tasks.length }}</span>
               </header>
-              <ul class="m-0 flex list-none flex-col gap-3 p-0">
+              <ul
+                class="m-0 flex min-h-24 list-none flex-col gap-3 p-0"
+                cdkDropList
+                cdkDropListSortingDisabled
+                [cdkDropListData]="column.status"
+                (cdkDropListDropped)="onDrop($event)"
+              >
                 @for (task of column.tasks; track task.id) {
-                  <li class="relative rounded-xl border bg-card p-4 hover:bg-muted/40">
+                  <li
+                    class="relative rounded-xl border bg-card p-4 hover:bg-muted/40"
+                    [class.cursor-grab]="canMove(task)"
+                    cdkDrag
+                    [cdkDragData]="task"
+                    [cdkDragDisabled]="!canMove(task)"
+                  >
                     <h3 class="mb-3 font-medium">
                       <button
                         type="button"
@@ -98,6 +123,25 @@
                         <ng-icon name="lucideCircleAlert" aria-hidden="true" /> Vencida
                       </p>
                     }
+                    @if (canMove(task)) {
+                      <div class="relative z-10 mt-3">
+                        <select
+                          class="h-9 w-full rounded-md border border-input bg-card px-2 text-sm text-foreground [color-scheme:dark]"
+                          [attr.aria-label]="'Cambiar estado de ' + task.name"
+                          (change)="onStatusSelect(task, $event)"
+                        >
+                            @for (option of columns(); track option.status) {
+                            <option
+                              class="bg-card text-foreground"
+                              [value]="option.status"
+                              [selected]="option.status === task.status"
+                            >
+                              {{ option.title }}
+                            </option>
+                          }
+                        </select>
+                      </div>
+                    }
                   </li>
                 }
               </ul>
@@ -111,5 +155,15 @@
     }
   }
 
-  <app-task-detail-dialog [(open)]="detailOpen" [task]="selectedTask()" />
+  <app-task-detail-dialog
+    [(open)]="detailOpen"
+    [task]="selectedTask()"
+    [canDelete]="isOwner()"
+    (deleteRequested)="requestDelete($event)"
+  />
+  <app-delete-task-dialog
+    [(open)]="deleteOpen"
+    [task]="selectedTask()"
+    (deleted)="onDeleted($event)"
+  />
 </section>

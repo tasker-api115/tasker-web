@@ -179,7 +179,12 @@
         aria-labelledby="project-kanban-button"
         [hidden]="activeSection() !== 'kanban'"
       >
-      <app-project-kanban [projectId]="data.project.id" [tasks]="data.tasks" />
+      <app-project-kanban
+          [projectId]="data.project.id"
+          [tasks]="data.tasks"
+          [isOwner]="isOwner()"
+          (taskDeleted)="onTaskDeleted($event)" 
+          (taskStatusChanged)="onTaskStatusChanged($event)"/>
       </section>
 
       <app-edit-project-dialog
