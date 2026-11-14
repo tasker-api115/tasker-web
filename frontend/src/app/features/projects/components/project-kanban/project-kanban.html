@@ -1,6 +1,169 @@
 <section aria-label="Tablero Kanban">
-  <!-- La implementación del tablero corresponde a otra tarea. -->
-  <p class="state-message">
-    El tablero Kanban todavía no está disponible.
-  </p>
+  @if (notice(); as notice) {
+    <div
+      class="mb-4 rounded-md border p-3 text-sm"
+      [class.border-destructive]="notice.kind === 'error'"
+      [attr.role]="notice.kind === 'error' ? 'alert' : 'status'"
+    >
+      <strong>{{ notice.title }}</strong>
+      @if (notice.text) {
+        · {{ notice.text }}
+      }
+    </div>
+  }
+
+  <div class="mb-6 flex flex-wrap items-center gap-3">
+    <div class="relative w-full max-w-sm">
+      <ng-icon
+        name="lucideSearch"
+        size="16"
+        class="pointer-events-none absolute left-2.5 top-2 text-muted-foreground"
+        aria-hidden="true"
+      />
+      <input
+        z-input
+        type="search"
+        class="pl-8"
+        aria-label="Buscar tareas"
+        placeholder="Buscar tareas…"
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+      />
+    </div>
+    @if (searching()) {
+      <button z-button zType="ghost" zSize="sm" type="button" (click)="clearSearch()">
+        Limpiar
+      </button>
+    }
+  </div>
+
+  @switch (store.status()) {
+    @case ('error') {
+      <z-empty
+        zIcon="lucideCircleAlert"
+        zTitle="No se pudieron cargar las tareas"
+        zDescription="Intenta nuevamente para consultar el tablero."
+        role="alert"
+      >
+        <button z-button zType="outline" type="button" (click)="retry()">
+          <ng-icon name="lucideRefreshCcw" aria-hidden="true" /> Reintentar
+        </button>
+      </z-empty>
+    }
+    @case ('ready') {
+      @if (store.tasks().length === 0) {
+        <z-empty
+          zIcon="lucideSquareCheck"
+          zTitle="Todavía no hay tareas"
+          zDescription="Las tareas de este proyecto aparecerán aquí."
+        />
+      } @else {
+        @if (searching()) {
+          <p class="mb-4 text-sm text-muted-foreground" aria-live="polite">{{ resultsLabel() }}</p>
+        }
+        <div class="flex gap-6 overflow-x-auto pb-4" cdkDropListGroup>
+          @for (column of columns(); track column.status) {
+            <section class="min-w-64 flex-1" [attr.aria-labelledby]="'col-' + column.status">
+              <header class="mb-3 flex items-center justify-between">
+                <h2 class="flex items-center gap-2 text-sm font-medium" [id]="'col-' + column.status">
+                  <ng-icon [name]="column.icon" aria-hidden="true" /> {{ column.title }}
+                </h2>
+                <span class="rounded-md bg-muted px-2 py-0.5 text-xs">{{ column.tasks.length }}</span>
+              </header>
+              <ul
+                class="m-0 flex min-h-24 list-none flex-col gap-3 p-0"
+                cdkDropList
+                cdkDropListSortingDisabled
+                [cdkDropListData]="column.status"
+                (cdkDropListDropped)="onDrop($event)"
+              >
+                @for (task of column.tasks; track task.id) {
+                  <li
+                    class="relative rounded-xl border bg-card p-4 hover:bg-muted/40"
+                    [class.cursor-grab]="canMove(task)"
+                    cdkDrag
+                    [cdkDragData]="task"
+                    [cdkDragDisabled]="!canMove(task)"
+                  >
+                    <h3 class="mb-3 font-medium">
+                      <button
+                        type="button"
+                        class="text-left after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring"
+                        [attr.aria-label]="'Ver detalle de la tarea ' + task.name"
+                        (click)="openDetail(task)"
+                      >
+                        {{ task.name }}
+                      </button>
+                    </h3>
+                    <div class="mb-3 flex items-center justify-between gap-2">
+                      <z-badge zType="secondary">{{ column.title }}</z-badge>
+                      <span class="flex items-center gap-1 text-sm text-muted-foreground">
+                        <ng-icon name="lucideCalendar" aria-hidden="true" />
+                        <time [attr.datetime]="task.dueDate">{{ formatDate(task.dueDate) }}</time>
+                      </span>
+                    </div>
+                    @if (task.assignees.length === 0) {
+                      <p class="text-sm text-muted-foreground">Sin responsable</p>
+                    } @else {
+                      <ul class="m-0 flex list-none flex-col gap-1 p-0">
+                        @for (assignee of task.assignees; track assignee.id) {
+                          <li class="flex items-center gap-2 text-sm">
+                            <span
+                              class="flex size-7 items-center justify-center rounded-full bg-muted text-xs"
+                              aria-hidden="true"
+                              >{{ assignee.initials }}</span
+                            >
+                            {{ assignee.name }}
+                          </li>
+                        }
+                      </ul>
+                    }
+                    @if (task.overdue) {
+                      <p class="mt-3 flex items-center gap-1 text-sm text-destructive">
+                        <ng-icon name="lucideCircleAlert" aria-hidden="true" /> Vencida
+                      </p>
+                    }
+                    @if (canMove(task)) {
+                      <div class="relative z-10 mt-3">
+                        <select
+                          class="h-9 w-full rounded-md border border-input bg-card px-2 text-sm text-foreground [color-scheme:dark]"
+                          [attr.aria-label]="'Cambiar estado de ' + task.name"
+                          (change)="onStatusSelect(task, $event)"
+                        >
+                            @for (option of columns(); track option.status) {
+                            <option
+                              class="bg-card text-foreground"
+                              [value]="option.status"
+                              [selected]="option.status === task.status"
+                            >
+                              {{ option.title }}
+                            </option>
+                          }
+                        </select>
+                      </div>
+                    }
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+        </div>
+      }
+    }
+    @default {
+      <p class="text-sm text-muted-foreground" role="status">Cargando tareas…</p>
+    }
+  }
+
+  <app-task-detail-dialog
+    [(open)]="detailOpen"
+    [task]="selectedTask()"
+    [canDelete]="isOwner()"
+    (deleteRequested)="requestDelete($event)"
+  />
+  <app-delete-task-dialog
+    [(open)]="deleteOpen"
+    [task]="selectedTask()"
+    (deleted)="onDeleted($event)"
+  />
 </section>
