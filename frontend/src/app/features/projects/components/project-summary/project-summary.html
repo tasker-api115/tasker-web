@@ -1,3 +1,4 @@
+
 <div class="project-detail-grid">
   <div class="project-main-column">
     <section class="detail-panel" aria-label="Información del proyecto">
@@ -49,6 +50,49 @@
           </p>
         }
       </div>
+    </section>
+
+    <!-- Resumen de tareas por estado -->
+    <section class="detail-panel" aria-label="Resumen de tareas por estado">
+      <h2 class="panel-title">Resumen de tareas por estado</h2>
+
+      <dl class="m-0 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">Por hacer</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().pending }}</dd>
+        </div>
+
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">En progreso</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().inProgress }}</dd>
+        </div>
+
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">En revisión</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().inReview }}</dd>
+        </div>
+
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">Completadas</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().completed }}</dd>
+        </div>
+
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">Canceladas</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().cancelled }}</dd>
+        </div>
+
+        <div class="rounded-xl border border-destructive/50 p-4">
+          <dt class="text-sm text-destructive">Vencidas</dt>
+          <dd class="m-0 text-2xl font-semibold text-destructive">
+            {{ statusSummary().overdue }}
+          </dd>
+        </div>
+      </dl>
+
+      <p class="progress-caption">
+        Total de tareas: {{ statusSummary().total }}
+      </p>
     </section>
 
     <section class="detail-panel" aria-label="Tareas del proyecto">
