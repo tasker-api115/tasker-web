@@ -1,0 +1,41 @@
+<z-dialog
+  [(zVisible)]="open"
+  [zClosable]="!deleting()"
+  [zMaskClosable]="!deleting()"
+  class="sm:max-w-lg"
+>
+  <z-dialog-header>
+    <z-dialog-title>¿Eliminar esta tarea?</z-dialog-title>
+    <z-dialog-description>{{ task()?.name }}</z-dialog-description>
+  </z-dialog-header>
+
+  <p class="text-sm text-muted-foreground">
+    La tarea dejará de aparecer en el tablero y el avance del proyecto se actualizará.
+  </p>
+
+  @if (deleteError(); as message) {
+    <div
+      role="alert"
+      class="mt-4 rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive"
+    >
+      {{ message }}
+    </div>
+  }
+
+  <z-dialog-footer>
+    <button z-button zType="outline" type="button" z-dialog-close [zDisabled]="deleting()">
+      Cancelar
+    </button>
+    <button
+      z-button
+      zType="destructive"
+      type="button"
+      [zLoading]="deleting()"
+      [zDisabled]="deleting()"
+      [attr.aria-busy]="deleting()"
+      (click)="confirm()"
+    >
+      {{ deleting() ? 'Eliminando…' : 'Eliminar tarea' }}
+    </button>
+  </z-dialog-footer>
+</z-dialog>
