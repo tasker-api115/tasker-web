@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "build:dev": "ng build --configuration development"
+    "build:dev": "ng build --configuration development",
+    "build:vercel": "node scripts/set-env.mjs && ng build"
   },
   "private": true,
   "packageManager": "npm@11.9.0",
