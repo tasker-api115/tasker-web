@@ -11,15 +11,7 @@
     </div>
 
     @if (isOwner()) {
-      <!-- TODO: conectar la administración de integrantes. -->
-      <button
-        z-button
-        zType="outline"
-        zSize="sm"
-        type="button"
-        [zDisabled]="true"
-        title="Todavía no disponible"
-      >
+      <button z-button zType="outline" zSize="sm" type="button" (click)="openAdd()">
         <ng-icon name="lucideUserPlus" aria-hidden="true" />
         Agregar
       </button>
@@ -28,7 +20,7 @@
 
   <ul class="member-list">
     @for (member of members(); track member.id) {
-      <li class="member-item">
+      <li class="member-item" [class.is-new]="highlightedId() === member.id">
         <span class="member-avatar" aria-hidden="true">
           {{ initials(member.name) }}
         </span>
@@ -47,9 +39,8 @@
             <button
               type="button"
               class="remove-member"
-              disabled
               [attr.aria-label]="'Quitar a ' + member.name"
-              title="Todavía no disponible"
+              (click)="openRemove(member)"
             >
               Quitar
             </button>
@@ -60,10 +51,21 @@
   </ul>
 
   <p class="members-note">El propietario no puede ser removido.</p>
-
-  @if (isOwner()) {
-    <p class="members-note">
-      La administración de integrantes todavía no está disponible.
-    </p>
-  }
 </section>
+
+@if (isOwner()) {
+  <app-add-member-dialog
+    [(open)]="addOpen"
+    [projectId]="projectId()"
+    [projectName]="projectName()"
+    (added)="onAdded($event)"
+  />
+
+  <app-remove-member-dialog
+    [(open)]="removeOpen"
+    [projectId]="projectId()"
+    [projectName]="projectName()"
+    [member]="removingMember()"
+    (removed)="onRemoved($event)"
+  />
+}

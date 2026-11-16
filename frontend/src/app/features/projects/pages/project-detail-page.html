@@ -158,6 +158,8 @@
         <app-project-summary
           [detail]="data"
           [isOwner]="isOwner()"
+          (memberAdded)="onMemberAdded($event)"
+          (memberRemoved)="onMemberRemoved($event)"
         />
       </section>
 
@@ -168,8 +170,12 @@
         [hidden]="activeSection() !== 'members'"
       >
         <app-project-members
+          [projectId]="data.project.id"
+          [projectName]="data.project.name"
           [members]="data.members"
           [isOwner]="isOwner()"
+          (memberAdded)="onMemberAdded($event)"
+          (memberRemoved)="onMemberRemoved($event)"
         />
       </section>
 

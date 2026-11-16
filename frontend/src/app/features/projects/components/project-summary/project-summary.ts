@@ -3,10 +3,11 @@ import {
   Component,
   computed,
   input,
+  output,
 } from '@angular/core';
 
 import { TaskStatus, isOverdue } from '../../../tasks/data/task.model';
-import { ProjectDetail } from '../../data/project-detail.model';
+import { ProjectDetail, ProjectMember } from '../../data/project-detail.model';
 import { formatProjectDate } from '../../utils/format-project-date';
 import { ProjectMembers } from '../project-members/project-members';
 
@@ -29,6 +30,9 @@ const STATUS_LABELS: Readonly<Record<string, string>> = {
 export class ProjectSummary {
   readonly detail = input.required<ProjectDetail>();
   readonly isOwner = input(false);
+
+  readonly memberAdded = output<ProjectMember>();
+  readonly memberRemoved = output<ProjectMember>();
 
   protected readonly formatDate = formatProjectDate;
 
