@@ -70,6 +70,21 @@ export class TaskBoardService {
   readonly tasks = this.tasksState.asReadonly();
   readonly status = this.statusState.asReadonly();
 
+  /**
+   * Quita a un usuario de los responsables de las tareas cargadas, sin volver a consultar.
+   * Se usa al quitar un integrante del proyecto (HU-51): sus asignaciones ya se eliminaron en
+   * Supabase y el tablero, que sigue montado en otra pestaña, debe reflejarlo de inmediato.
+   */
+  removeAssignee(userId: string): void {
+    this.tasksState.update((list) =>
+      list.map((task) =>
+        task.assignees.some((assignee) => assignee.id === userId)
+          ? { ...task, assignees: task.assignees.filter((assignee) => assignee.id !== userId) }
+          : task
+      )
+    );
+  }
+
   /** Con silent se recarga sin vaciar el tablero ni mostrar "Cargando…". */
   async loadByProject(projectId: string, silent = false): Promise<void> {
     if (!this.client) {

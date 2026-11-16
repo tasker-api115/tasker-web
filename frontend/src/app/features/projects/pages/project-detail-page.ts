@@ -31,6 +31,7 @@ import { ProjectDetailService } from '../data/project-detail.service';
 import { ProjectsService } from '../data/projects.service';
 import { CreateTaskDialog } from '../../projects/components/create-task-dialog/create-task-dialog';
 import { CreatedProjectTask } from '../../projects/data/task-create.model';
+import { TaskBoardService } from '../../tasks/data/task-board.service';
 import { Task, TaskStatus } from '../../tasks/data/task.model';
 
 type DetailStatus = 'loading' | 'ready' | 'error' | 'unavailable';
@@ -66,6 +67,7 @@ type DetailSection = 'summary' | 'members' | 'kanban';
 export class ProjectDetailPage {
   private readonly service = inject(ProjectDetailService);
   private readonly projects = inject(ProjectsService);
+  private readonly taskBoard = inject(TaskBoardService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -188,6 +190,10 @@ export class ProjectDetailPage {
           }
         : current,
     );
+
+    // Sus asignaciones se eliminaron junto con la membresía: el tablero (montado aunque esté
+    // oculto) deja de mostrarlo como responsable sin recargar.
+    this.taskBoard.removeAssignee(member.id);
 
     this.announcement.set(`${member.name} se quitó del proyecto.`);
   }
