@@ -6,6 +6,7 @@ import {
   output,
 } from '@angular/core';
 
+import { TaskStatus, isOverdue } from '../../../tasks/data/task.model';
 import { ProjectDetail, ProjectMember } from '../../data/project-detail.model';
 import { formatProjectDate } from '../../utils/format-project-date';
 import { ProjectMembers } from '../project-members/project-members';
@@ -55,7 +56,24 @@ export class ProjectSummary {
     };
   });
 
+  /** Totales de tareas por estado del proyecto seleccionado (HU-38 / SCRUM-53). */
+  protected readonly statusSummary = computed(() => {
+    const tasks = this.detail().tasks;
+    const count = (status: string) => tasks.filter((task) => task.status === status).length;
+
+    return {
+      total: tasks.length,
+      pending: count('pendiente'),
+      inProgress: count('en_progreso'),
+      inReview: count('en_revision'),
+      completed: count('completada'),
+      cancelled: count('cancelada'),
+      // Misma regla que el tablero: entrega pasada y tarea sin completar ni cancelar.
+      overdue: tasks.filter((task) => isOverdue(task.endDate, task.status as TaskStatus)).length,
+    };
+  });
+
   protected statusLabel(status: string): string {
     return STATUS_LABELS[status] ?? 'Estado no reconocido';
   }
-}
+}
