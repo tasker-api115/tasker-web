@@ -75,6 +75,7 @@
                 cdkDropList
                 cdkDropListSortingDisabled
                 [cdkDropListData]="column.status"
+                [cdkDropListEnterPredicate]="enterPredicates[column.status]"
                 (cdkDropListDropped)="onDrop($event)"
               >
                 @for (task of column.tasks; track task.id) {
@@ -124,23 +125,19 @@
                       </p>
                     }
                     @if (canMove(task)) {
-                      <div class="relative z-10 mt-3">
-                        <select
-                          class="h-9 w-full rounded-md border border-input bg-card px-2 text-sm text-foreground [color-scheme:dark]"
-                          [attr.aria-label]="'Cambiar estado de ' + task.name"
-                          (change)="onStatusSelect(task, $event)"
-                        >
-                            @for (option of columns(); track option.status) {
-                            <option
-                              class="bg-card text-foreground"
-                              [value]="option.status"
-                              [selected]="option.status === task.status"
-                            >
-                              {{ option.title }}
-                            </option>
-                          }
-                        </select>
-                      </div>
+                      <button
+                        z-button
+                        zType="outline"
+                        zSize="sm"
+                        type="button"
+                        class="relative z-10 mt-3 w-full"
+                        aria-haspopup="dialog"
+                        [attr.aria-label]="'Cambiar estado de ' + task.name"
+                        (click)="openStatusChange(task)"
+                      >
+                        <ng-icon name="lucideChevronDown" aria-hidden="true" />
+                        Cambiar estado
+                      </button>
                     }
                   </li>
                 }
@@ -159,7 +156,24 @@
     [(open)]="detailOpen"
     [task]="selectedTask()"
     [canDelete]="isOwner()"
+    [canEdit]="isOwner()"
+    [canChangeStatus]="selectedTask() !== null && canMove(selectedTask()!)"
+    [identity]="identityFor(selectedTask())"
     (deleteRequested)="requestDelete($event)"
+    (editRequested)="requestEdit($event)"
+    (statusChangeRequested)="openStatusChange($event)"
+  />
+  <app-edit-task-dialog
+    [(open)]="editOpen"
+    [task]="selectedTask()"
+    [projectName]="projectName()"
+    (updated)="onUpdated($event)"
+  />
+  <app-change-task-status-dialog
+    [(open)]="statusOpen"
+    [task]="selectedTask()"
+    [identity]="identityFor(selectedTask())"
+    (statusSelected)="onStatusChosen($event)"
   />
   <app-delete-task-dialog
     [(open)]="deleteOpen"
