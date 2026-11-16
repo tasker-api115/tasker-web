@@ -31,7 +31,7 @@ import { ProjectDetailService } from '../data/project-detail.service';
 import { ProjectsService } from '../data/projects.service';
 import { CreateTaskDialog } from '../../projects/components/create-task-dialog/create-task-dialog';
 import { CreatedProjectTask } from '../../projects/data/task-create.model';
-import { TaskStatus } from '../../tasks/data/task.model';
+import { Task, TaskStatus } from '../../tasks/data/task.model';
 
 type DetailStatus = 'loading' | 'ready' | 'error' | 'unavailable';
 type DetailSection = 'summary' | 'members' | 'kanban';
@@ -264,6 +264,24 @@ export class ProjectDetailPage {
     );
 
     this.announcement.set('Tarea eliminada.');
+  }
+
+  /** Refleja en el detalle (resumen y progreso) una tarea editada desde el tablero (HU-28). */
+  protected onTaskUpdated(task: Task): void {
+    this.detail.update((current) =>
+      current
+        ? {
+            ...current,
+            tasks: current.tasks.map((existing) =>
+              existing.id === task.id
+                ? { ...existing, name: task.name, status: task.status, endDate: task.dueDate }
+                : existing,
+            ),
+          }
+        : current,
+    );
+
+    this.announcement.set(`Tarea «${task.name}» actualizada.`);
   }
 
   /**

@@ -1,0 +1,30 @@
+/*
+ * Los avisos y errores entran con un desplazamiento corto en vez de aparecer de golpe.
+ * Transición (no keyframes) para que se pueda interrumpir; con movimiento reducido, solo fundido.
+ */
+.task-form-alert,
+.task-form-message {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-form-alert,
+  .task-form-message {
+    transform: none;
+    transition: opacity 150ms ease;
+
+    @starting-style {
+      opacity: 0;
+      transform: none;
+    }
+  }
+}
