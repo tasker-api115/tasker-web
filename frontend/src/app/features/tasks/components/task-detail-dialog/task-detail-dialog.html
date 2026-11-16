@@ -69,31 +69,55 @@
   <z-dialog-footer>
     <div class="flex w-full flex-col gap-3">
 
-      <div class="flex items-center gap-2">
+      @if (identity() && canChangeStatus()) {
+        <p class="text-xs text-muted-foreground">{{ identity() }}</p>
+      }
 
-        <!-- Editar tarea: funcionalidad pendiente de otra HU -->
+      @if (canChangeStatus()) {
+        <!-- Cambiar estado: HU-31 -->
         <button
           z-button
           zType="outline"
           type="button"
+          class="w-full"
+          aria-haspopup="dialog"
+          (click)="requestStatusChange()"
         >
-          Editar tarea
+          <ng-icon name="lucideChevronDown" aria-hidden="true" />
+          Cambiar estado
         </button>
+      }
 
-        <!-- Eliminar tarea: HU-29 -->
-        @if (canDelete()) {
-          <button
-            z-button
-            zType="destructive"
-            type="button"
-            (click)="requestDelete()"
-          >
-            <ng-icon name="lucideTrash2" aria-hidden="true" />
-            Eliminar tarea
-          </button>
-        }
+      @if (canEdit() || canDelete()) {
+        <div class="flex items-center gap-2">
+          <!-- Editar tarea: HU-28 -->
+          @if (canEdit()) {
+            <button
+              z-button
+              zType="outline"
+              type="button"
+              aria-haspopup="dialog"
+              (click)="requestEdit()"
+            >
+              <ng-icon name="lucidePencil" aria-hidden="true" />
+              Editar tarea
+            </button>
+          }
 
-      </div>
+          <!-- Eliminar tarea: HU-29 -->
+          @if (canDelete()) {
+            <button
+              z-button
+              zType="destructive"
+              type="button"
+              (click)="requestDelete()"
+            >
+              <ng-icon name="lucideTrash2" aria-hidden="true" />
+              Eliminar tarea
+            </button>
+          }
+        </div>
+      }
 
       <!-- Cerrar diálogo -->
       <button

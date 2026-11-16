@@ -181,10 +181,12 @@
       >
       <app-project-kanban
           [projectId]="data.project.id"
+          [projectName]="data.project.name"
           [tasks]="data.tasks"
           [isOwner]="isOwner()"
           (taskDeleted)="onTaskDeleted($event)" 
-          (taskStatusChanged)="onTaskStatusChanged($event)"/>
+          (taskStatusChanged)="onTaskStatusChanged($event)"
+          (taskUpdated)="onTaskUpdated($event)"/>
       </section>
 
       <app-edit-project-dialog
