@@ -108,6 +108,29 @@ npm start
 
 La configuración inicial de Supabase, las variables individuales y los pasos de vinculación y verificación se documentan en [docs/supabase.md](docs/supabase.md). Las migraciones se incorporarán en su historia correspondiente. **No se deben publicar contraseñas o claves de administración.**
 
+## Despliegue en Vercel
+
+Configuración del proyecto en Vercel:
+
+| Opción | Valor |
+| --- | --- |
+| Root Directory | `frontend` |
+| Framework Preset | Angular |
+| Build Command | `npm run build:vercel` |
+| Output Directory | `dist/tasker-frontend/browser` |
+| Production Branch | `main` |
+
+Variables de entorno (configurarlas en Vercel, nunca en el repositorio):
+
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY`
+
+`frontend/vercel.json` redirige todas las rutas a `index.html` para que las rutas de la SPA (por ejemplo, `/proyectos/:projectId`) no devuelvan 404 al recargar.
+
+En Supabase, en **Authentication > URL Configuration**, colocar la URL de Vercel como **Site URL** y agregarla en **Redirect URLs**.
+
+> **Advertencia:** `build:vercel` sobrescribe `frontend/src/environments/environment.ts`. Si se ejecuta en local, revertirlo antes de hacer commit con `git checkout frontend/src/environments/environment.ts`.
+
 ## Seguridad y repositorio público
 
 El código fuente es público por decisión del equipo, **pero la información de los usuarios no lo es**.
