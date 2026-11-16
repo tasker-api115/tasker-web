@@ -3,9 +3,10 @@ import {
   Component,
   computed,
   input,
+  output,
 } from '@angular/core';
 
-import { ProjectDetail } from '../../data/project-detail.model';
+import { ProjectDetail, ProjectMember } from '../../data/project-detail.model';
 import { formatProjectDate } from '../../utils/format-project-date';
 import { ProjectMembers } from '../project-members/project-members';
 
@@ -28,6 +29,9 @@ const STATUS_LABELS: Readonly<Record<string, string>> = {
 export class ProjectSummary {
   readonly detail = input.required<ProjectDetail>();
   readonly isOwner = input(false);
+
+  readonly memberAdded = output<ProjectMember>();
+  readonly memberRemoved = output<ProjectMember>();
 
   protected readonly formatDate = formatProjectDate;
 
@@ -54,4 +58,4 @@ export class ProjectSummary {
   protected statusLabel(status: string): string {
     return STATUS_LABELS[status] ?? 'Estado no reconocido';
   }
-}
+}

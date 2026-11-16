@@ -25,7 +25,7 @@ import { ProjectSummary } from '../components/project-summary/project-summary';
 import { ProjectMembers } from '../components/project-members/project-members';
 import { ProjectKanban } from '../components/project-kanban/project-kanban';
 import { Project } from '../data/project.model';
-import { ProjectDetail } from '../data/project-detail.model';
+import { ProjectDetail, ProjectMember } from '../data/project-detail.model';
 import { ProjectDetailService } from '../data/project-detail.service';
 import { ProjectsService } from '../data/projects.service';
 import { CreateTaskDialog } from '../../projects/components/create-task-dialog/create-task-dialog';
@@ -161,6 +161,35 @@ export class ProjectDetailPage {
     this.announcement.set('Información del proyecto actualizada.');
   }
 
+  protected onMemberAdded(member: ProjectMember): void {
+    this.detail.update((current) =>
+      current
+        ? {
+            ...current,
+            members: sortMembers([
+              ...current.members.filter((existing) => existing.id !== member.id),
+              member,
+            ]),
+          }
+        : current,
+    );
+
+    this.announcement.set(`${member.name} se agregó al proyecto.`);
+  }
+
+  protected onMemberRemoved(member: ProjectMember): void {
+    this.detail.update((current) =>
+      current
+        ? {
+            ...current,
+            members: current.members.filter((existing) => existing.id !== member.id),
+          }
+        : current,
+    );
+
+    this.announcement.set(`${member.name} se quitó del proyecto.`);
+  }
+
   private async load(): Promise<void> {
     const requestId = ++this.requestId;
     const projectId = this.projectId;
@@ -221,4 +250,15 @@ export class ProjectDetailPage {
 
     this.announcement.set(`Tarea «${task.name}» creada.`);
   }
+}
+
+/** Mismo orden que al cargar el detalle: primero el propietario y luego por nombre. */
+function sortMembers(members: readonly ProjectMember[]): ProjectMember[] {
+  return [...members].sort((a, b) => {
+    if (a.role !== b.role) {
+      return a.role === 'Propietario' ? -1 : 1;
+    }
+
+    return a.name.localeCompare(b.name, 'es');
+  });
 }

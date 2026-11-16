@@ -1,0 +1,52 @@
+<z-dialog
+  [(zVisible)]="open"
+  [zClosable]="!removing()"
+  [zMaskClosable]="!removing()"
+  class="sm:max-w-lg"
+>
+  <z-dialog-header>
+    <z-dialog-title>Quitar integrante</z-dialog-title>
+    <z-dialog-description>{{ projectName() }}</z-dialog-description>
+  </z-dialog-header>
+
+  @if (member(); as person) {
+    <div class="member-card">
+      <span class="member-card-avatar" aria-hidden="true">{{ initials(person.name) }}</span>
+      <div class="member-card-information">
+        <p class="member-card-name">{{ person.name }}</p>
+        <p>{{ person.email || 'Correo no disponible' }}</p>
+      </div>
+    </div>
+
+    <p class="member-text">
+      Se quitará a {{ firstName() }} del proyecto y se eliminarán sus asignaciones en las tareas. El
+      cambio se reflejará en el tablero y el cronograma.
+    </p>
+  }
+
+  @if (errorMessage(); as message) {
+    <div
+      role="alert"
+      class="member-message mt-4 rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive"
+    >
+      {{ message }}
+    </div>
+  }
+
+  <z-dialog-footer>
+    <button z-button zType="outline" type="button" z-dialog-close [zDisabled]="removing()">
+      Cancelar
+    </button>
+    <button
+      z-button
+      zType="destructive"
+      type="button"
+      [zLoading]="removing()"
+      [zDisabled]="removing()"
+      [attr.aria-busy]="removing()"
+      (click)="confirm()"
+    >
+      {{ removing() ? 'Quitando…' : 'Quitar integrante' }}
+    </button>
+  </z-dialog-footer>
+</z-dialog>

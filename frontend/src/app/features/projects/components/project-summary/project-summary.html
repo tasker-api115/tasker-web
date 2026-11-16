@@ -82,7 +82,11 @@
   </div>
 
   <app-project-members
+    [projectId]="detail().project.id"
+    [projectName]="detail().project.name"
     [members]="detail().members"
     [isOwner]="isOwner()"
+    (memberAdded)="memberAdded.emit($event)"
+    (memberRemoved)="memberRemoved.emit($event)"
   />
-</div>
+</div>
