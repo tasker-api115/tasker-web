@@ -1,0 +1,69 @@
+<section class="detail-panel members-panel" aria-label="Integrantes">
+  <header class="members-heading">
+    <div>
+      <h2 class="panel-title">Integrantes</h2>
+
+      <p class="members-count">
+        {{ members().length }}
+        {{ members().length === 1 ? 'integrante' : 'integrantes' }}
+        · incluye al propietario
+      </p>
+    </div>
+
+    @if (isOwner()) {
+      <!-- TODO: conectar la administración de integrantes. -->
+      <button
+        z-button
+        zType="outline"
+        zSize="sm"
+        type="button"
+        [zDisabled]="true"
+        title="Todavía no disponible"
+      >
+        <ng-icon name="lucideUserPlus" aria-hidden="true" />
+        Agregar
+      </button>
+    }
+  </header>
+
+  <ul class="member-list">
+    @for (member of members(); track member.id) {
+      <li class="member-item">
+        <span class="member-avatar" aria-hidden="true">
+          {{ initials(member.name) }}
+        </span>
+
+        <div class="member-information">
+          <h3>{{ member.name }}</h3>
+          <p>{{ member.email || 'Correo no disponible' }}</p>
+        </div>
+
+        <div class="member-actions">
+          <z-badge zType="secondary">
+            {{ member.role }}
+          </z-badge>
+
+          @if (isOwner() && member.role !== 'Propietario') {
+            <button
+              type="button"
+              class="remove-member"
+              disabled
+              [attr.aria-label]="'Quitar a ' + member.name"
+              title="Todavía no disponible"
+            >
+              Quitar
+            </button>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+
+  <p class="members-note">El propietario no puede ser removido.</p>
+
+  @if (isOwner()) {
+    <p class="members-note">
+      La administración de integrantes todavía no está disponible.
+    </p>
+  }
+</section>

@@ -47,7 +47,7 @@ tasker-web/
 │       └── features/
 ├── supabase/
 │   ├── migrations/
-│   ├── seed.sql
+│   ├── scripts/
 │   └── config.toml
 ├── docs/
 ├── .github/
@@ -66,7 +66,7 @@ Esta estructura se completará progresivamente según las historias correspondie
 - `shared/`: componentes, utilidades y elementos reutilizables.
 - `features/`: funcionalidades organizadas por dominio.
 - `supabase/migrations/`: migraciones SQL y políticas de seguridad.
-- `supabase/seed.sql`: datos semilla para desarrollo (HU-52).
+- `supabase/scripts/seed-auth-users.py`: datos semilla para desarrollo (HU-52).
 - `docs/`: documentación técnica complementaria.
 - `.github/`: plantillas y configuraciones de colaboración.
 

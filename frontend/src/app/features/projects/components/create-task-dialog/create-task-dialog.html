@@ -1,0 +1,185 @@
+@if (isOwner()) {
+  <button
+    z-button
+    zSize="sm"
+    type="button"
+    aria-haspopup="dialog"
+    (click)="openDialog()"
+  >
+    <ng-icon name="lucidePlus" aria-hidden="true" />
+    Crear tarea
+  </button>
+
+  <z-dialog
+    [(zVisible)]="open"
+    [zClosable]="!saving()"
+    [zMaskClosable]="!saving()"
+    class="sm:max-w-md"
+  >
+    <z-dialog-header>
+      <z-dialog-title>Crear tarea</z-dialog-title>
+      <z-dialog-description>{{ project().name }}</z-dialog-description>
+    </z-dialog-header>
+
+    <form
+      #taskForm
+      id="create-task-form"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      [attr.aria-busy]="saving()"
+      class="flex flex-col gap-4"
+      novalidate
+    >
+      <div class="flex flex-col gap-2">
+        <label for="create-task-name" class="text-sm font-medium">
+          Nombre *
+        </label>
+
+        <input
+          id="create-task-name"
+          type="text"
+          formControlName="name"
+          placeholder="Nombre de la tarea"
+          required
+          [class]="inputClasses"
+          [attr.aria-invalid]="nameInvalid ? 'true' : null"
+          [attr.aria-describedby]="nameInvalid ? 'task-name-error' : null"
+        />
+
+        @if (nameInvalid) {
+          <p id="task-name-error" class="text-sm text-destructive">
+            Ingresa un nombre para la tarea.
+          </p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="create-task-description" class="text-sm font-medium">
+          Descripción
+        </label>
+
+        <textarea
+          id="create-task-description"
+          formControlName="description"
+          placeholder="Describe la tarea"
+          rows="3"
+          [class]="textareaClasses"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-2">
+          <label for="create-task-start-date" class="text-sm font-medium">
+            Fecha de inicio
+          </label>
+
+          <input
+            id="create-task-start-date"
+            type="date"
+            formControlName="startDate"
+            [class]="inputClasses"
+            [attr.aria-invalid]="startDateInvalid ? 'true' : null"
+            [attr.aria-describedby]="
+              startDateInvalid ? 'task-start-error' : null
+            "
+          />
+
+          @if (startDateInvalid) {
+            <p id="task-start-error" class="text-sm text-destructive">
+              Ingresa una fecha válida.
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="create-task-due-date" class="text-sm font-medium">
+            Fecha de entrega
+          </label>
+
+          <input
+            id="create-task-due-date"
+            type="date"
+            formControlName="dueDate"
+            [class]="inputClasses"
+            [attr.aria-invalid]="dueDateInvalid ? 'true' : null"
+            [attr.aria-describedby]="
+              dueDateInvalid ? 'task-due-error' : null
+            "
+          />
+
+          @if (dueDateInvalid) {
+            <p id="task-due-error" class="text-sm text-destructive">
+              @if (form.controls.dueDate.invalid) {
+                Ingresa una fecha válida.
+              } @else {
+                La entrega no puede ser anterior al inicio.
+              }
+            </p>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <span class="text-sm font-medium">Responsables</span>
+
+        <button
+          z-button
+          zType="outline"
+          type="button"
+          class="w-full"
+          [zDisabled]="true"
+          aria-describedby="task-assignees-help"
+        >
+          <ng-icon name="lucideUserPlus" aria-hidden="true" />
+          Seleccionar integrantes
+        </button>
+
+        <p id="task-assignees-help" class="text-xs text-muted-foreground">
+          La asignación de responsables todavía no está disponible.
+        </p>
+      </div>
+
+      <span
+        class="w-fit rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground"
+      >
+        Estado · Por hacer
+      </span>
+
+      <p class="text-xs text-muted-foreground">
+        * Campo obligatorio.
+      </p>
+
+      @if (saveError(); as message) {
+        <p
+          role="alert"
+          class="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive"
+        >
+          {{ message }}
+        </p>
+      }
+    </form>
+
+    <z-dialog-footer>
+      <button
+        z-button
+        zType="outline"
+        type="button"
+        z-dialog-close
+        [zDisabled]="saving()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        z-button
+        type="submit"
+        form="create-task-form"
+        [zDisabled]="saving()"
+        [zLoading]="saving()"
+        [attr.aria-busy]="saving()"
+      >
+        {{ saving() ? 'Guardando…' : 'Crear tarea' }}
+      </button>
+    </z-dialog-footer>
+  </z-dialog>
+}

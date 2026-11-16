@@ -1,0 +1,132 @@
+
+<div class="project-detail-grid">
+  <div class="project-main-column">
+    <section class="detail-panel" aria-label="Información del proyecto">
+      <h2 class="panel-title">Información del proyecto</h2>
+
+      <dl class="project-info-grid">
+        <div>
+          <dt>Propietario</dt>
+          <dd>{{ detail().ownerName }}</dd>
+        </div>
+
+        <div>
+          <dt>Tu rol</dt>
+          <dd>{{ isOwner() ? 'Propietario' : 'Integrante' }}</dd>
+        </div>
+
+        <div>
+          <dt>Inicio</dt>
+          <dd>{{ formatDate(detail().project.startDate) }}</dd>
+        </div>
+
+        <div>
+          <dt>Finalización</dt>
+          <dd>{{ formatDate(detail().project.endDate) }}</dd>
+        </div>
+      </dl>
+
+      <div class="project-progress-block">
+        <div class="progress-heading">
+          <span>Avance del proyecto</span>
+          <span>{{ progress().percentage }} %</span>
+        </div>
+
+        <progress
+          class="project-progress"
+          max="100"
+          [value]="progress().percentage"
+          aria-label="Avance del proyecto"
+        ></progress>
+
+        <p class="progress-caption">
+          {{ progress().completed }} de {{ progress().total }}
+          tareas completadas
+        </p>
+
+        @if (detail().tasks.length !== progress().total) {
+          <p class="progress-caption">
+            Las tareas canceladas no se incluyen en el cálculo.
+          </p>
+        }
+      </div>
+    </section>
+
+    <!-- Resumen de tareas por estado -->
+    <section class="detail-panel" aria-label="Resumen de tareas por estado">
+      <h2 class="panel-title">Resumen de tareas por estado</h2>
+
+      <dl class="m-0 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">Por hacer</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().pending }}</dd>
+        </div>
+
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">En progreso</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().inProgress }}</dd>
+        </div>
+
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">En revisión</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().inReview }}</dd>
+        </div>
+
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">Completadas</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().completed }}</dd>
+        </div>
+
+        <div class="rounded-xl border p-4">
+          <dt class="text-sm text-muted-foreground">Canceladas</dt>
+          <dd class="m-0 text-2xl font-semibold">{{ statusSummary().cancelled }}</dd>
+        </div>
+
+        <div class="rounded-xl border border-destructive/50 p-4">
+          <dt class="text-sm text-destructive">Vencidas</dt>
+          <dd class="m-0 text-2xl font-semibold text-destructive">
+            {{ statusSummary().overdue }}
+          </dd>
+        </div>
+      </dl>
+
+      <p class="progress-caption">
+        Total de tareas: {{ statusSummary().total }}
+      </p>
+    </section>
+
+    <section class="detail-panel" aria-label="Tareas del proyecto">
+      <h2 class="panel-title">Tareas del proyecto</h2>
+
+      @if (detail().tasks.length === 0) {
+        <p class="empty-message">
+          Todavía no hay tareas asociadas al proyecto.
+        </p>
+      } @else {
+        <ul class="project-task-list">
+          @for (task of detail().tasks; track task.id) {
+            <li class="project-task">
+              <div class="task-heading">
+                <h3>{{ task.name }}</h3>
+
+                <span class="task-status">
+                  {{ statusLabel(task.status) }}
+                </span>
+              </div>
+
+              <p class="task-description">
+                #{{ task.number }} · Fecha límite:
+                {{ formatDate(task.endDate) }}
+              </p>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+
+  <app-project-members
+    [members]="detail().members"
+    [isOwner]="isOwner()"
+  />
+</div>

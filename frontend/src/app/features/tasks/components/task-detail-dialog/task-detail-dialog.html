@@ -1,0 +1,111 @@
+
+<z-dialog [(zVisible)]="open" class="sm:max-w-lg">
+  <z-dialog-header>
+    <z-dialog-title>Detalle de tarea</z-dialog-title>
+  </z-dialog-header>
+
+  @if (task(); as task) {
+    <div class="flex flex-col gap-4">
+      <h3 class="text-lg font-semibold">{{ task.name }}</h3>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <z-badge zType="secondary">
+          {{ statusLabels[task.status] }}
+        </z-badge>
+
+        @if (task.complexity; as complexity) {
+          <z-badge zType="outline">
+            Complejidad: {{ complexityLabels[complexity] }}
+          </z-badge>
+        }
+
+        @if (task.overdue) {
+          <span class="text-sm text-destructive">Vencida</span>
+        }
+      </div>
+
+      <p class="text-sm">
+        {{ task.description || 'Sin descripción.' }}
+      </p>
+
+      <dl class="m-0 flex flex-col gap-1 text-sm">
+        <div class="flex gap-2">
+          <dt class="text-muted-foreground">Inicio ·</dt>
+          <dd class="m-0">{{ formatDate(task.startDate) }}</dd>
+        </div>
+
+        <div class="flex gap-2">
+          <dt class="text-muted-foreground">Entrega ·</dt>
+          <dd class="m-0">{{ formatDate(task.dueDate) }}</dd>
+        </div>
+      </dl>
+
+      <section class="border-t pt-4" aria-labelledby="task-detail-assignees">
+        <h4 class="mb-3 text-sm font-medium" id="task-detail-assignees">
+          Responsables
+        </h4>
+
+        @if (task.assignees.length === 0) {
+          <p class="text-sm text-muted-foreground">Sin responsable</p>
+        } @else {
+          <ul class="m-0 flex list-none flex-col gap-2 p-0">
+            @for (assignee of task.assignees; track assignee.id) {
+              <li class="flex items-center gap-2 text-sm">
+                <span
+                  class="flex size-7 items-center justify-center rounded-full bg-muted text-xs"
+                  aria-hidden="true"
+                >
+                  {{ assignee.initials }}
+                </span>
+                {{ assignee.name }}
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </div>
+  }
+
+  <z-dialog-footer>
+    <div class="flex w-full flex-col gap-3">
+
+      <div class="flex items-center gap-2">
+
+        <!-- Editar tarea: funcionalidad pendiente de otra HU -->
+        <button
+          z-button
+          zType="outline"
+          type="button"
+        >
+          Editar tarea
+        </button>
+
+        <!-- Eliminar tarea: HU-29 -->
+        @if (canDelete()) {
+          <button
+            z-button
+            zType="destructive"
+            type="button"
+            (click)="requestDelete()"
+          >
+            <ng-icon name="lucideTrash2" aria-hidden="true" />
+            Eliminar tarea
+          </button>
+        }
+
+      </div>
+
+      <!-- Cerrar diálogo -->
+      <button
+        z-button
+        zType="outline"
+        type="button"
+        class="w-full"
+        z-dialog-close
+      >
+        Cerrar
+      </button>
+
+    </div>
+  </z-dialog-footer>
+</z-dialog>

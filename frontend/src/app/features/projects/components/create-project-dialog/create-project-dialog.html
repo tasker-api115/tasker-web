@@ -1,0 +1,45 @@
+<z-dialog
+  [(zVisible)]="open"
+  [zClosable]="!saving()"
+  [zMaskClosable]="!saving()"
+  class="sm:max-w-lg"
+>
+  <z-dialog-header>
+    <z-dialog-title>Crear proyecto</z-dialog-title>
+    <z-dialog-description>Define la información del proyecto.</z-dialog-description>
+  </z-dialog-header>
+
+  <form
+    id="create-project-form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate
+    [attr.aria-busy]="saving()"
+  >
+    <app-project-form-fields
+      [form]="form"
+      idPrefix="create-project"
+      [submitted]="submitted()"
+      [saveError]="saveError()"
+    />
+  </form>
+
+  <z-dialog-footer>
+    <button z-button zType="outline" type="button" z-dialog-close [zDisabled]="saving()">
+      Cancelar
+    </button>
+    <button
+      z-button
+      type="submit"
+      form="create-project-form"
+      [zLoading]="saving()"
+      [zDisabled]="saving()"
+      [attr.aria-busy]="saving()"
+    >
+      @if (!saving()) {
+        <ng-icon name="lucidePlus" aria-hidden="true" />
+      }
+      {{ saving() ? 'Guardando…' : 'Crear proyecto' }}
+    </button>
+  </z-dialog-footer>
+</z-dialog>

@@ -1,0 +1,42 @@
+<z-dialog
+  [(zVisible)]="open"
+  [zClosable]="!saving()"
+  [zMaskClosable]="!saving() && !form.dirty"
+  class="sm:max-w-lg"
+>
+  <z-dialog-header>
+    <z-dialog-title>Editar proyecto</z-dialog-title>
+    <z-dialog-description>Actualiza la información del proyecto.</z-dialog-description>
+  </z-dialog-header>
+
+  <form
+    id="edit-project-form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate
+    [attr.aria-busy]="saving()"
+  >
+    <app-project-form-fields
+      [form]="form"
+      idPrefix="edit-project"
+      [submitted]="submitted()"
+      [saveError]="saveError()"
+    />
+  </form>
+
+  <z-dialog-footer>
+    <button z-button zType="outline" type="button" z-dialog-close [zDisabled]="saving()">
+      Cancelar
+    </button>
+    <button
+      z-button
+      type="submit"
+      form="edit-project-form"
+      [zLoading]="saving()"
+      [zDisabled]="saving()"
+      [attr.aria-busy]="saving()"
+    >
+      {{ saving() ? 'Guardando…' : 'Guardar cambios' }}
+    </button>
+  </z-dialog-footer>
+</z-dialog>
