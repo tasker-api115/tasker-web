@@ -88,3 +88,9 @@ export const TASK_COMPLEXITY_LABELS: Record<TaskComplexity, string> = {
   media: 'Media',
   alta: 'Alta',
 };
+/** Estados que puede elegir el responsable de una tarea (HU-31). */
+export const ASSIGNEE_TASK_STATUSES: readonly TaskStatus[] = [
+  'pendiente',
+  'en_progreso',
+  'completada',
+];

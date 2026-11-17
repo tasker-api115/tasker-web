@@ -1,0 +1,191 @@
+<div class="schedule">
+  <div class="schedule-toolbar">
+    <div class="schedule-search">
+      <ng-icon name="lucideSearch" class="schedule-search-icon" aria-hidden="true" />
+      <label for="schedule-search" class="sr-only">Buscar tareas</label>
+      <input
+        #searchInput
+        id="schedule-search"
+        type="search"
+        placeholder="Buscar tareas…"
+        autocomplete="off"
+        [value]="query()"
+        [disabled]="!hasTasks()"
+        (input)="onSearch($event)"
+        (keydown.escape)="clearSearch(searchInput)"
+      />
+      @if (query()) {
+        <button
+          type="button"
+          class="schedule-search-clear"
+          aria-label="Limpiar búsqueda"
+          (click)="clearSearch(searchInput)"
+        >
+          <ng-icon name="lucideX" aria-hidden="true" />
+        </button>
+      }
+    </div>
+
+    <label for="schedule-status" class="sr-only">Estado</label>
+    <select
+      id="schedule-status"
+      class="schedule-select"
+      [disabled]="!hasTasks()"
+      (change)="onStatusFilter($event)"
+    >
+      @for (option of statusFilters; track option.value) {
+        <option [value]="option.value" [selected]="option.value === statusFilter()">
+          {{ option.label }}
+        </option>
+      }
+    </select>
+
+    <span class="schedule-scale-label">{{ scaleLabel() }}</span>
+  </div>
+
+  @switch (status()) {
+    @case ('loading') {
+      <p class="schedule-message" role="status">Cargando cronograma…</p>
+    }
+    @case ('error') {
+      <div class="schedule-empty" role="alert">
+        <ng-icon name="lucideCircleAlert" class="schedule-empty-icon" aria-hidden="true" />
+        <p class="schedule-empty-title">No se pudo cargar el cronograma</p>
+        <p>Intenta de nuevo para consultar las tareas del proyecto.</p>
+        <button z-button zType="outline" type="button" (click)="retry()">
+          <ng-icon name="lucideRefreshCcw" aria-hidden="true" />
+          Reintentar
+        </button>
+      </div>
+    }
+    @default {
+      @if (!hasTasks()) {
+        <div class="schedule-empty">
+          <span class="schedule-empty-badge" aria-hidden="true">
+            <ng-icon name="lucideCalendarDays" />
+          </span>
+          <p class="schedule-empty-title">Todavía no hay tareas para mostrar</p>
+          <p>
+            Cuando haya tareas, verás sus fechas y estado en este cronograma. También puedes
+            consultarlas en el tablero Kanban.
+          </p>
+          <button z-button zType="outline" type="button" (click)="kanbanRequested.emit()">
+            Ver tablero Kanban
+          </button>
+          <p class="schedule-empty-note">Las tareas se muestran en ambas vistas del proyecto.</p>
+        </div>
+      } @else {
+        <p class="schedule-count" aria-live="polite">{{ resultLabel() }}</p>
+        <p class="schedule-hint">
+          Desliza la escala temporal horizontalmente para ver todas las fechas.
+        </p>
+
+        @if (rows().length === 0) {
+          <div class="schedule-empty">
+            <p class="schedule-empty-title">No hay tareas que coincidan</p>
+            <p>Prueba con otro nombre o cambia el estado seleccionado.</p>
+          </div>
+        } @else {
+          <div class="schedule-frame" tabindex="0" role="region" aria-label="Cronograma de tareas">
+            <table class="schedule-table" [style.--day-width.px]="dayWidth">
+              <caption class="sr-only">
+                Tareas del proyecto con sus fechas de inicio y fin, de
+                {{
+                  scaleLabel()
+                }}.
+              </caption>
+              <colgroup>
+                <col class="schedule-task-col" />
+                <col [style.width.px]="scaleWidth()" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col" class="schedule-task-head">
+                    <span class="schedule-task-head-title">Tarea</span>
+                    <span class="schedule-task-head-sub">Inicio · Fin · Estado</span>
+                  </th>
+                  <th scope="col" class="schedule-scale-head">
+                    <div class="schedule-scale" [style.width.px]="scaleWidth()">
+                      <div class="schedule-scale-row schedule-months">
+                        @for (month of months(); track month.label) {
+                          <span [style.width.px]="month.span * dayWidth">{{ month.label }}</span>
+                        }
+                      </div>
+                      <div class="schedule-scale-row schedule-weeks" aria-hidden="true">
+                        @for (week of weeks(); track $index) {
+                          <span [style.width.px]="week.span * dayWidth">{{ week.label }}</span>
+                        }
+                      </div>
+                      <div class="schedule-scale-row schedule-days" aria-hidden="true">
+                        @for (day of days(); track day.iso) {
+                          <span
+                            [class.is-weekend]="day.weekend"
+                            [class.is-month-start]="day.monthStart"
+                          >
+                            {{ day.day }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of rows(); track row.task.id) {
+                  <tr>
+                    <th scope="row" class="schedule-task">
+                      <button
+                        type="button"
+                        class="schedule-task-name"
+                        (click)="openDetail(row.task)"
+                      >
+                        {{ row.task.name }}
+                      </button>
+                      <span class="schedule-task-dates">{{ row.datesLabel }}</span>
+                      <app-task-status-badge [status]="row.task.status" />
+                    </th>
+                    <td class="schedule-track" [style.min-width.px]="scaleWidth()">
+                      @if (todayOffset() !== null) {
+                        <span
+                          class="schedule-today"
+                          [style.left.px]="todayOffset()"
+                          aria-hidden="true"
+                        ></span>
+                      }
+                      @if (row.bar; as bar) {
+                        <button
+                          type="button"
+                          class="schedule-bar"
+                          [attr.data-status]="row.task.status"
+                          [style.left.px]="bar.left"
+                          [style.width.px]="bar.width"
+                          [attr.aria-label]="bar.description"
+                          (click)="openDetail(row.task)"
+                        >
+                          {{ bar.label }}
+                        </button>
+                      } @else {
+                        <span class="schedule-no-dates">Sin fechas</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+
+      <p class="schedule-footnote">
+        Solo consulta · las fechas se muestran, no se editan desde el cronograma.
+      </p>
+    }
+  }
+</div>
+
+<app-task-detail-dialog
+  [(open)]="detailOpen"
+  [task]="selectedTask()"
+  [canDelete]="false"
+  note="Solo consulta · sin edición desde el cronograma."
+/>

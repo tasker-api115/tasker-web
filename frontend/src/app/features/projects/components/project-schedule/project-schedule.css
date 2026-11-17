@@ -1,0 +1,412 @@
+.schedule {
+  display: grid;
+  gap: 12px;
+}
+
+.schedule-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.schedule-search {
+  position: relative;
+  flex: 1 1 260px;
+  max-width: 360px;
+}
+
+.schedule-search input,
+.schedule-select {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--input) 30%, transparent);
+  color: var(--foreground);
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.schedule-search input {
+  padding: 0 32px;
+}
+
+.schedule-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.schedule-select {
+  flex: 0 1 200px;
+  width: auto;
+  min-width: 180px;
+  padding: 0 10px;
+}
+
+.schedule-search input:focus-visible,
+.schedule-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+.schedule-search input:disabled,
+.schedule-select:disabled {
+  opacity: 0.5;
+}
+
+.schedule-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  color: var(--muted-foreground);
+  transform: translateY(-50%);
+}
+
+.schedule-search-clear {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  color: var(--muted-foreground);
+  transform: translateY(-50%);
+}
+
+.schedule-search-clear:hover,
+.schedule-search-clear:focus-visible {
+  background: var(--muted);
+  color: var(--foreground);
+  outline: none;
+}
+
+.schedule-scale-label {
+  margin-left: auto;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.schedule-count,
+.schedule-hint,
+.schedule-message,
+.schedule-footnote {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+.schedule-hint {
+  display: none;
+  font-size: 12px;
+}
+
+.schedule-footnote {
+  font-size: 12px;
+}
+
+/* Marco con desplazamiento horizontal; la columna de tareas queda fija. */
+.schedule-frame {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+}
+
+.schedule-frame:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.schedule-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.schedule-task-col {
+  width: 260px;
+}
+
+.schedule-task-head,
+.schedule-task {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  padding: 12px 16px;
+  border-right: 1px solid var(--border);
+  background: var(--card);
+  text-align: left;
+  vertical-align: top;
+}
+
+.schedule-task-head {
+  vertical-align: bottom;
+}
+
+.schedule-task-head-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.schedule-task-head-sub {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.schedule-scale-head {
+  padding: 8px 0 0;
+  font-weight: 400;
+}
+
+.schedule-scale-row {
+  display: flex;
+}
+
+.schedule-scale-row span {
+  flex: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.schedule-months span {
+  padding: 0 8px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.schedule-weeks span {
+  padding: 0 0 2px 4px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  text-align: left;
+}
+
+.schedule-days span {
+  width: var(--day-width);
+  padding-bottom: 6px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  text-align: center;
+}
+
+.schedule-days .is-weekend {
+  opacity: 0.6;
+}
+
+.schedule-task {
+  border-top: 1px solid var(--border);
+}
+
+.schedule-task-name {
+  display: block;
+  max-width: 100%;
+  border-radius: 4px;
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.schedule-task-name:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .schedule-task-name:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.schedule-task-dates {
+  display: block;
+  margin: 6px 0 8px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Pista de la escala: una línea por día como en el diseño. */
+.schedule-track {
+  position: relative;
+  height: 100%;
+  min-height: 112px;
+  border-top: 1px solid var(--border);
+  background-image: linear-gradient(to right, var(--border) 1px, transparent 1px);
+  background-size: var(--day-width) 100%;
+}
+
+.schedule-bar {
+  position: absolute;
+  top: 50%;
+  height: 30px;
+  padding: 0 8px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transform: translateY(-50%);
+  transition:
+    filter 150ms ease,
+    transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.schedule-bar:active {
+  transform: translateY(-50%) scale(0.98);
+}
+
+.schedule-bar:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .schedule-bar:hover {
+    filter: brightness(1.15);
+  }
+}
+
+/* Además del badge con texto e icono, la barra cambia según el estado. */
+.schedule-bar[data-status='pendiente'] {
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--primary) 55%, transparent);
+  background: color-mix(in oklab, var(--primary) 18%, var(--card));
+  color: var(--foreground);
+}
+
+.schedule-bar[data-status='en_progreso'] {
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 35%, var(--card));
+  color: var(--foreground);
+}
+
+.schedule-bar[data-status='en_revision'] {
+  border-color: var(--border);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.schedule-bar[data-status='completada'] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.schedule-bar[data-status='cancelada'] {
+  border-color: var(--border);
+  background: var(--muted);
+  color: var(--muted-foreground);
+  text-decoration: line-through;
+}
+
+.schedule-no-dates {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  transform: translateY(-50%);
+}
+
+.schedule-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in oklab, var(--destructive) 70%, transparent);
+}
+
+.schedule-empty {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  color: var(--muted-foreground);
+  font-size: 13px;
+  text-align: center;
+}
+
+.schedule-empty p {
+  max-width: 420px;
+  margin: 0;
+}
+
+.schedule-empty .schedule-empty-title {
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.schedule-empty-badge {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.schedule-empty-icon {
+  color: var(--destructive);
+  font-size: 20px;
+}
+
+.schedule-empty-note {
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .schedule-search,
+  .schedule-select {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .schedule-scale-label {
+    margin-left: auto;
+  }
+
+  .schedule-hint {
+    display: block;
+  }
+
+  .schedule-task-col,
+  .schedule-task-head,
+  .schedule-task {
+    width: 168px;
+    min-width: 168px;
+    max-width: 168px;
+  }
+
+  .schedule-task-head,
+  .schedule-task {
+    padding: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .schedule-bar {
+    transition: none;
+  }
+}

@@ -1,0 +1,121 @@
+<z-dialog
+  [(zVisible)]="open"
+  [zClosable]="!adding()"
+  [zMaskClosable]="!adding()"
+  class="sm:max-w-lg"
+>
+  <z-dialog-header>
+    <z-dialog-title>Agregar integrante</z-dialog-title>
+    <z-dialog-description>{{ projectName() }}</z-dialog-description>
+  </z-dialog-header>
+
+  <form
+    id="add-member-form"
+    [formGroup]="form"
+    (ngSubmit)="search()"
+    novalidate
+    [attr.aria-busy]="searching()"
+  >
+    <z-field [attr.data-invalid]="emailInvalid || null">
+      <label z-field-label for="add-member-email">Correo electrónico</label>
+
+      <div class="member-search">
+        <input
+          #emailInput
+          cdkFocusInitial
+          z-input
+          id="add-member-email"
+          type="email"
+          inputmode="email"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="nombre@ejemplo.com"
+          required
+          formControlName="email"
+          [readonly]="adding()"
+          [attr.aria-invalid]="emailInvalid || null"
+          aria-describedby="add-member-email-help"
+        />
+        <button
+          z-button
+          zType="outline"
+          type="submit"
+          [zLoading]="searching()"
+          [zDisabled]="searching() || adding()"
+          [attr.aria-busy]="searching()"
+        >
+          @if (!searching()) {
+            <ng-icon name="lucideSearch" aria-hidden="true" />
+          }
+          {{ searching() ? 'Buscando…' : 'Buscar' }}
+        </button>
+      </div>
+
+      @if (emailInvalid) {
+        <z-field-error id="add-member-email-help" class="member-message">
+          {{ emailErrorMessage }}
+        </z-field-error>
+      } @else {
+        <p id="add-member-email-help" class="member-help">
+          Busca entre los usuarios que ya tienen una cuenta.
+        </p>
+      }
+    </z-field>
+  </form>
+
+  <div class="member-result" aria-live="polite">
+    @if (result().kind === 'not-found') {
+      <div class="member-notice member-message">
+        <p class="member-notice-title">No se encontró un usuario</p>
+        <p>No hay un usuario registrado con ese correo. No se agregó a nadie.</p>
+      </div>
+    }
+
+    @if (candidate(); as person) {
+      <div class="member-card member-message">
+        <span class="member-card-avatar" aria-hidden="true">{{ initials(person.name) }}</span>
+        <div class="member-card-information">
+          <p class="member-card-name">{{ person.name }}</p>
+          <p>{{ person.email }}</p>
+          @if (result().kind === 'found') {
+            <p class="member-card-status">Usuario registrado · aún no pertenece al proyecto</p>
+          }
+        </div>
+      </div>
+
+      @if (result().kind === 'duplicate') {
+        <p class="member-warning member-message">Este usuario ya es integrante del proyecto.</p>
+      }
+    }
+  </div>
+
+  @if (errorMessage(); as message) {
+    <div
+      role="alert"
+      class="member-message mt-4 rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive"
+    >
+      {{ message }}
+    </div>
+  }
+
+  <z-dialog-footer>
+    <button z-button zType="outline" type="button" z-dialog-close [zDisabled]="adding()">
+      Cancelar
+    </button>
+    @if (result().kind === 'found') {
+      <button
+        z-button
+        type="button"
+        [zLoading]="adding()"
+        [zDisabled]="adding()"
+        [attr.aria-busy]="adding()"
+        (click)="add()"
+      >
+        @if (!adding()) {
+          <ng-icon name="lucideUserPlus" aria-hidden="true" />
+        }
+        {{ adding() ? 'Agregando…' : 'Agregar integrante' }}
+      </button>
+    }
+  </z-dialog-footer>
+</z-dialog>

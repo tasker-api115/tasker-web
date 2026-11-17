@@ -1,0 +1,167 @@
+<z-dialog
+  [(zVisible)]="open"
+  [zClosable]="!saving()"
+  [zMaskClosable]="!saving() && !dirty()"
+  class="sm:max-w-md"
+>
+  <z-dialog-header>
+    <z-dialog-title>Editar tarea</z-dialog-title>
+    <z-dialog-description>{{ projectName() }}</z-dialog-description>
+  </z-dialog-header>
+
+  @if (task(); as current) {
+    <form
+      #taskForm
+      id="edit-task-form"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      [attr.aria-busy]="saving()"
+      class="flex flex-col gap-4"
+      novalidate
+    >
+      @if (saveError(); as message) {
+        <div
+          role="alert"
+          class="task-form-alert flex gap-3 rounded-md border border-destructive bg-destructive/10 p-3 text-sm"
+        >
+          <ng-icon
+            name="lucideCircleAlert"
+            class="mt-0.5 shrink-0 text-destructive"
+            aria-hidden="true"
+          />
+          <div>
+            <p class="font-medium text-destructive">No se pudo guardar la tarea</p>
+            <p class="text-muted-foreground">{{ message }}</p>
+          </div>
+        </div>
+      } @else if (showValidationAlert) {
+        <div
+          role="alert"
+          class="task-form-alert flex gap-3 rounded-md border border-destructive bg-destructive/10 p-3 text-sm"
+        >
+          <ng-icon
+            name="lucideCircleAlert"
+            class="mt-0.5 shrink-0 text-destructive"
+            aria-hidden="true"
+          />
+          <div>
+            <p class="font-medium text-destructive">Revisa los datos de la tarea</p>
+            <p class="text-muted-foreground">
+              Corrige los campos marcados para guardar los cambios.
+            </p>
+          </div>
+        </div>
+      }
+
+      <div class="flex flex-col gap-2">
+        <label for="edit-task-name" class="text-sm font-medium">Nombre *</label>
+        <input
+          id="edit-task-name"
+          type="text"
+          formControlName="name"
+          placeholder="Nombre de la tarea"
+          required
+          [class]="inputClasses"
+          [attr.aria-invalid]="nameInvalid ? 'true' : null"
+          [attr.aria-describedby]="nameInvalid ? 'edit-task-name-error' : null"
+        />
+        @if (nameInvalid) {
+          <p id="edit-task-name-error" class="task-form-message text-sm text-destructive">
+            Ingresa un nombre para la tarea.
+          </p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="edit-task-description" class="text-sm font-medium">Descripción</label>
+        <textarea
+          id="edit-task-description"
+          formControlName="description"
+          placeholder="Describe la tarea"
+          rows="3"
+          [class]="textareaClasses"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-2">
+          <label for="edit-task-start-date" class="text-sm font-medium">Fecha de inicio</label>
+          <input
+            id="edit-task-start-date"
+            type="date"
+            formControlName="startDate"
+            [class]="inputClasses"
+            [attr.aria-invalid]="startDateInvalid ? 'true' : null"
+            [attr.aria-describedby]="startDateInvalid ? 'edit-task-start-error' : null"
+          />
+          @if (startDateInvalid) {
+            <p id="edit-task-start-error" class="task-form-message text-sm text-destructive">
+              Ingresa una fecha válida.
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="edit-task-due-date" class="text-sm font-medium">Fecha de entrega</label>
+          <input
+            id="edit-task-due-date"
+            type="date"
+            formControlName="dueDate"
+            [class]="inputClasses"
+            [attr.aria-invalid]="dueDateInvalid ? 'true' : null"
+            [attr.aria-describedby]="dueDateInvalid ? 'edit-task-due-error' : null"
+          />
+          @if (dueDateInvalid) {
+            <p id="edit-task-due-error" class="task-form-message text-sm text-destructive">
+              @if (form.controls.dueDate.invalid) {
+                Ingresa una fecha válida.
+              } @else {
+                La entrega no puede ser anterior al inicio.
+              }
+            </p>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <span class="text-sm font-medium">Responsables</span>
+        <button
+          z-button
+          zType="outline"
+          type="button"
+          class="w-full"
+          [zDisabled]="true"
+          aria-describedby="edit-task-assignees-help"
+        >
+          <ng-icon name="lucideUserPlus" aria-hidden="true" />
+          {{ assigneeNames() }}
+        </button>
+        <p id="edit-task-assignees-help" class="text-xs text-muted-foreground">
+          La asignación de responsables todavía no está disponible.
+        </p>
+      </div>
+
+      <span class="w-fit rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
+        Estado · {{ statusLabels[current.status] }}
+      </span>
+
+      <p class="text-xs text-muted-foreground">* Campo obligatorio.</p>
+    </form>
+  }
+
+  <z-dialog-footer>
+    <button z-button zType="outline" type="button" z-dialog-close [zDisabled]="saving()">
+      Cancelar
+    </button>
+    <button
+      z-button
+      type="submit"
+      form="edit-task-form"
+      [zLoading]="saving()"
+      [zDisabled]="saving()"
+      [attr.aria-busy]="saving()"
+    >
+      {{ saving() ? 'Guardando…' : 'Guardar cambios' }}
+    </button>
+  </z-dialog-footer>
+</z-dialog>
