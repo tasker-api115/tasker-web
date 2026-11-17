@@ -49,14 +49,19 @@ export function isOverdue(dueDate: string | null, status: TaskStatus, today = lo
   return dueDate < today;
 }
 
-function toAssignee(row: NonNullable<TaskRow['ejecuta']>[number]): TaskAssignee {
-  const name = [row.usuario?.nombre, row.usuario?.apellido].filter(Boolean).join(' ') || 'Sin nombre';
+export function makeAssignee(id: string, name: string): TaskAssignee {
   const initials = name
     .split(' ')
+    .filter(Boolean)
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
     .join('');
-  return { id: row.id_usuario, name, initials };
+  return { id, name, initials };
+}
+
+function toAssignee(row: NonNullable<TaskRow['ejecuta']>[number]): TaskAssignee {
+  const name = [row.usuario?.nombre, row.usuario?.apellido].filter(Boolean).join(' ') || 'Sin nombre';
+  return makeAssignee(row.id_usuario, name);
 }
 
 export function toTask(row: TaskRow): Task {
@@ -88,3 +93,9 @@ export const TASK_COMPLEXITY_LABELS: Record<TaskComplexity, string> = {
   media: 'Media',
   alta: 'Alta',
 };
+/** Estados que puede elegir el responsable de una tarea (HU-31). */
+export const ASSIGNEE_TASK_STATUSES: readonly TaskStatus[] = [
+  'pendiente',
+  'en_progreso',
+  'completada',
+];

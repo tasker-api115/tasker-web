@@ -3,11 +3,13 @@ import {
   Component,
   computed,
   input,
+  output,
 } from '@angular/core';
 
 import { TaskStatus, isOverdue } from '../../../tasks/data/task.model';
-import { ProjectDetail } from '../../data/project-detail.model';
+import { ProjectDetail, ProjectMember } from '../../data/project-detail.model';
 import { formatProjectDate } from '../../utils/format-project-date';
+import { calculateProjectProgress } from '../../utils/calculate-project-progress';
 import { ProjectMembers } from '../project-members/project-members';
 
 const STATUS_LABELS: Readonly<Record<string, string>> = {
@@ -30,27 +32,14 @@ export class ProjectSummary {
   readonly detail = input.required<ProjectDetail>();
   readonly isOwner = input(false);
 
+  readonly memberAdded = output<ProjectMember>();
+  readonly memberRemoved = output<ProjectMember>();
+
   protected readonly formatDate = formatProjectDate;
 
-  protected readonly progress = computed(() => {
-    // Regla provisional pendiente de confirmar con el equipo.
-    const considered = this.detail().tasks.filter(
-      (task) => task.status !== 'cancelada',
-    );
-
-    const completed = considered.filter(
-      (task) => task.status === 'completada',
-    ).length;
-
-    return {
-      total: considered.length,
-      completed,
-      percentage:
-        considered.length === 0
-          ? 0
-          : Math.round((completed / considered.length) * 100),
-    };
-  });
+  protected readonly progress = computed(() =>
+    calculateProjectProgress(this.detail().tasks.map((task) => task.status)),
+  );
 
   /** Totales de tareas por estado del proyecto seleccionado (HU-38 / SCRUM-53). */
   protected readonly statusSummary = computed(() => {

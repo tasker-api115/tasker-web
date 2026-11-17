@@ -43,12 +43,6 @@
           {{ progress().completed }} de {{ progress().total }}
           tareas completadas
         </p>
-
-        @if (detail().tasks.length !== progress().total) {
-          <p class="progress-caption">
-            Las tareas canceladas no se incluyen en el cálculo.
-          </p>
-        }
       </div>
     </section>
 
@@ -126,7 +120,11 @@
   </div>
 
   <app-project-members
+    [projectId]="detail().project.id"
+    [projectName]="detail().project.name"
     [members]="detail().members"
     [isOwner]="isOwner()"
+    (memberAdded)="memberAdded.emit($event)"
+    (memberRemoved)="memberRemoved.emit($event)"
   />
 </div>

@@ -8,6 +8,7 @@ import {
   output,
   signal,
   viewChild,
+  effect
 } from '@angular/core';
 import {
   FormBuilder,
@@ -16,11 +17,17 @@ import {
   type ValidatorFn,
 } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucidePlus, lucideUserPlus } from '@ng-icons/lucide';
+import { lucidePlus } from '@ng-icons/lucide';
 
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { ZardDialogImports } from '@/shared/components/dialog/dialog.imports';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { AssigneePicker } from '../assignee-picker/assignee-picker';
+import {
+  TaskAssignmentsService,
+  assigneesErrorMessage,
+} from '../../data/task-assignments.service';
+import { ProjectMember } from '../../data/project-detail.model';
 import { Project } from '../../../projects/data/project.model';
 import { CreatedProjectTask } from '../../data/task-create.model';
 import { TasksService } from '../../data/tasks.service';
@@ -94,26 +101,32 @@ const dateOrderValidator: ValidatorFn = (group) => {
     NgIcon,
     ZardDialogImports,
     ZardButtonComponent,
+    AssigneePicker,
   ],
-  viewProviders: [provideIcons({ lucidePlus, lucideUserPlus })],
+  viewProviders: [provideIcons({ lucidePlus })],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './create-task-dialog.html',
 })
 export class CreateTaskDialog {
   private readonly auth = inject(AuthService);
   private readonly tasks = inject(TasksService);
+  private readonly assignments = inject(TaskAssignmentsService);
   private readonly fb = inject(FormBuilder).nonNullable;
 
   private readonly formElement =
     viewChild<ElementRef<HTMLFormElement>>('taskForm');
 
   readonly project = input.required<Project>();
+  readonly members = input<readonly ProjectMember[]>([]);
   readonly created = output<CreatedProjectTask>();
 
   protected readonly open = signal(false);
   protected readonly saving = signal(false);
   protected readonly submitted = signal(false);
   protected readonly saveError = signal<string | null>(null);
+
+  protected readonly selectedAssignees = signal<readonly string[]>([]);
+  protected readonly assignWarning = signal<string | null>(null);
 
   protected readonly inputClasses = INPUT_CLASSES;
   protected readonly textareaClasses = TEXTAREA_CLASSES;
@@ -131,6 +144,15 @@ export class CreateTaskDialog {
     },
     { validators: dateOrderValidator },
   );
+
+  constructor() {
+    // Al cerrar después de un aviso, el formulario queda listo para otra tarea.
+    effect(() => {
+      if (!this.open() && this.assignWarning()) {
+        this.resetForm();
+      }
+    });
+  }
 
   protected get nameInvalid(): boolean {
     return this.submitted() && this.form.controls.name.invalid;
@@ -154,11 +176,20 @@ export class CreateTaskDialog {
     }
 
     this.saveError.set(null);
+    this.assignWarning.set(null);
     this.open.set(true);
   }
 
-  protected async submit(): Promise<void> {
-    if (this.saving()) {
+  private resetForm(): void {
+    this.form.reset();
+    this.form.enable();
+    this.submitted.set(false);
+    this.selectedAssignees.set([]);
+    this.assignWarning.set(null);
+  }
+
+    protected async submit(): Promise<void> {
+    if (this.saving() || this.assignWarning()) {
       return;
     }
 
@@ -212,8 +243,34 @@ export class CreateTaskDialog {
         return;
       }
 
-      this.form.reset();
-      this.submitted.set(false);
+      /*
+       * Asignación de responsables, después de crear la tarea.
+       * TODO(backend): para que tarea y asignaciones se guarden juntas (todo o nada),
+       * agregar a la RPC `create_project_task` un parámetro `p_assignee_ids uuid[]`
+       * que inserte en `ejecuta` (rol_tarea = 'responsable') en la misma transacción.
+       * Cuando exista, enviarlo en `TasksService.create` y quitar este paso.
+       */
+      const assigneeIds = this.selectedAssignees();
+      if (assigneeIds.length > 0) {
+        const assigned = await this.assignments.replace(
+          result.task.id,
+          [],
+          assigneeIds,
+          this.members().map((member) => member.id),
+        );
+
+        if (!assigned.ok) {
+          // La tarea ya existe: no se debe reenviar el formulario (crearía otra).
+          this.created.emit(result.task);
+          this.assignWarning.set(
+            `La tarea se creó, pero no se asignaron los responsables. ${assigneesErrorMessage(assigned.reason)} ` +
+              'Puedes asignarlos desde el detalle de la tarea.',
+          );
+          return;
+        }
+      }
+
+      this.resetForm();
       this.open.set(false);
       this.created.emit(result.task);
     } catch {
@@ -221,7 +278,9 @@ export class CreateTaskDialog {
         'No pudimos confirmar la operación. Revisa las tareas antes de reintentar.',
       );
     } finally {
-      this.form.enable();
+      if (!this.assignWarning()) {
+        this.form.enable();
+      }
       this.saving.set(false);
     }
   }

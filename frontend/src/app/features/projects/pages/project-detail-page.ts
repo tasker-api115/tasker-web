@@ -25,16 +25,28 @@ import { EditProjectDialog } from '../components/edit-project-dialog/edit-projec
 import { ProjectSummary } from '../components/project-summary/project-summary';
 import { ProjectMembers } from '../components/project-members/project-members';
 import { ProjectKanban } from '../components/project-kanban/project-kanban';
+import { ProjectReport } from '../components/project-report/project-report';
+import { ProjectSchedule } from '../components/project-schedule/project-schedule';
 import { Project } from '../data/project.model';
-import { ProjectDetail } from '../data/project-detail.model';
+import { ProjectDetail, ProjectMember } from '../data/project-detail.model';
 import { ProjectDetailService } from '../data/project-detail.service';
 import { ProjectsService } from '../data/projects.service';
 import { CreateTaskDialog } from '../../projects/components/create-task-dialog/create-task-dialog';
 import { CreatedProjectTask } from '../../projects/data/task-create.model';
-import { TaskStatus } from '../../tasks/data/task.model';
+import { TaskBoardService } from '../../tasks/data/task-board.service';
+import { Task, TaskStatus } from '../../tasks/data/task.model';
 
 type DetailStatus = 'loading' | 'ready' | 'error' | 'unavailable';
-type DetailSection = 'summary' | 'members' | 'kanban';
+type DetailSection = 'summary' | 'members' | 'kanban' | 'schedule' | 'reports';
+
+/** Valor de `?seccion=` para cada pestaña (el resumen no usa parámetro). */
+const SECTION_PARAMS: Record<DetailSection, string | null> = {
+  summary: null,
+  members: 'integrantes',
+  kanban: 'kanban',
+  schedule: 'cronograma',
+  reports: 'reportes',
+};
 
 @Component({
   selector: 'app-project-detail-page',
@@ -47,6 +59,8 @@ type DetailSection = 'summary' | 'members' | 'kanban';
     ProjectSummary,
     ProjectMembers,
     ProjectKanban,
+    ProjectSchedule,
+    ProjectReport,
     CreateTaskDialog,
   ],
   viewProviders: [
@@ -66,6 +80,7 @@ type DetailSection = 'summary' | 'members' | 'kanban';
 export class ProjectDetailPage {
   private readonly service = inject(ProjectDetailService);
   private readonly projects = inject(ProjectsService);
+  private readonly taskBoard = inject(TaskBoardService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -103,13 +118,10 @@ export class ProjectDetailPage {
         const projectId = params.get('projectId') ?? '';
         const section = queryParams.get('seccion');
 
-        this.activeSection.set(
-          section === 'kanban'
-            ? 'kanban'
-            : section === 'integrantes'
-              ? 'members'
-              : 'summary',
+        const match = (Object.keys(SECTION_PARAMS) as DetailSection[]).find(
+          (key) => SECTION_PARAMS[key] !== null && SECTION_PARAMS[key] === section,
         );
+        this.activeSection.set(match ?? 'summary');
 
         // Cambiar la pestaña no vuelve a consultar el proyecto.
         if (projectId === this.projectId) {
@@ -129,12 +141,7 @@ export class ProjectDetailPage {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
-        seccion:
-          section === 'summary'
-            ? null
-            : section === 'members'
-              ? 'integrantes'
-              : 'kanban',
+        seccion: SECTION_PARAMS[section],
       },
       queryParamsHandling: 'merge',
       replaceUrl: true,
@@ -161,6 +168,39 @@ export class ProjectDetailPage {
     });
 
     this.announcement.set('Información del proyecto actualizada.');
+  }
+
+  protected onMemberAdded(member: ProjectMember): void {
+    this.detail.update((current) =>
+      current
+        ? {
+            ...current,
+            members: sortMembers([
+              ...current.members.filter((existing) => existing.id !== member.id),
+              member,
+            ]),
+          }
+        : current,
+    );
+
+    this.announcement.set(`${member.name} se agregó al proyecto.`);
+  }
+
+  protected onMemberRemoved(member: ProjectMember): void {
+    this.detail.update((current) =>
+      current
+        ? {
+            ...current,
+            members: current.members.filter((existing) => existing.id !== member.id),
+          }
+        : current,
+    );
+
+    // Sus asignaciones se eliminaron junto con la membresía: el tablero (montado aunque esté
+    // oculto) deja de mostrarlo como responsable sin recargar.
+    this.taskBoard.removeAssignee(member.id);
+
+    this.announcement.set(`${member.name} se quitó del proyecto.`);
   }
 
   private async load(): Promise<void> {
@@ -237,6 +277,24 @@ export class ProjectDetailPage {
     this.announcement.set('Tarea eliminada.');
   }
 
+  /** Refleja en el detalle (resumen y progreso) una tarea editada desde el tablero (HU-28). */
+  protected onTaskUpdated(task: Task): void {
+    this.detail.update((current) =>
+      current
+        ? {
+            ...current,
+            tasks: current.tasks.map((existing) =>
+              existing.id === task.id
+                ? { ...existing, name: task.name, status: task.status, endDate: task.dueDate }
+                : existing,
+            ),
+          }
+        : current,
+    );
+
+    this.announcement.set(`Tarea «${task.name}» actualizada.`);
+  }
+
   /**
    * Actualiza el estado de una tarea en el detalle del proyecto (HU-33).
    */
@@ -257,4 +315,15 @@ export class ProjectDetailPage {
         : current,
     );
   }
+}
+
+/** Mismo orden que al cargar el detalle: primero el propietario y luego por nombre. */
+function sortMembers(members: readonly ProjectMember[]): ProjectMember[] {
+  return [...members].sort((a, b) => {
+    if (a.role !== b.role) {
+      return a.role === 'Propietario' ? -1 : 1;
+    }
+
+    return a.name.localeCompare(b.name, 'es');
+  });
 }

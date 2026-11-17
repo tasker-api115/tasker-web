@@ -1,4 +1,4 @@
-
+import { calculateProjectProgress } from '../utils/calculate-project-progress';
 /** Proyecto tal como lo usa la interfaz. Las fechas son cadenas ISO `YYYY-MM-DD` (columna `date`). */
 export interface Project {
   readonly id: string;
@@ -46,6 +46,6 @@ export function toProject(row: ProjectRow): Project {
     startDate: row.fecha_inicio,
     endDate: row.fecha_fin,
     createdAt: row.created_at,
-    progress: tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100),
+    progress: calculateProjectProgress(tasks.map((t) => t.estado)).percentage,
   };
 }

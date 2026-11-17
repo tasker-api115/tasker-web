@@ -3,6 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { SUPABASE_CLIENT } from '../../../core/supabase/supabase-client';
 import {
   Task,
+  TaskAssignee,
   TaskRow,
   TaskStatus,
   isOverdue,
@@ -32,8 +33,29 @@ export type UpdateTaskStatusResult =
       readonly reason: 'not-configured' | 'not-allowed' | 'unknown';
     };
 
+export type UpdateTaskResult =
+  | { readonly ok: true; readonly task: Task }
+  | {
+      readonly ok: false;
+      readonly reason: 'not-configured' | 'not-allowed' | 'invalid' | 'unknown';
+    };
+
+/** Datos editables de una tarea (HU-28). */
+export interface TaskEditDraft {
+  readonly name: string;
+  readonly description: string | null;
+  readonly startDate: string | null;
+  readonly dueDate: string | null;
+}
+
 /** Código de PostgreSQL cuando otra tabla (dependencias) impide borrar. */
 const FOREIGN_KEY_VIOLATION_CODE = '23503';
+
+/** Permiso rechazado por el trigger `tarea_permisos` (HU-28 / HU-31). */
+const INSUFFICIENT_PRIVILEGE_CODE = '42501';
+
+/** Restricción `CHECK` (fechas invertidas o estado no permitido para el responsable). */
+const CHECK_VIOLATION_CODE = '23514';
 
 /**
  * Lectura de las tareas de un proyecto para el tablero Kanban.
@@ -48,6 +70,40 @@ export class TaskBoardService {
 
   readonly tasks = this.tasksState.asReadonly();
   readonly status = this.statusState.asReadonly();
+
+  /**
+   * Quita a un usuario de los responsables de las tareas cargadas, sin volver a consultar.
+   * Se usa al quitar un integrante del proyecto (HU-51): sus asignaciones ya se eliminaron en
+   * Supabase y el tablero, que sigue montado en otra pestaña, debe reflejarlo de inmediato.
+   */
+  removeAssignee(userId: string): void {
+    this.tasksState.update((list) =>
+      list.map((task) =>
+        task.assignees.some((assignee) => assignee.id === userId)
+          ? { ...task, assignees: task.assignees.filter((assignee) => assignee.id !== userId) }
+          : task
+      )
+    );
+  }
+
+  /**
+   * Reemplaza los responsables de una tarea cargada, sin volver a consultar.
+   * Se usa después de guardar la asignación de responsables en Supabase
+   * (`projects/data/task-assignments.service.ts`) para que la tarjeta se actualice al momento.
+   */
+  setAssignees(taskId: string, assignees: readonly TaskAssignee[]): Task | null {
+    let updated: Task | null = null;
+    this.tasksState.update((list) =>
+      list.map((task) => {
+        if (task.id !== taskId) {
+          return task;
+        }
+        updated = { ...task, assignees };
+        return updated;
+      })
+    );
+    return updated;
+  }
 
   /** Con silent se recarga sin vaciar el tablero ni mostrar "Cargando…". */
   async loadByProject(projectId: string, silent = false): Promise<void> {
@@ -124,7 +180,61 @@ export class TaskBoardService {
   }
 
   /**
-   * Cambia el estado de una tarea (HU-33). Actualiza el tablero de inmediato y, si Supabase
+   * Guarda los datos editables de una tarea (HU-28) y la reemplaza en el tablero.
+   *
+   * Solo el propietario puede hacerlo: el trigger `tarea_permisos` rechaza a los demás
+   * (42501) y RLS oculta la fila a quien no es integrante (0 filas).
+   */
+  async update(taskId: string, draft: TaskEditDraft): Promise<UpdateTaskResult> {
+    if (!this.client) {
+      return { ok: false, reason: 'not-configured' };
+    }
+
+    try {
+      const { data, error } = await this.client
+        .from('tarea')
+        .update({
+          nombre: draft.name,
+          descripcion: draft.description,
+          fecha_inicio: draft.startDate,
+          fecha_fin: draft.dueDate,
+        })
+        .eq('id_tarea', taskId)
+        .select(TASK_COLUMNS)
+        .returns<TaskRow[]>();
+
+      if (error?.code === INSUFFICIENT_PRIVILEGE_CODE) {
+        return { ok: false, reason: 'not-allowed' };
+      }
+
+      if (error?.code === CHECK_VIOLATION_CODE) {
+        return { ok: false, reason: 'invalid' };
+      }
+
+      if (error) {
+        return { ok: false, reason: 'unknown' };
+      }
+
+      const row = data?.[0];
+
+      if (!row) {
+        return { ok: false, reason: 'not-allowed' };
+      }
+
+      const task = toTask(row);
+
+      this.tasksState.update((list) =>
+        list.map((existing) => (existing.id === task.id ? task : existing))
+      );
+
+      return { ok: true, task };
+    } catch {
+      return { ok: false, reason: 'unknown' };
+    }
+  }
+
+  /**
+   * Cambia el estado de una tarea (HU-33 / HU-31). Actualiza el tablero de inmediato y, si Supabase
    * no guarda el cambio, vuelve al estado anterior.
    */
   async updateStatus(
@@ -166,9 +276,14 @@ export class TaskBoardService {
       if (error || !data || data.length === 0) {
         apply(previous.status);
 
+        const rejected =
+          !error ||
+          error.code === INSUFFICIENT_PRIVILEGE_CODE ||
+          error.code === CHECK_VIOLATION_CODE;
+
         return {
           ok: false,
-          reason: error ? 'unknown' : 'not-allowed',
+          reason: rejected ? 'not-allowed' : 'unknown',
         };
       }
 

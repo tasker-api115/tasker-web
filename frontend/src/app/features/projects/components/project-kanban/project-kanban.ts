@@ -13,6 +13,7 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideCalendar,
+  lucideChevronDown,
   lucideCircleAlert,
   lucideCircleCheck,
   lucideCircleDashed,
@@ -28,11 +29,18 @@ import { ZardButtonComponent } from '@/shared/components/button/button.component
 import { ZardEmptyComponent } from '@/shared/components/empty/empty.component';
 import { ZardInputComponent } from '@/shared/components/input/input.component';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { ChangeTaskStatusDialog } from '../../../tasks/components/change-task-status-dialog/change-task-status-dialog';
 import { DeleteTaskDialog } from '../../../tasks/components/delete-task-dialog/delete-task-dialog';
+import { EditTaskDialog } from '../../../tasks/components/edit-task-dialog/edit-task-dialog';
 import { TaskDetailDialog } from '../../../tasks/components/task-detail-dialog/task-detail-dialog';
 import { TaskBoardService } from '../../../tasks/data/task-board.service';
-import { TASK_STATUS_LABELS, Task, TaskStatus } from '../../../tasks/data/task.model';
-import { ProjectTask } from '../../data/project-detail.model';
+import {
+  ASSIGNEE_TASK_STATUSES,
+  TASK_STATUS_LABELS,
+  Task,
+  TaskStatus,
+} from '../../../tasks/data/task.model';
+import { ProjectMember, ProjectTask } from '../../data/project-detail.model';
 import { formatProjectDate } from '../../utils/format-project-date';
 
 interface BoardColumn {
@@ -66,7 +74,7 @@ function normalize(value: string): string {
 
 /**
  * Tablero Kanban del proyecto: visualización (HU-32), detalle (HU-27),
- * eliminación (HU-29) y cambio de estado (HU-33).
+ * edición (HU-28), eliminación (HU-29) y cambio de estado (HU-31 / HU-33).
  */
 @Component({
   selector: 'app-project-kanban',
@@ -75,7 +83,9 @@ function normalize(value: string): string {
     CdkDrag,
     CdkDropList,
     CdkDropListGroup,
+    ChangeTaskStatusDialog,
     DeleteTaskDialog,
+    EditTaskDialog,
     NgIcon,
     TaskDetailDialog,
     ZardBadgeComponent,
@@ -86,6 +96,7 @@ function normalize(value: string): string {
   viewProviders: [
     provideIcons({
       lucideCalendar,
+      lucideChevronDown,
       lucideCircleAlert,
       lucideCircleCheck,
       lucideCircleDashed,
@@ -105,14 +116,20 @@ export class ProjectKanban {
   private readonly auth = inject(AuthService);
 
   readonly projectId = input.required<string>();
+  /** Nombre del proyecto, como contexto del modal de edición. */
+  readonly projectName = input('');
   /** Tareas del detalle: cuando cambian (por ejemplo, al crear una tarea) el tablero se recarga. */
   readonly tasks = input<readonly ProjectTask[]>([]);
   /** El propietario puede eliminar tareas y mover cualquiera. */
   readonly isOwner = input(false);
+  /** Integrantes del proyecto (HU-51): los únicos que se pueden asignar como responsables. */
+  readonly members = input<readonly ProjectMember[]>([]);
   /** Se emite con el id de la tarea eliminada para que la página actualice sus datos. */
   readonly taskDeleted = output<string>();
   /** Se emite cuando una tarea cambió de estado y quedó guardada. */
   readonly taskStatusChanged = output<{ readonly id: string; readonly status: TaskStatus }>();
+  /** Se emite con la tarea editada y guardada (HU-28). */
+  readonly taskUpdated = output<Task>();
 
   private loadedProjectId: string | null = null;
   private readonly saving = signal(false);
@@ -121,6 +138,8 @@ export class ProjectKanban {
   protected readonly searchTerm = signal('');
   protected readonly detailOpen = signal(false);
   protected readonly deleteOpen = signal(false);
+  protected readonly editOpen = signal(false);
+  protected readonly statusOpen = signal(false);
   protected readonly selectedTask = signal<Task | null>(null);
   protected readonly notice = signal<BoardNotice | null>(null);
   protected readonly formatDate = formatProjectDate;
@@ -169,6 +188,33 @@ export class ProjectKanban {
     return userId !== null && task.assignees.some((assignee) => assignee.id === userId);
   }
 
+  /**
+   * Quién cambia el estado, como en los frames `state-menu` y `detail-assigned`.
+   * Si es responsable de la tarea se indica aunque también sea el propietario.
+   */
+  protected identityFor(task: Task | null): string {
+    if (!task) {
+      return '';
+    }
+    const userId = this.currentUserId();
+    const assignee = task.assignees.find((person) => person.id === userId);
+    if (assignee) {
+      return `${assignee.name} · responsable asignado`;
+    }
+    return this.isOwner() ? 'Propietario del proyecto' : '';
+  }
+
+  /**
+   * El propietario puede soltar en cualquier columna; un responsable, solo en
+   * Por hacer, En progreso y Completada (HU-31; el trigger `tarea_permisos` lo exige).
+   */
+  protected readonly enterPredicates: Record<TaskStatus, () => boolean> = Object.fromEntries(
+    COLUMNS.map((column) => [
+      column.status,
+      () => this.isOwner() || ASSIGNEE_TASK_STATUSES.includes(column.status),
+    ]),
+  ) as Record<TaskStatus, () => boolean>;
+
   protected onSearch(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
   }
@@ -185,6 +231,36 @@ export class ProjectKanban {
     this.notice.set(null);
     this.selectedTask.set(task);
     this.detailOpen.set(true);
+  }
+
+  protected requestEdit(task: Task): void {
+    this.notice.set(null);
+    this.selectedTask.set(task);
+    this.detailOpen.set(false);
+    this.editOpen.set(true);
+  }
+
+  protected onUpdated(task: Task): void {
+    this.selectedTask.set(task);
+    this.notice.set({
+      kind: 'success',
+      title: 'Tarea actualizada',
+      text: `Se guardaron los cambios de «${task.name}».`,
+    });
+    this.taskUpdated.emit(task);
+  }
+
+  protected openStatusChange(task: Task): void {
+    this.selectedTask.set(task);
+    this.detailOpen.set(false);
+    this.statusOpen.set(true);
+  }
+
+  protected onStatusChosen(status: TaskStatus): void {
+    const task = this.selectedTask();
+    if (task) {
+      void this.changeStatus(task, status);
+    }
   }
 
   protected requestDelete(task: Task): void {
@@ -209,18 +285,18 @@ export class ProjectKanban {
     void this.changeStatus(event.item.data, event.container.data);
   }
 
-  protected onStatusSelect(task: Task, event: Event): void {
-    const status = (event.target as HTMLSelectElement).value as TaskStatus;
-    void this.changeStatus(task, status);
-  }
-
   private async changeStatus(task: Task, status: TaskStatus): Promise<void> {
-    if (task.status === status || !this.canMove(task) || this.saving()) {
+    const allowed = this.isOwner() || ASSIGNEE_TASK_STATUSES.includes(status);
+    if (task.status === status || !this.canMove(task) || !allowed || this.saving()) {
       return;
     }
     const previousLabel = TASK_STATUS_LABELS[task.status];
     this.saving.set(true);
-    this.notice.set({ kind: 'pending', title: 'Guardando cambio de estado…', text: '' });
+    this.notice.set({
+      kind: 'pending',
+      title: 'Guardando cambio de estado…',
+      text: `${task.name} · ${previousLabel} → ${TASK_STATUS_LABELS[status]}`,
+    });
 
     const result = await this.store.updateStatus(task.id, status);
     this.saving.set(false);

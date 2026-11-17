@@ -1,0 +1,43 @@
+<z-dialog [(zVisible)]="open" class="sm:max-w-sm">
+  <z-dialog-header>
+    <z-dialog-title>Cambiar estado</z-dialog-title>
+    @if (task(); as current) {
+      <z-dialog-description>{{ current.name }}</z-dialog-description>
+    }
+  </z-dialog-header>
+
+  @if (task(); as current) {
+    @if (identity()) {
+      <p class="text-xs text-muted-foreground">{{ identity() }}</p>
+    }
+
+    <ul class="m-0 flex list-none flex-col gap-1 p-0" role="list" aria-label="Estados disponibles">
+      @for (status of options(); track status) {
+        <li>
+          <button
+            type="button"
+            class="flex h-10 w-full items-center gap-2 rounded-md px-3 text-left text-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            [class.text-primary]="status === current.status"
+            [attr.aria-current]="status === current.status ? 'true' : null"
+            [disabled]="status === current.status"
+            (click)="select(status)"
+          >
+            <span class="flex size-4 items-center justify-center" aria-hidden="true">
+              @if (status === current.status) {
+                <ng-icon name="lucideCheck" />
+              }
+            </span>
+            {{ labels[status] }}
+            @if (status === current.status) {
+              <span class="sr-only">(estado actual)</span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <z-dialog-footer>
+    <button z-button zType="outline" type="button" class="w-full" z-dialog-close>Cancelar</button>
+  </z-dialog-footer>
+</z-dialog>
