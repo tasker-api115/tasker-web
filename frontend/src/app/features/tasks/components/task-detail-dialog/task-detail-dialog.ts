@@ -31,6 +31,8 @@ export class TaskDetailDialog {
   readonly canChangeStatus = input(false);
   /** Quién cambia el estado, por ejemplo «Diego Pérez · responsable asignado». */
   readonly identity = input('');
+  /** Aviso opcional sobre la vista, p. ej. «Solo consulta · sin edición desde el cronograma.». */
+  readonly note = input('');
   readonly editRequested = output<Task>();
   readonly statusChangeRequested = output<Task>();
 

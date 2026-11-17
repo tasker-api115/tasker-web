@@ -1,0 +1,215 @@
+/* Vista de impresión del reporte (HU-37). Estilos globales: todas las clases usan tasker-print-. */
+
+.tasker-print-view {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+html.tasker-printing body {
+  overflow: hidden;
+}
+
+.tasker-print-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+
+.tasker-print-toolbar h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  outline: none;
+}
+
+.tasker-print-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tasker-print-stage {
+  flex: 1;
+  overflow: auto;
+  padding: 24px 16px 48px;
+}
+
+/* Hoja A4 (794 × 1123 px a 96 ppp) en blanco y negro. */
+.tasker-print-sheet {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 794px;
+  min-height: 1123px;
+  margin: 0 auto;
+  padding: 48px;
+  background: #fff;
+  color: #111;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tasker-print-sheet p {
+  margin: 0 0 10px;
+}
+
+.tasker-print-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.tasker-print-header h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.tasker-print-sheet .tasker-print-project {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tasker-print-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.tasker-print-data {
+  margin: 0 0 14px;
+}
+
+.tasker-print-data div {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.tasker-print-data dt,
+.tasker-print-data dd {
+  margin: 0;
+}
+
+.tasker-print-strong {
+  font-weight: 600;
+}
+
+.tasker-print-bar {
+  height: 4px;
+  margin: -4px 0 14px;
+  background: #d4d9e2;
+}
+
+.tasker-print-bar span {
+  display: block;
+  height: 100%;
+  background: #111;
+}
+
+.tasker-print-table {
+  width: 100%;
+  margin: 6px 0 14px;
+  border: 1px solid #c8ced8;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.tasker-print-table th,
+.tasker-print-table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #c8ced8;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tasker-print-table thead th {
+  font-weight: 600;
+}
+
+.tasker-print-table tbody th {
+  font-weight: 600;
+}
+
+.tasker-print-table tr {
+  break-inside: avoid;
+}
+
+/* Encabezados repetidos en cada página. */
+.tasker-print-table thead {
+  display: table-header-group;
+}
+
+.tasker-print-sheet .tasker-print-note {
+  color: #333;
+  font-size: 11px;
+}
+
+@media (max-width: 640px) {
+  .tasker-print-sheet {
+    min-height: 0;
+    padding: 24px 18px;
+  }
+
+  .tasker-print-toolbar,
+  .tasker-print-actions,
+  .tasker-print-actions button {
+    width: 100%;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 16mm;
+}
+
+/*
+ * Al imprimir solo sale la hoja: se oculta todo lo que no la contiene y se quitan
+ * márgenes, fondos y posiciones de sus contenedores. No se imprime ningún botón.
+ */
+@media print {
+  html.tasker-printing,
+  html.tasker-printing body {
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  html.tasker-printing
+    body
+    *:not(:has(.tasker-print-sheet)):not(.tasker-print-sheet):not(.tasker-print-sheet *) {
+    display: none !important;
+  }
+
+  html.tasker-printing body *:has(.tasker-print-sheet) {
+    position: static !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  .tasker-print-sheet {
+    max-width: none;
+    min-height: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

@@ -1,0 +1,253 @@
+.report {
+  display: grid;
+  gap: 16px;
+}
+
+.report-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.report-lead,
+.report-muted {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+.report-card {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+}
+
+.report-progress {
+  display: grid;
+  gap: 10px;
+}
+
+.report-progress-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.report-progress h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.report-percentage {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--muted);
+}
+
+.report-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.report-counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.report-counts li {
+  display: grid;
+  gap: 6px;
+}
+
+.report-counts span {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.report-counts strong {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-overdue {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+.report-overdue.has-overdue,
+.report-overdue-cell {
+  color: var(--destructive);
+}
+
+.report-overdue-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.report-table-frame {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.report-table-frame:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.report-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.report-table thead th {
+  padding: 10px 12px;
+  background: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.report-table tbody th,
+.report-table td {
+  padding: 14px 12px;
+  border-top: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.report-table tbody th {
+  font-weight: 500;
+}
+
+.report-table .report-table-empty {
+  padding: 36px 16px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  text-align: center;
+}
+
+.report-table-empty p {
+  margin: 4px 0 0;
+}
+
+.report-empty,
+.report-loading {
+  display: grid;
+  gap: 8px;
+}
+
+.report-empty {
+  justify-items: center;
+  padding: 48px 24px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  text-align: center;
+}
+
+.report-empty p {
+  max-width: 420px;
+  margin: 0;
+}
+
+.report-empty-title,
+.report-table-empty .report-empty-title {
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.report-error-icon {
+  color: var(--destructive);
+  font-size: 20px;
+}
+
+.report-empty-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 4px;
+  border-radius: var(--radius-md);
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.report-skeleton {
+  display: block;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background: var(--muted);
+  animation: report-pulse 1.4s ease-in-out infinite;
+}
+
+.report-skeleton-wide {
+  height: 76px;
+}
+
+.report-skeleton-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.report-skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+}
+
+@keyframes report-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 640px) {
+  .report-toolbar button {
+    width: 100%;
+  }
+
+  .report-counts {
+    gap: 8px;
+  }
+
+  .report-counts li {
+    padding: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report-skeleton {
+    animation: none;
+  }
+
+  .report-bar span {
+    transition: none;
+  }
+}
