@@ -2,7 +2,7 @@
 
 **Proyecto:** Tasker  
 **Historia de Jira:** HU-43 — Pruebas de Kanban y cronograma  
-**Clave de Jira:** SCRUM-___  
+**Clave de Jira:** SCRUM-59  
 **Responsable:** QA  
 **Tipo:** Pruebas funcionales manuales  
 **Versión del registro:** 1.0  
