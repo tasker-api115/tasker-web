@@ -25,6 +25,8 @@ import { EditProjectDialog } from '../components/edit-project-dialog/edit-projec
 import { ProjectSummary } from '../components/project-summary/project-summary';
 import { ProjectMembers } from '../components/project-members/project-members';
 import { ProjectKanban } from '../components/project-kanban/project-kanban';
+import { ProjectReport } from '../components/project-report/project-report';
+import { ProjectSchedule } from '../components/project-schedule/project-schedule';
 import { Project } from '../data/project.model';
 import { ProjectDetail } from '../data/project-detail.model';
 import { ProjectDetailService } from '../data/project-detail.service';
@@ -34,7 +36,16 @@ import { CreatedProjectTask } from '../../projects/data/task-create.model';
 import { Task, TaskStatus } from '../../tasks/data/task.model';
 
 type DetailStatus = 'loading' | 'ready' | 'error' | 'unavailable';
-type DetailSection = 'summary' | 'members' | 'kanban';
+type DetailSection = 'summary' | 'members' | 'kanban' | 'schedule' | 'reports';
+
+/** Valor de `?seccion=` para cada pestaña (el resumen no usa parámetro). */
+const SECTION_PARAMS: Record<DetailSection, string | null> = {
+  summary: null,
+  members: 'integrantes',
+  kanban: 'kanban',
+  schedule: 'cronograma',
+  reports: 'reportes',
+};
 
 @Component({
   selector: 'app-project-detail-page',
@@ -47,6 +58,8 @@ type DetailSection = 'summary' | 'members' | 'kanban';
     ProjectSummary,
     ProjectMembers,
     ProjectKanban,
+    ProjectSchedule,
+    ProjectReport,
     CreateTaskDialog,
   ],
   viewProviders: [
@@ -103,13 +116,10 @@ export class ProjectDetailPage {
         const projectId = params.get('projectId') ?? '';
         const section = queryParams.get('seccion');
 
-        this.activeSection.set(
-          section === 'kanban'
-            ? 'kanban'
-            : section === 'integrantes'
-              ? 'members'
-              : 'summary',
+        const match = (Object.keys(SECTION_PARAMS) as DetailSection[]).find(
+          (key) => SECTION_PARAMS[key] !== null && SECTION_PARAMS[key] === section,
         );
+        this.activeSection.set(match ?? 'summary');
 
         // Cambiar la pestaña no vuelve a consultar el proyecto.
         if (projectId === this.projectId) {
@@ -129,12 +139,7 @@ export class ProjectDetailPage {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
-        seccion:
-          section === 'summary'
-            ? null
-            : section === 'members'
-              ? 'integrantes'
-              : 'kanban',
+        seccion: SECTION_PARAMS[section],
       },
       queryParamsHandling: 'merge',
       replaceUrl: true,

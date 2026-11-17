@@ -1,0 +1,96 @@
+<div class="tasker-print-toolbar">
+  <h2 #viewTitle id="tasker-print-title" tabindex="-1">Vista de impresión</h2>
+  <div class="tasker-print-actions">
+    <button z-button zType="outline" type="button" (click)="closed.emit()">
+      Volver al reporte
+    </button>
+    <button z-button type="button" (click)="print()">
+      <ng-icon name="lucidePrinter" aria-hidden="true" />
+      Imprimir o guardar PDF
+    </button>
+  </div>
+</div>
+
+<div class="tasker-print-stage">
+  <article class="tasker-print-sheet" aria-label="Reporte de tareas para imprimir">
+    <header class="tasker-print-header">
+      <div>
+        <h1>Reporte de tareas</h1>
+        <p class="tasker-print-project">{{ detail().project.name }}</p>
+      </div>
+      <span class="tasker-print-brand">
+        <img src="brand/tasker-symbol.svg" alt="" width="26" height="26" />
+        Tasker
+      </span>
+    </header>
+
+    <dl class="tasker-print-data">
+      <div>
+        <dt>Propietario del proyecto:</dt>
+        <dd>{{ detail().ownerName }}</dd>
+      </div>
+      @if (detail().project.startDate || detail().project.endDate) {
+        <div>
+          <dt>Periodo del proyecto:</dt>
+          <dd>
+            {{ formatDate(detail().project.startDate) }} –
+            {{ formatDate(detail().project.endDate) }}
+          </dd>
+        </div>
+      }
+      <div>
+        <dt>Fecha de emisión:</dt>
+        <dd>{{ issuedAt }}</dd>
+      </div>
+    </dl>
+
+    <p class="tasker-print-strong">Avance del proyecto: {{ report().percentage }} %</p>
+    <div class="tasker-print-bar" aria-hidden="true">
+      <span [style.width.%]="report().percentage"></span>
+    </div>
+
+    <p>
+      Total: {{ report().considered }} · Por hacer: {{ report().pending }} · En progreso:
+      {{ report().inProgress }} · Completadas: {{ report().completed }}
+      @if (report().inReview) {
+        · En revisión: {{ report().inReview }}
+      }
+      @if (report().cancelled) {
+        · Canceladas (fuera del avance): {{ report().cancelled }}
+      }
+    </p>
+    <p class="tasker-print-strong">Tareas vencidas: {{ report().overdue }}</p>
+
+    <table class="tasker-print-table">
+      <thead>
+        <tr>
+          <th scope="col">Tarea</th>
+          <th scope="col">Responsable</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Fecha límite</th>
+          <th scope="col">Vencimiento</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of report().rows; track row.id) {
+          <tr>
+            <th scope="row">{{ row.name }}</th>
+            <td>{{ row.assignees }}</td>
+            <td>{{ labels[row.status] }}</td>
+            <td>{{ row.dueDate ? formatDate(row.dueDate) : 'Sin fecha' }}</td>
+            <td [class.tasker-print-strong]="row.overdue">{{ row.overdue ? 'Vencida' : '—' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">El proyecto todavía no tiene tareas.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <p class="tasker-print-note">
+      Reporte del estado actual del proyecto. Las fechas corresponden a la fecha límite de cada
+      tarea.
+    </p>
+  </article>
+</div>

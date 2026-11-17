@@ -69,6 +69,10 @@
   <z-dialog-footer>
     <div class="flex w-full flex-col gap-3">
 
+      @if (note()) {
+        <p class="text-xs text-muted-foreground">{{ note() }}</p>
+      }
+
       @if (identity() && canChangeStatus()) {
         <p class="text-xs text-muted-foreground">{{ identity() }}</p>
       }

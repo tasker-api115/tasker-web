@@ -1,0 +1,160 @@
+<div class="report">
+  <div class="report-toolbar">
+    <p class="report-lead">Reporte de tareas y avance del proyecto</p>
+    <button
+      #printButton
+      z-button
+      type="button"
+      [zDisabled]="status() !== 'ready'"
+      (click)="openPrint()"
+    >
+      <ng-icon name="lucidePrinter" aria-hidden="true" />
+      Imprimir reporte
+    </button>
+  </div>
+
+  @switch (status()) {
+    @case ('error') {
+      <div class="report-empty" role="alert">
+        <ng-icon name="lucideCircleAlert" class="report-error-icon" aria-hidden="true" />
+        <p class="report-empty-title">No se pudo cargar el reporte</p>
+        <p>Intenta de nuevo para consultar los datos actuales del proyecto.</p>
+        <button z-button type="button" (click)="retry()">
+          <ng-icon name="lucideRefreshCcw" aria-hidden="true" />
+          Reintentar
+        </button>
+      </div>
+    }
+    @case ('ready') {
+      @let data = report();
+
+      <section class="report-card report-progress" aria-labelledby="report-progress-title">
+        <div class="report-progress-heading">
+          <h2 id="report-progress-title">Avance del proyecto</h2>
+          <span class="report-percentage">{{ data.percentage }} %</span>
+        </div>
+        <div
+          class="report-bar"
+          role="progressbar"
+          aria-labelledby="report-progress-title"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="data.percentage"
+        >
+          <span [style.width.%]="data.percentage"></span>
+        </div>
+        <p class="report-muted">
+          @if (data.considered === 0) {
+            El proyecto todavía no tiene tareas.
+          } @else {
+            {{ data.completed }} de {{ data.considered }}
+            {{ data.considered === 1 ? 'tarea completada' : 'tareas completadas' }}
+          }
+        </p>
+      </section>
+
+      <ul class="report-counts" aria-label="Tareas por estado">
+        <li class="report-card">
+          <span>Por hacer</span>
+          <strong>{{ data.pending }}</strong>
+        </li>
+        <li class="report-card">
+          <span>En progreso</span>
+          <strong>{{ data.inProgress }}</strong>
+        </li>
+        <li class="report-card">
+          <span>Completadas</span>
+          <strong>{{ data.completed }}</strong>
+        </li>
+      </ul>
+
+      @if (data.inReview || data.cancelled) {
+        <p class="report-muted">
+          Además: {{ data.inReview }} en revisión · {{ data.cancelled }}
+          {{ data.cancelled === 1 ? 'cancelada' : 'canceladas' }} (las canceladas no cuentan en el
+          avance).
+        </p>
+      }
+
+      <p class="report-overdue" [class.has-overdue]="data.overdue > 0">
+        <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+        {{ overdueText() }}{{ data.overdue > 0 ? ' · requiere atención' : '' }}
+      </p>
+
+      <div class="report-table-frame" tabindex="0" role="region" aria-label="Tareas del reporte">
+        <table class="report-table">
+          <caption class="sr-only">
+            Tareas del proyecto
+            {{
+              detail().project.name
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Tarea</th>
+              <th scope="col">Responsable</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Fecha límite</th>
+              <th scope="col">Vencimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of data.rows; track row.id) {
+              <tr>
+                <th scope="row">{{ row.name }}</th>
+                <td>{{ row.assignees }}</td>
+                <td><app-task-status-badge [status]="row.status" /></td>
+                <td>{{ row.dueDate ? formatDate(row.dueDate) : 'Sin fecha' }}</td>
+                <td>
+                  @if (row.overdue) {
+                    <span class="report-overdue-cell">
+                      <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+                      Vencida
+                    </span>
+                  } @else {
+                    <span aria-label="No vencida">—</span>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="report-table-empty">
+                  <span class="report-empty-badge" aria-hidden="true">
+                    <ng-icon name="lucideChartNoAxesCombined" />
+                  </span>
+                  <p class="report-empty-title">Todavía no hay tareas para reportar</p>
+                  <p>
+                    Cuando agregues tareas al proyecto, aparecerán aquí con su estado y fecha
+                    límite.
+                  </p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="report-muted report-footnote">
+        Datos actuales del proyecto · consulta sin modificar tareas.
+      </p>
+    }
+    @default {
+      <div class="report-loading" role="status" aria-label="Cargando reporte">
+        <p class="report-muted">Cargando reporte…</p>
+        <span class="report-skeleton report-skeleton-wide"></span>
+        <div class="report-skeleton-row">
+          <span class="report-skeleton"></span>
+          <span class="report-skeleton"></span>
+          <span class="report-skeleton"></span>
+        </div>
+        @for (line of [1, 2, 3, 4]; track line) {
+          <span class="report-skeleton report-skeleton-line"></span>
+        }
+      </div>
+    }
+  }
+</div>
+
+@if (printOpen()) {
+  <app-project-report-print [detail]="detail()" [report]="report()" (closed)="closePrint()" />
+}

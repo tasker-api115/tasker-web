@@ -126,20 +126,30 @@
         </button>
 
         <button
+          id="project-schedule-button"
           type="button"
           class="section-link"
-          disabled
-          title="Todavía no disponible"
+          aria-controls="project-schedule-section"
+          [class.is-active]="activeSection() === 'schedule'"
+          [attr.aria-current]="
+            activeSection() === 'schedule' ? 'true' : null
+          "
+          (click)="selectSection('schedule')"
         >
           <ng-icon name="lucideCalendarDays" aria-hidden="true" />
           Cronograma
         </button>
 
         <button
+          id="project-reports-button"
           type="button"
           class="section-link"
-          disabled
-          title="Todavía no disponible"
+          aria-controls="project-reports-section"
+          [class.is-active]="activeSection() === 'reports'"
+          [attr.aria-current]="
+            activeSection() === 'reports' ? 'true' : null
+          "
+          (click)="selectSection('reports')"
         >
           <ng-icon
             name="lucideChartNoAxesCombined"
@@ -187,6 +197,27 @@
           (taskDeleted)="onTaskDeleted($event)" 
           (taskStatusChanged)="onTaskStatusChanged($event)"
           (taskUpdated)="onTaskUpdated($event)"/>
+      </section>
+
+      <section
+        id="project-schedule-section"
+        class="project-section"
+        aria-labelledby="project-schedule-button"
+        [hidden]="activeSection() !== 'schedule'"
+      >
+        <app-project-schedule
+          [projectId]="data.project.id"
+          (kanbanRequested)="selectSection('kanban')"
+        />
+      </section>
+
+      <section
+        id="project-reports-section"
+        class="project-section"
+        aria-labelledby="project-reports-button"
+        [hidden]="activeSection() !== 'reports'"
+      >
+        <app-project-report [detail]="data" />
       </section>
 
       <app-edit-project-dialog
