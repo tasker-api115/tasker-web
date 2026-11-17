@@ -5,9 +5,9 @@
 **Enlace:** https://api-proyecto-disc01.atlassian.net/browse/SCRUM-58  
 **Responsable:** QA  
 **Tipo de ejecución:** Pruebas funcionales manuales  
-**Versión del registro:** 1.0  
-**Fecha de elaboración:** 16 de noviembre de 2026  
-**Fecha y hora de ejecución:** Pendientes de registrar  
+**Versión del registro:** 1.1  
+**Fecha de actualización:** 16 de noviembre de 2026  
+**Fecha y hora de ejecución:** Pendientes de completar con los registros reales  
 **Ejecutor:** Responsable de QA  
 **Rama y commit del frontend probado:** Pendientes de registrar  
 **Aplicación:** Angular, `http://localhost:4200`  
@@ -16,49 +16,62 @@
 **Navegador y versión:** Pendientes de registrar  
 **Plan de referencia:** HU-39 — Plan Maestro de Pruebas  
 **Datos de referencia:** HU-53 — DS-01, DS-02, DS-03, DS-04 y DS-05  
-**Estado:** Ejecución parcial, con un defecto funcional confirmado por QA y dependencias pendientes de implementación.
+**Estado:** Ejecución parcial actualizada, sin casos originales fallidos actualmente
 
 ## 1. Objetivo
 
-Documentar los resultados de las pruebas de gestión de tareas de Tasker conforme a los criterios de aceptación de HU-42, incluyendo creación, consulta, edición, eliminación, asignación de responsables, cambios de estado, validación de fechas y restricciones de autorización.
+Documentar los resultados de las pruebas funcionales de gestión de tareas correspondientes a HU-42, conforme a los criterios de aceptación registrados en Jira.
 
-Los resultados se registran mediante las fichas de ejecución del Anexo A del Plan Maestro de Pruebas HU-39 y se relacionan con los datasets definidos en HU-53.
+Las pruebas comprenden creación, consulta, edición y eliminación de tareas, asignación de responsables, cambios de estado, validación de fechas y restricciones de autorización.
+
+Se verifica especialmente el comportamiento establecido en HU-31: solamente el usuario asignado a una tarea debe poder modificar su estado.
+
+Los resultados se registran mediante los casos del Plan Maestro de Pruebas HU-39 y los datasets relacionados de HU-53.
 
 ## 2. Alcance y condiciones de ejecución
 
-Las pruebas se realizaron manualmente desde la aplicación Angular conectada al Supabase compartido del equipo.
+Las pruebas se realizaron manualmente desde Angular, utilizando la conexión existente con el Supabase compartido del equipo.
 
-QA reportó que las funcionalidades de creación, consulta y eliminación de tareas funcionan correctamente. También confirmó el funcionamiento de los cambios de estado y las validaciones de fechas.
+Durante la primera ejecución, QA confirmó el funcionamiento de la creación, consulta y eliminación de tareas, los cambios generales de estado y las validaciones de fechas.
 
-Durante la prueba de edición se identificó un problema funcional: al seleccionar el botón Editar, la aplicación no responde a la acción esperada. Por este motivo, la edición se registra como fallida.
+En esa ejecución se identificó que el botón Editar no respondía, lo que impedía completar la modificación de una tarea existente.
 
-Las funcionalidades de asignación de responsables, permisos del propietario y restricción de cambio de estado exclusivamente al usuario asignado no están implementadas. Por tanto, las comprobaciones que dependen de ellas permanecen bloqueadas.
+En la actualización de esta historia, QA confirmó que el botón Editar ya funciona. Por tanto, CP-TAR-03 se actualiza de fallido a aprobado, conservando el historial del defecto detectado.
 
-No se ha confirmado que los scripts de restauración de HU-53 hayan sido ejecutados antes de esta campaña. Las referencias a datasets indican los conjuntos de datos previstos, sin afirmar que todos los registros de QA fueron cargados.
+También se confirmó el funcionamiento de las siguientes restricciones:
 
-Las funcionalidades que presentan resultados satisfactorios se registran según lo informado por QA. Los pasos adicionales de persistencia, permisos y límites que no hayan sido comprobados permanecen pendientes de verificación.
+- El usuario asignado puede cambiar el estado de su tarea.
+- Un usuario no asignado no puede modificar el estado de esa tarea.
+
+En consecuencia, CP-TAR-06 y CP-TAR-07 pasan a estado aprobado según la ejecución reportada por QA.
+
+La asignación o el cambio de responsable desde la aplicación no se ha confirmado como implementada, por lo que CP-TAR-05 permanece bloqueado de acuerdo con la última información disponible.
+
+Las validaciones de fechas se encuentran aprobadas. Sin embargo, no se dispone de resultados completos para todas las validaciones generales del formulario, por lo que CP-TAR-02 continúa pendiente de completar.
+
+No se ha confirmado la restauración de los datasets de HU-53 durante esta campaña. Sus identificadores se utilizan como referencias de los datos requeridos para reproducir los escenarios.
+
+Las pruebas de autorización reportadas corresponden al comportamiento funcional observado. No se afirma que hayan sido ejecutadas pruebas independientes sobre políticas RLS mediante solicitudes directas autenticadas a Supabase.
 
 ## 3. Matriz de trazabilidad
 
-| Criterio de aceptación | Caso de prueba | Dataset | Estado |
+| Criterio de aceptación | Caso | Dataset | Estado |
 |---|---|---|---|
 | Creación de tareas | CP-TAR-01 | DS-02, DS-04 | Aprobado |
-| Formulario con datos inválidos o vacíos | CP-TAR-02 | DS-05 | Pendiente de completar; se verificaron fechas |
-| Edición de tareas | CP-TAR-03 | DS-04 | Fallido |
+| Validaciones generales del formulario | CP-TAR-02 | DS-05 | Pendiente de completar |
+| Edición de tareas | CP-TAR-03 | DS-04 | Aprobado |
 | Eliminación de tareas | CP-TAR-04 | DS-04 | Aprobado |
-| Cambio de responsable | CP-TAR-05 | DS-03, DS-04 | Bloqueado |
-| Cambio de estado por usuario asignado | CP-TAR-06 | DS-04 | Bloqueado para validación completa de HU-31 |
-| Rechazo de cambio de estado por no asignado | CP-TAR-07 | DS-03, DS-04 | Bloqueado |
+| Asignación o cambio de responsable | CP-TAR-05 | DS-03, DS-04 | Bloqueado |
+| Cambio de estado por usuario asignado | CP-TAR-06 | DS-04 | Aprobado |
+| Rechazo de cambio de estado por usuario no asignado | CP-TAR-07 | DS-03, DS-04 | Aprobado |
 | Consulta funcional de tareas | EXT-TAR-01 | DS-02, DS-04 | Aprobado |
 | Validación de fechas | EXT-TAR-02 | DS-05 | Aprobado |
-| Cambio funcional de estado, sin comprobar autorización | EXT-TAR-03 | DS-04 | Aprobado según QA |
-| Registro de defectos | DEF-HU42-01 | — | Defecto documentado |
+| Cambio funcional de estado | EXT-TAR-03 | DS-04 | Aprobado |
+| Registro y seguimiento del defecto de edición | DEF-HU42-01 | — | Corregido funcionalmente según QA |
 
-Los casos CP-TAR-01 a CP-TAR-07 corresponden al inventario original de HU-39.
+Los casos CP-TAR-01 a CP-TAR-07 pertenecen al inventario original de HU-39.
 
-Los identificadores EXT-TAR-01, EXT-TAR-02 y EXT-TAR-03 se utilizan para documentar comprobaciones funcionales adicionales de manera independiente. No se incorporan al total original de 45 casos de HU-39 sin la aprobación correspondiente.
-
-La prueba de cambio funcional de estado no sustituye CP-TAR-06 ni CP-TAR-07, ya que ambos incluyen restricciones específicas de autorización.
+EXT-TAR-01, EXT-TAR-02 y EXT-TAR-03 son casos complementarios utilizados para documentar las comprobaciones funcionales de manera independiente. No modifican el total original de 45 casos de HU-39.
 
 ## 4. Fichas de ejecución
 
@@ -67,37 +80,34 @@ La prueba de cambio funcional de estado no sustituye CP-TAR-06 ni CP-TAR-07, ya 
 **Historia:** SCRUM-58 / HU-42  
 **Módulo:** Gestión de tareas  
 **Prioridad:** Alta  
-**Estado:** Aprobado según QA
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | CP-TAR-01 / HU-42 |
-| Módulo y prioridad | Gestión de tareas / Alta |
-| Ejecutado por / fecha y hora | QA / pendientes de registrar |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-02, DS-04 |
-| Precondiciones | Usuario autenticado, proyecto disponible y formulario de creación de tareas habilitado |
-| Resultado esperado | La tarea se crea con datos válidos, aparece en el proyecto y conserva sus campos después de recargar |
+| Identificador | CP-TAR-01 |
+| Precondiciones | Usuario autenticado, proyecto disponible y formulario de creación habilitado |
+| Dataset | DS-02, DS-04 |
+| Resultado esperado | La tarea se crea con datos válidos y aparece en el proyecto correspondiente |
 | Resultado observado | QA confirmó que la creación de tareas funciona correctamente |
 | Estado | Aprobado según QA |
-| Evidencia / Jira de defecto | EV-HU42-01 / sin defecto reportado |
-| Observaciones / próxima acción | Incorporar captura y confirmar persistencia tras recargar, si no se verificó |
+| Evidencia | EV-HU42-01 |
+| Defectos | No se reportaron |
 
-**Pasos de prueba:**
+**Procedimiento de prueba:**
 
 1. Iniciar sesión con una cuenta de prueba.
 2. Acceder a un proyecto disponible.
 3. Abrir el formulario de creación de tareas.
-4. Introducir los datos requeridos con valores válidos.
+4. Completar los campos requeridos con datos válidos.
 5. Guardar la tarea.
-6. Verificar que la aplicación muestre el registro creado.
-7. Recargar la página y comprobar que la tarea conserva sus datos.
+6. Comprobar que la tarea aparezca en la aplicación.
+7. Verificar los datos registrados.
 
-**Resultado:** Aprobado según la ejecución reportada por QA.
+**Resultado:** Aprobado según la ejecución reportada.
 
-La aprobación reportada corresponde al funcionamiento de creación. No se declara comprobada la persistencia después de recargar si esa acción no se realizó durante la prueba.
+La persistencia tras recargar deberá identificarse expresamente en la evidencia cuando se haya verificado.
 
-### CP-TAR-02 — Validación de datos inválidos o campos vacíos
+### CP-TAR-02 — Validaciones generales del formulario
 
 **Historia:** SCRUM-58 / HU-42  
 **Módulo:** Formularios de tareas  
@@ -106,101 +116,95 @@ La aprobación reportada corresponde al funcionamiento de creación. No se decla
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | CP-TAR-02 / HU-42 |
-| Módulo y prioridad | Validaciones de formularios / Alta |
-| Ejecutado por / fecha y hora | QA / ejecución parcial reportada |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-05 |
-| Precondiciones | Formulario de creación de tareas disponible |
-| Resultado esperado | El formulario rechaza campos inválidos o vacíos conforme a las reglas aprobadas y no crea registros incorrectos |
-| Resultado observado | QA confirmó que las validaciones de fechas funcionan. No se informó el resultado de todas las demás validaciones de campos |
+| Identificador | CP-TAR-02 |
+| Precondiciones | Formulario de tareas disponible |
+| Dataset | DS-05 |
+| Resultado esperado | El formulario rechaza datos inválidos o campos obligatorios vacíos conforme a sus reglas |
+| Resultado observado | Se confirmó el funcionamiento de las validaciones de fechas, pero no se informaron resultados completos sobre las demás reglas del formulario |
 | Estado | Pendiente de completar |
-| Evidencia / Jira de defecto | EV-HU42-06 para fechas / sin defecto confirmado |
-| Observaciones / próxima acción | Verificar campos obligatorios y otros valores inválidos definidos en Jira |
+| Evidencia | EV-HU42-06, correspondiente únicamente a fechas |
+| Defectos | Ninguno confirmado para este caso |
 
-**Pasos de prueba:**
+**Procedimiento pendiente:**
 
-1. Abrir el formulario de tareas.
-2. Intentar guardar una tarea omitiendo un campo obligatorio.
-3. Comprobar la validación correspondiente.
-4. Introducir otros valores inválidos conforme a las reglas aprobadas.
-5. Intentar guardar nuevamente.
-6. Comprobar que el formulario no acepte indebidamente esos datos.
-7. Registrar los mensajes obtenidos.
+1. Abrir el formulario de creación de tareas.
+2. Intentar guardar una tarea con campos obligatorios vacíos.
+3. Verificar las respuestas de validación.
+4. Introducir otros valores inválidos previstos en los requisitos.
+5. Comprobar que el sistema no acepte indebidamente los datos.
+6. Registrar los mensajes y resultados obtenidos.
 
 **Resultado:** Pendiente de completar.
 
-La validación de fechas se registra por separado como aprobada en EXT-TAR-02. Esa comprobación no permite afirmar que todas las demás reglas del formulario hayan sido probadas.
+Las validaciones de fechas se mantienen aprobadas en EXT-TAR-02.
 
 ### CP-TAR-03 — Edición de tareas
 
 **Historia:** SCRUM-58 / HU-42  
 **Módulo:** Gestión de tareas  
 **Prioridad:** Alta  
-**Estado:** Fallido
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | CP-TAR-03 / HU-42 |
-| Módulo y prioridad | Gestión de tareas / Alta |
-| Ejecutado por / fecha y hora | QA / pendientes de registrar |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-04 |
-| Precondiciones | Usuario autenticado y tarea existente con botón Editar visible |
-| Resultado esperado | Al seleccionar Editar, la aplicación permite modificar los campos autorizados y guardar cambios persistentes |
-| Resultado observado | Al seleccionar el botón Editar, la interfaz no responde con la acción esperada y no se puede completar la edición |
-| Estado | Fallido |
-| Evidencia / Jira de defecto | EV-HU42-03 / DEF-HU42-01 |
-| Observaciones / próxima acción | Reportar el defecto a desarrollo y repetir la prueba después de corregirlo |
+| Identificador | CP-TAR-03 |
+| Precondiciones | Usuario autenticado y tarea existente con opción Editar disponible |
+| Dataset | DS-04 |
+| Resultado esperado | El botón Editar permite modificar los campos autorizados y guardar los cambios |
+| Resultado observado | QA confirmó que la edición de tareas ya funciona correctamente |
+| Estado inicial | Fallido: el botón Editar no respondía |
+| Estado actual | Aprobado según QA |
+| Evidencia anterior | EV-HU42-03 — fallo del botón Editar |
+| Evidencia de reejecución | EV-HU42-07 — edición corregida, pendiente de incorporar |
+| Defecto asociado | DEF-HU42-01 |
 
-**Pasos de prueba:**
+**Procedimiento de reejecución:**
 
 1. Iniciar sesión en Tasker.
-2. Acceder al proyecto que contiene una tarea existente.
-3. Ubicar la tarea que se desea modificar.
-4. Seleccionar el botón Editar.
-5. Observar si se abre el formulario o se habilita la edición.
-6. Registrar que no ocurre la respuesta esperada.
+2. Acceder a un proyecto que contenga una tarea existente.
+3. Seleccionar el botón Editar.
+4. Comprobar que se habilite el formulario o mecanismo de edición.
+5. Modificar un campo permitido de la tarea.
+6. Guardar los cambios.
+7. Comprobar que la aplicación muestre la información modificada.
+8. Verificar la persistencia después de recargar, si esta comprobación forma parte de la ejecución.
 
-**Resultado:** Fallido.
+**Resultado:** Aprobado según la nueva ejecución reportada por QA.
 
-La edición no pudo completarse porque el botón Editar no responde. No se ha identificado todavía la causa técnica del problema.
+**Actualización de versión 1.1:** El defecto que impedía editar tareas ya no se reproduce en el flujo probado. Se mantiene su registro histórico para conservar la trazabilidad entre el fallo inicial y la corrección.
 
-No se atribuye el error a Angular, Supabase, permisos, eventos del navegador ni políticas RLS sin un análisis posterior.
+El cierre administrativo de la incidencia en Jira deberá verificarse por separado.
 
 ### CP-TAR-04 — Eliminación de tareas
 
 **Historia:** SCRUM-58 / HU-42  
 **Módulo:** Gestión de tareas  
 **Prioridad:** Media  
-**Estado:** Aprobado según QA
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | CP-TAR-04 / HU-42 |
-| Módulo y prioridad | Gestión de tareas / Media |
-| Ejecutado por / fecha y hora | QA / pendientes de registrar |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-04 |
-| Precondiciones | Tarea descartable de prueba y funcionalidad de eliminación disponible |
-| Resultado esperado | La tarea se elimina mediante el flujo autorizado y la aplicación refleja el resultado |
+| Identificador | CP-TAR-04 |
+| Precondiciones | Tarea descartable de prueba y operación de eliminación disponible |
+| Dataset | DS-04 |
+| Resultado esperado | La tarea se elimina correctamente y el resultado se refleja en la aplicación |
 | Resultado observado | QA confirmó que la eliminación de tareas funciona correctamente |
 | Estado | Aprobado según QA |
-| Evidencia / Jira de defecto | EV-HU42-04 / sin defecto reportado |
-| Observaciones / próxima acción | Documentar la confirmación y desaparición del registro, cuando corresponda |
+| Evidencia | EV-HU42-04 |
+| Defectos | No se reportaron |
 
-**Pasos de prueba:**
+**Procedimiento de prueba:**
 
-1. Acceder a un proyecto con una tarea descartable.
+1. Acceder al proyecto que contiene una tarea descartable.
 2. Seleccionar la tarea.
 3. Utilizar la opción Eliminar.
-4. Confirmar la operación si el sistema presenta una confirmación.
-5. Comprobar que el resultado se refleja en el listado.
-6. Recargar la vista para verificar el estado persistido.
+4. Confirmar la operación si corresponde.
+5. Comprobar que la tarea deje de aparecer como disponible.
+6. Verificar el resultado después de actualizar la vista, si se realizó esa comprobación.
 
 **Resultado:** Aprobado según QA.
 
-La prueba debe realizarse únicamente sobre registros de prueba autorizados, debido a que Supabase es compartido.
+La operación debe realizarse exclusivamente sobre datos de prueba autorizados.
 
 ### CP-TAR-05 — Asignación o cambio de responsable
 
@@ -211,267 +215,247 @@ La prueba debe realizarse únicamente sobre registros de prueba autorizados, deb
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | CP-TAR-05 / HU-42 |
-| Módulo y prioridad | Asignaciones / Alta |
-| Ejecutado por / fecha y hora | QA / no ejecutado |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-03, DS-04 |
-| Precondiciones | Proyecto con integrantes y controles de asignación habilitados |
-| Resultado esperado | Un usuario autorizado puede asignar o cambiar el responsable de una tarea y la relación se conserva |
-| Resultado observado | QA informó que la asignación de responsables todavía no está implementada |
-| Estado | Bloqueado |
-| Evidencia / Jira de defecto | No disponible / dependencia de implementación |
-| Observaciones / próxima acción | Ejecutar al estar disponible la asignación de responsables |
+| Identificador | CP-TAR-05 |
+| Precondiciones | Proyecto con integrantes y funcionalidad de asignación de responsables disponible |
+| Dataset | DS-03, DS-04 |
+| Resultado esperado | Un usuario autorizado puede asignar o cambiar el responsable de una tarea y guardar la relación |
+| Resultado observado | No se ha confirmado que la asignación o el cambio de responsables desde la aplicación esté implementado |
+| Estado | Bloqueado, según la última información disponible |
+| Evidencia | No disponible |
+| Defectos | No se registra defecto funcional de ejecución |
 
-**Pasos pendientes:**
+**Procedimiento pendiente:**
 
-1. Preparar un proyecto con integrantes.
-2. Acceder a una tarea del proyecto.
-3. Abrir la opción para asignar responsable.
-4. Seleccionar un integrante permitido.
-5. Guardar la asignación.
-6. Verificar el responsable asociado.
-7. Cambiarlo por otro integrante permitido.
-8. Comprobar la persistencia del cambio.
+1. Iniciar sesión con una cuenta autorizada.
+2. Abrir un proyecto con integrantes.
+3. Seleccionar una tarea.
+4. Abrir la funcionalidad de asignación.
+5. Seleccionar a un integrante permitido.
+6. Guardar la asignación.
+7. Comprobar que el responsable aparezca asociado a la tarea.
+8. Cambiarlo por otro integrante autorizado.
+9. Verificar que la modificación se conserve.
 
-**Resultado:** No ejecutado por falta de implementación.
+**Resultado:** No ejecutado en este registro por falta de confirmación de la funcionalidad.
 
-### CP-TAR-06 — Cambio de estado realizado por el usuario asignado
+La aprobación de las restricciones de cambio de estado no demuestra que se haya probado la operación de asignar o cambiar responsables desde la interfaz.
+
+### CP-TAR-06 — Cambio de estado por usuario asignado
 
 **Historia:** SCRUM-58 / HU-42, relacionada con HU-31  
 **Módulo:** Estados y autorización  
 **Prioridad:** Crítica  
-**Estado:** Bloqueado para validación completa
+**Estado:** Aprobado según QA
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | CP-TAR-06 / HU-42 |
-| Módulo y prioridad | Estados y permisos / Crítica |
-| Ejecutado por / fecha y hora | QA / verificación funcional parcial reportada |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-04 |
-| Precondiciones | Tarea con responsable asignado y sesión autenticada del responsable |
-| Resultado esperado | El usuario asignado puede cambiar el estado de su tarea entre los estados permitidos y los cambios persisten |
-| Resultado observado | QA confirmó que el cambio funcional de estado opera correctamente, pero no existe la asignación de responsables necesaria para verificar que el usuario sea el asignado |
-| Estado | Bloqueado para validación completa |
-| Evidencia / Jira de defecto | EV-HU42-05, relativa al cambio funcional / dependencia HU-31 |
-| Observaciones / próxima acción | Verificar la identidad asignada, permisos y persistencia una vez implementadas las asignaciones |
+| Identificador | CP-TAR-06 |
+| Precondiciones | Tarea con responsable asignado y sesión autenticada del usuario correspondiente |
+| Dataset | DS-04 |
+| Resultado esperado | El usuario asignado puede modificar el estado de su tarea mediante las transiciones permitidas |
+| Resultado observado | QA confirmó que el cambio de estado realizado por el usuario asignado funciona correctamente |
+| Estado inicial | Bloqueado para validación completa |
+| Estado actual | Aprobado según QA |
+| Evidencia | EV-HU42-08 — cambio de estado por usuario asignado |
+| Defectos | No se reportaron |
 
-**Pasos pendientes para completar el caso:**
+**Procedimiento de prueba:**
 
-1. Preparar una tarea asignada a un integrante específico.
-2. Iniciar sesión con la cuenta de ese integrante.
-3. Cambiar la tarea de Por hacer a En progreso.
-4. Cambiarla posteriormente a Completada.
-5. Recargar la aplicación.
-6. Verificar que los cambios se conservaron y que fueron realizados por el usuario autorizado.
+1. Preparar una tarea con un responsable identificado.
+2. Iniciar sesión con la cuenta del usuario asignado.
+3. Acceder a la tarea.
+4. Modificar su estado mediante el control disponible.
+5. Comprobar que la aplicación acepte el cambio.
+6. Verificar que se muestre el nuevo estado.
+7. Comprobar su persistencia después de actualizar la vista, si esta acción fue ejecutada.
 
-**Resultado:** El cambio funcional de estado fue reportado como satisfactorio, pero no puede declararse aprobado el caso completo de HU-31.
+**Resultado:** Aprobado según la ejecución reportada por QA.
 
-### CP-TAR-07 — Restricción de cambio de estado para usuario no asignado
+**Actualización de versión 1.1:** Se confirmó que el usuario asignado puede cambiar el estado de la tarea.
+
+Esta aprobación corresponde al comportamiento probado desde la aplicación. La persistencia y los permisos de la API deberán documentarse por separado si no fueron verificados.
+
+### CP-TAR-07 — Rechazo de cambio de estado por usuario no asignado
 
 **Historia:** SCRUM-58 / HU-42, relacionada con HU-31  
 **Módulo:** Seguridad y permisos  
 **Prioridad:** Crítica  
-**Estado:** Bloqueado
+**Estado:** Aprobado según QA
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | CP-TAR-07 / HU-42 |
-| Módulo y prioridad | Seguridad / Crítica |
-| Ejecutado por / fecha y hora | QA / no ejecutado |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-03, DS-04 |
-| Precondiciones | Tarea asignada a un usuario y otro integrante del proyecto sin asignación a esa tarea |
-| Resultado esperado | El usuario no asignado no puede modificar el estado desde la interfaz ni mediante solicitudes no privilegiadas a Supabase |
-| Resultado observado | La asignación de responsables y sus restricciones de autorización no están implementadas |
-| Estado | Bloqueado |
-| Evidencia / Jira de defecto | No disponible |
-| Observaciones / próxima acción | Coordinar validación de interfaz y RLS con backend |
+| Identificador | CP-TAR-07 |
+| Precondiciones | Tarea asignada a un usuario y otro usuario autenticado que no sea el responsable |
+| Dataset | DS-03, DS-04 |
+| Resultado esperado | El usuario no asignado no puede modificar el estado de la tarea |
+| Resultado observado | QA confirmó que la aplicación rechaza el cambio de estado cuando lo intenta un usuario no asignado |
+| Estado inicial | Bloqueado |
+| Estado actual | Aprobado según QA |
+| Evidencia | EV-HU42-09 — rechazo de cambio de estado por usuario no asignado |
+| Defectos | No se reportaron |
 
-**Pasos pendientes:**
+**Procedimiento de prueba:**
 
-1. Preparar una tarea asignada a un integrante.
-2. Iniciar sesión con otro integrante del mismo proyecto que no esté asignado a esa tarea.
-3. Intentar modificar su estado.
-4. Comprobar que la operación sea rechazada.
-5. Verificar que el estado permanezca sin cambios.
-6. Comprobar la restricción mediante una solicitud autenticada no privilegiada a Supabase.
+1. Preparar una tarea con un responsable asignado.
+2. Iniciar sesión con otra cuenta que no sea la asignada.
+3. Acceder a la tarea.
+4. Intentar modificar su estado.
+5. Comprobar que la aplicación impida o rechace la operación.
+6. Verificar que el estado de la tarea permanezca sin cambios.
 
-**Resultado:** No ejecutado.
+**Resultado:** Aprobado según QA.
 
-No se confirma ningún defecto de autorización porque las condiciones necesarias para realizar la prueba aún no están implementadas.
+**Actualización de versión 1.1:** Se confirmó el rechazo de cambios de estado realizados por usuarios no asignados.
+
+La aprobación funcional no acredita automáticamente una prueba independiente de las restricciones RLS de Supabase. Si dicha comprobación se realizó, deberán incorporarse el procedimiento y su evidencia.
 
 ### EXT-TAR-01 — Consulta funcional de tareas
 
 **Historia:** SCRUM-58 / HU-42  
 **Módulo:** Consulta de tareas  
 **Prioridad:** Alta, caso complementario  
-**Estado:** Aprobado según QA
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | EXT-TAR-01 / HU-42 |
-| Módulo y prioridad | Consulta de tareas / Alta |
-| Ejecutado por / fecha y hora | QA / pendientes de registrar |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-02, DS-04 |
+| Identificador | EXT-TAR-01 |
 | Precondiciones | Proyecto con tareas existentes |
-| Resultado esperado | El usuario puede consultar las tareas visibles en el proyecto y sus datos correspondientes |
-| Resultado observado | QA informó que la consulta de tareas funciona correctamente |
-| Estado | Aprobado según QA |
-| Evidencia / Jira de defecto | EV-HU42-02 / sin defecto reportado |
-| Observaciones / próxima acción | Registrar los campos y datos comprobados en la consulta |
+| Dataset | DS-02, DS-04 |
+| Resultado esperado | El usuario puede consultar las tareas visibles y su información |
+| Resultado observado | QA confirmó que la consulta de tareas funciona correctamente |
+| Estado | Aprobado |
+| Evidencia | EV-HU42-02 |
+| Defectos | No se reportaron |
 
-**Pasos de prueba:**
+**Procedimiento de prueba:**
 
 1. Iniciar sesión.
-2. Acceder a un proyecto con tareas.
+2. Acceder a un proyecto.
 3. Abrir el listado o la vista de tareas.
-4. Comprobar que las tareas del proyecto se visualizan.
-5. Consultar los datos disponibles de una tarea.
-6. Verificar que la información corresponda a la tarea seleccionada.
+4. Seleccionar una tarea cuando corresponda.
+5. Comprobar los datos mostrados.
 
 **Resultado:** Aprobado según QA.
-
-La consulta funcional no demuestra por sí sola que los usuarios sin autorización tengan restringido el acceso a las tareas.
 
 ### EXT-TAR-02 — Validación de fechas de tareas
 
 **Historia:** SCRUM-58 / HU-42  
 **Módulo:** Formularios y fechas  
 **Prioridad:** Alta, caso complementario  
-**Estado:** Aprobado según QA
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | EXT-TAR-02 / HU-42 |
-| Módulo y prioridad | Validación de fechas / Alta |
-| Ejecutado por / fecha y hora | QA / pendientes de registrar |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-05 |
-| Precondiciones | Formulario de tareas con campos de fecha disponible |
-| Resultado esperado | La aplicación valida las fechas conforme a las restricciones aprobadas y rechaza las combinaciones inválidas |
+| Identificador | EXT-TAR-02 |
+| Precondiciones | Formulario de tareas con campos de fecha disponibles |
+| Dataset | DS-05 |
+| Resultado esperado | El formulario valida las fechas conforme a las restricciones configuradas |
 | Resultado observado | QA confirmó que las validaciones de fechas funcionan correctamente |
-| Estado | Aprobado según QA |
-| Evidencia / Jira de defecto | EV-HU42-06 / sin defecto reportado |
-| Observaciones / próxima acción | Registrar las fechas concretas utilizadas y el mensaje de validación, si lo hubo |
+| Estado | Aprobado |
+| Evidencia | EV-HU42-06 |
+| Defectos | No se reportaron |
 
-**Pasos de prueba:**
+**Procedimiento de prueba:**
 
-1. Abrir el formulario de creación de tareas.
-2. Introducir las fechas requeridas.
-3. Intentar guardar una combinación que incumpla las restricciones configuradas.
+1. Abrir el formulario de tareas.
+2. Introducir fechas que incumplan una restricción definida.
+3. Intentar continuar con el registro.
 4. Comprobar que la validación se active.
 5. Corregir las fechas.
-6. Verificar que la aplicación permita continuar con valores válidos.
+6. Verificar que los valores válidos sean aceptados.
 
 **Resultado:** Aprobado según QA.
 
-No se declara que se hayan probado fechas iguales, valores extremos u otras combinaciones específicas sin evidencia de su ejecución.
+La evidencia deberá identificar las fechas utilizadas y el mensaje mostrado, cuando corresponda.
 
 ### EXT-TAR-03 — Cambio funcional de estado de tareas
 
 **Historia:** SCRUM-58 / HU-42  
 **Módulo:** Estados de tareas  
 **Prioridad:** Alta, caso complementario  
-**Estado:** Aprobado según QA
+**Estado:** Aprobado
 
 | Campo | Registro |
 |---|---|
-| ID del caso / historia | EXT-TAR-03 / HU-42 |
-| Módulo y prioridad | Estados de tareas / Alta |
-| Ejecutado por / fecha y hora | QA / pendientes de registrar |
-| Build / commit / navegador | Pendientes de registrar |
-| Entorno / versión del dataset | Angular y Supabase compartido / DS-04 |
-| Precondiciones | Tarea disponible y control de cambio de estado habilitado |
-| Resultado esperado | La tarea cambia al estado seleccionado, dentro de las transiciones permitidas por la aplicación |
-| Resultado observado | QA confirmó que la funcionalidad de cambio de estado opera correctamente |
-| Estado | Aprobado según QA |
-| Evidencia / Jira de defecto | EV-HU42-05 / sin defecto funcional reportado |
-| Observaciones / próxima acción | Registrar las transiciones realizadas y comprobar su persistencia tras recargar |
+| Identificador | EXT-TAR-03 |
+| Precondiciones | Tarea disponible con un control de cambio de estado habilitado |
+| Dataset | DS-04 |
+| Resultado esperado | La aplicación actualiza el estado de la tarea mediante una transición permitida |
+| Resultado observado | QA confirmó que el cambio funcional de estado opera correctamente |
+| Estado | Aprobado |
+| Evidencia | EV-HU42-05 |
+| Defectos | No se reportaron |
 
-**Pasos de prueba:**
+**Procedimiento de prueba:**
 
-1. Abrir un proyecto con tareas.
+1. Acceder a un proyecto con tareas.
 2. Seleccionar una tarea.
-3. Utilizar el control de cambio de estado.
-4. Seleccionar otro estado disponible.
-5. Comprobar que la aplicación refleja el cambio.
-6. Recargar la vista y verificar el estado persistido.
+3. Utilizar el control para cambiar su estado.
+4. Seleccionar otro estado permitido.
+5. Comprobar que la aplicación refleje el cambio.
 
 **Resultado:** Aprobado según QA.
 
-Esta prueba confirma el funcionamiento general reportado del cambio de estado. No verifica que solo el responsable asignado pueda ejecutar la operación.
+Este caso complementa las pruebas de autorización CP-TAR-06 y CP-TAR-07, pero no las sustituye.
 
-## 5. Registro de defectos
+## 5. Seguimiento de defectos
 
-### DEF-HU42-01 — El botón Editar de tareas no responde
+### DEF-HU42-01 — El botón Editar de tareas no respondía
 
-**Identificador provisional de QA:** DEF-HU42-01  
-**Historia afectada:** SCRUM-58 / HU-42  
+**Identificador provisional:** DEF-HU42-01  
+**Historia relacionada:** SCRUM-58 — HU-42  
 **Caso afectado:** CP-TAR-03  
 **Tipo:** Defecto funcional  
 **Severidad propuesta:** Alta  
-**Estado:** Abierto, pendiente de corrección y reejecución  
-**Responsable técnico:** Por asignar en Jira  
-**Identificador definitivo de Jira:** Pendiente de creación o vinculación
+**Estado inicial:** Abierto, pendiente de corrección  
+**Estado funcional actual:** Corregido y revalidado según QA  
+**Estado administrativo en Jira:** Pendiente de verificar  
+**Identificador definitivo de Jira:** Pendiente de registrar
 
-**Descripción:**
+**Descripción inicial:**
 
-Durante las pruebas de gestión de tareas se identificó que el botón Editar no responde a la interacción del usuario. Esto impide acceder al flujo de edición y modificar los datos de una tarea existente desde la aplicación.
+Durante las pruebas de edición de tareas, se identificó que el botón Editar no respondía a la interacción del usuario, lo que impedía completar la modificación de una tarea existente.
 
-**Precondiciones:**
+**Resultado esperado inicial:**
 
-- Usuario autenticado en Tasker.
-- Proyecto con al menos una tarea.
-- Botón Editar disponible en la interfaz.
+Al seleccionar Editar, el sistema debía abrir o habilitar el mecanismo para modificar los datos de la tarea.
 
-**Pasos para reproducir:**
+**Resultado obtenido inicialmente:**
 
-1. Iniciar sesión en Tasker.
-2. Acceder a un proyecto con tareas.
-3. Localizar una tarea existente.
-4. Seleccionar el botón Editar.
-5. Observar la respuesta de la aplicación.
+La aplicación no producía la respuesta esperada y no permitía completar la edición.
 
-**Resultado esperado:**
+**Resultado de la nueva ejecución:**
 
-La aplicación debe abrir el formulario de edición o habilitar el mecanismo correspondiente para modificar los campos permitidos de la tarea.
+QA confirmó que la edición de tareas ya funciona correctamente.
 
-**Resultado obtenido:**
+**Evidencias:**
 
-El botón Editar no produce la respuesta funcional esperada. La edición no puede completarse desde el flujo probado.
+- EV-HU42-03: fallo inicial del botón Editar.
+- EV-HU42-07: resultado de la edición después de la corrección.
 
-**Impacto:**
+**Estado de seguimiento:**
 
-El usuario no puede modificar los datos de una tarea mediante el botón de edición, lo que impide satisfacer el criterio de edición de HU-42.
+El defecto ya no se reproduce según la nueva ejecución reportada. Debe mantenerse la relación entre la incidencia original y la reejecución de CP-TAR-03.
 
-**Evidencia:** EV-HU42-03.
-
-**Acción recomendada:**
-
-El equipo de desarrollo debe revisar la interacción del botón Editar y su integración con el formulario o mecanismo de edición, identificar la causa y corregirla.
-
-Después de integrar la corrección, QA deberá repetir CP-TAR-03 y comprobar la persistencia de los cambios.
-
-La causa técnica permanece sin determinar. No se atribuye el fallo a un componente específico sin evidencia adicional.
+No se declara cerrado el ticket en Jira sin verificar su estado real.
 
 ## 6. Resumen de ejecución
 
-### 6.1. Casos originales del Plan Maestro de Pruebas HU-39
+### 6.1. Casos originales de HU-39
 
-| Estado | Cantidad | Casos |
+| Estado | Cantidad | Identificadores |
 |---|---:|---|
-| Aprobados | 2 | CP-TAR-01, CP-TAR-04 |
-| Fallidos | 1 | CP-TAR-03 |
-| Bloqueados | 3 | CP-TAR-05, CP-TAR-06, CP-TAR-07 |
+| Aprobados | 5 | CP-TAR-01, CP-TAR-03, CP-TAR-04, CP-TAR-06, CP-TAR-07 |
+| Fallidos actualmente | 0 | Ninguno |
+| Bloqueados | 1 | CP-TAR-05 |
 | Pendientes de completar | 1 | CP-TAR-02 |
 | Total | 7 | — |
 
-El cambio de estado funciona según QA, pero CP-TAR-06 todavía requiere comprobar que el usuario que lo ejecuta sea el asignado de la tarea. Por eso no se declara aprobado el caso completo.
+**Resultado:** Cinco casos originales aprobados según QA, uno bloqueado y uno pendiente de completar.
 
-### 6.2. Comprobaciones complementarias
+El defecto inicial de CP-TAR-03 se conserva en el historial, aunque el caso actualmente está aprobado según la nueva ejecución.
+
+### 6.2. Casos complementarios
 
 | Caso | Funcionalidad | Estado |
 |---|---|---|
@@ -479,41 +463,43 @@ El cambio de estado funciona según QA, pero CP-TAR-06 todavía requiere comprob
 | EXT-TAR-02 | Validación de fechas | Aprobado |
 | EXT-TAR-03 | Cambio funcional de estado | Aprobado |
 
-Los casos complementarios se documentan de manera independiente sin modificar el inventario de 45 casos originales de HU-39.
+Los tres casos complementarios permanecen aprobados.
 
 ### 6.3. Resultado por criterio de aceptación
 
-| Criterio | Resultado |
+| Criterio | Estado |
 |---|---|
-| Creación | Aprobada |
-| Consulta | Aprobada |
-| Edición | Fallida |
-| Eliminación | Aprobada |
-| Asignación de responsables | Bloqueada |
-| Cambio funcional de estado | Aprobado |
-| Fechas | Aprobadas |
-| Permisos del propietario | Bloqueados |
-| Cambio de estado exclusivo del asignado | Bloqueado |
+| Creación de tareas | Aprobado |
+| Consulta de tareas | Aprobado |
+| Edición de tareas | Aprobado |
+| Eliminación de tareas | Aprobado |
+| Asignación o cambio de responsables | Bloqueado |
+| Cambios funcionales de estado | Aprobado |
+| Validación de fechas | Aprobado |
+| Cambio de estado por usuario asignado | Aprobado |
+| Rechazo de cambio de estado por usuario no asignado | Aprobado |
+| Validaciones generales del formulario | Pendiente de completar |
 | Registro de resultados | Documentado |
 
-**Resultado general:** ejecución parcial con un defecto funcional identificado, restricciones de autorización no implementadas y verificaciones de formulario pendientes de completar.
+No se reportaron defectos funcionales activos en los casos originales aprobados.
 
-No corresponde declarar HU-42 completamente aprobada.
+La historia conserva un caso bloqueado y una verificación pendiente.
 
 ## 7. Inventario de evidencias
 
-Las siguientes referencias identifican las evidencias que deberán obtenerse y adjuntarse. No se afirma que ya hayan sido capturadas o subidas a GitHub.
+| ID | Descripción | Caso | Situación |
+|---|---|---|---|
+| EV-HU42-01 | Creación de tarea | CP-TAR-01 | Verificar incorporación |
+| EV-HU42-02 | Consulta de tareas | EXT-TAR-01 | Verificar incorporación |
+| EV-HU42-03 | Fallo inicial del botón Editar | CP-TAR-03 | Conservar si existe |
+| EV-HU42-04 | Eliminación de tarea | CP-TAR-04 | Verificar incorporación |
+| EV-HU42-05 | Cambio funcional de estado | EXT-TAR-03 | Verificar incorporación |
+| EV-HU42-06 | Validación de fechas | EXT-TAR-02 | Verificar incorporación |
+| EV-HU42-07 | Edición corregida de tarea | CP-TAR-03 | Pendiente de adjuntar |
+| EV-HU42-08 | Cambio de estado por usuario asignado | CP-TAR-06 | Pendiente de adjuntar |
+| EV-HU42-09 | Rechazo de cambio por usuario no asignado | CP-TAR-07 | Pendiente de adjuntar |
 
-| ID | Evidencia requerida | Caso |
-|---|---|---|
-| EV-HU42-01 | Creación correcta de una tarea | CP-TAR-01 |
-| EV-HU42-02 | Consulta de tareas | EXT-TAR-01 |
-| EV-HU42-03 | Botón Editar sin respuesta; preferiblemente video corto o registro de interacción | CP-TAR-03 |
-| EV-HU42-04 | Eliminación de una tarea de prueba | CP-TAR-04 |
-| EV-HU42-05 | Cambio funcional de estado | EXT-TAR-03 |
-| EV-HU42-06 | Validación de fechas | EXT-TAR-02 |
-
-### 7.1. Ubicación propuesta
+### 7.1. Ubicación en el repositorio
 
 `docs/qa/evidencias/hu-42/`
 
@@ -526,15 +512,16 @@ EV-HU42-03-error-edicion-tarea.png
 EV-HU42-04-eliminacion-tarea.png
 EV-HU42-05-cambio-estado.png
 EV-HU42-06-validacion-fechas.png
+EV-HU42-07-edicion-corregida.png
+EV-HU42-08-estado-usuario-asignado.png
+EV-HU42-09-rechazo-usuario-no-asignado.png
 ```
 
-Si el archivo de evidencia está en otro formato, debe conservarse su extensión real y actualizarse su referencia.
+Conservar las extensiones reales de los archivos. No se deben crear evidencias ficticias para completar el inventario.
 
-Para el caso EV-HU42-03, una captura puede mostrar el botón Editar, pero no demostrar por sí sola que no responde. Es recomendable acompañarla de un video breve o una descripción reproducible de los pasos y del resultado.
+### 7.2. Evidencias visuales
 
-### 7.2. Incorporación de evidencias
-
-Una vez adjuntados los archivos con los nombres anteriores, se podrán añadir estas referencias al documento:
+Cuando las capturas estén incorporadas, sus enlaces podrán registrarse así:
 
 **EV-HU42-01 — Creación de tarea**
 
@@ -544,9 +531,9 @@ Una vez adjuntados los archivos con los nombres anteriores, se podrán añadir e
 
 ![Consulta de tareas](evidencias/hu-42/EV-HU42-02-consulta-tareas.png)
 
-**EV-HU42-03 — Fallo del botón Editar**
+**EV-HU42-03 — Fallo inicial de edición**
 
-![Fallo de edición](evidencias/hu-42/EV-HU42-03-error-edicion-tarea.png)
+![Fallo inicial de edición](evidencias/hu-42/EV-HU42-03-error-edicion-tarea.png)
 
 **EV-HU42-04 — Eliminación de tarea**
 
@@ -554,39 +541,38 @@ Una vez adjuntados los archivos con los nombres anteriores, se podrán añadir e
 
 **EV-HU42-05 — Cambio funcional de estado**
 
-![Cambio de estado](evidencias/hu-42/EV-HU42-05-cambio-estado.png)
+![Cambio funcional de estado](evidencias/hu-42/EV-HU42-05-cambio-estado.png)
 
 **EV-HU42-06 — Validación de fechas**
 
 ![Validación de fechas](evidencias/hu-42/EV-HU42-06-validacion-fechas.png)
 
-Las capturas deben revisarse para evitar publicar contraseñas, tokens, claves de API o información sensible.
+Para las pruebas de autorización, las evidencias deben permitir distinguir el rol o condición del usuario que intenta modificar el estado, sin exponer credenciales.
 
-## 8. Dependencias, riesgos y acciones pendientes
+La comprobación del rechazo debería incluir también el estado final de la tarea, para respaldar que no fue modificada indebidamente.
 
-1. Registrar DEF-HU42-01 como incidencia en Jira y vincularla a SCRUM-58.
-2. Corregir el funcionamiento del botón Editar y reejecutar CP-TAR-03.
-3. Implementar la asignación y el cambio de responsable de tareas.
-4. Verificar que el propietario tenga únicamente los permisos definidos en las historias vigentes.
-5. Comprobar que solo el asignado pueda modificar el estado, según HU-31.
-6. Ejecutar la prueba negativa de cambio de estado por integrante no asignado.
-7. Verificar las restricciones de autorización tanto desde Angular como mediante políticas RLS en Supabase.
-8. Completar las validaciones restantes del formulario previstas en CP-TAR-02.
-9. Documentar las fechas y transiciones concretas utilizadas en las pruebas.
-10. Incorporar las evidencias visuales disponibles.
-11. Registrar la rama, commit, navegador y fecha de ejecución.
-12. Reejecutar los casos afectados cuando desarrollo integre las correcciones pendientes.
+## 8. Dependencias y acciones pendientes
+
+1. Confirmar la implementación de la asignación y cambio de responsables desde la aplicación.
+2. Ejecutar CP-TAR-05 cuando se encuentre disponible la funcionalidad.
+3. Completar CP-TAR-02 con las validaciones generales de campos obligatorios y datos inválidos.
+4. Incorporar evidencias de la edición corregida y de los cambios de estado permitidos y rechazados.
+5. Verificar y documentar la persistencia de las modificaciones realizadas.
+6. Registrar el identificador definitivo y el estado de la incidencia de edición en Jira.
+7. Registrar fechas, navegador, rama y commit del frontend probado.
+8. Comprobar las restricciones RLS mediante solicitudes autenticadas no privilegiadas, si estas pruebas forman parte de la validación requerida y todavía no se han ejecutado.
+9. Actualizar los resultados y la trazabilidad si se incorporan nuevas funcionalidades de asignación.
 
 ## 9. Estado de HU-42
 
-**Estado:** ejecución parcial, con defecto funcional abierto y casos bloqueados por implementación pendiente.
+**Estado:** ejecución parcial actualizada, con cinco casos originales aprobados, uno bloqueado y uno pendiente de completar.
 
-Las pruebas reportadas de creación, consulta y eliminación de tareas presentan resultados favorables. También funcionan, según QA, las validaciones de fechas y el mecanismo general de cambio de estado.
+Las funcionalidades de creación, consulta, edición y eliminación de tareas fueron reportadas como satisfactorias. También funcionan las validaciones de fechas y el cambio general de estado.
 
-La edición no cumple el comportamiento esperado porque el botón Editar no responde. Este defecto se documenta como DEF-HU42-01, pendiente de registro o vinculación con Jira y posterior corrección.
+La edición de tareas fue corregida y aprobada en la nueva ejecución reportada por QA. El defecto inicial permanece documentado para conservar el historial de pruebas.
 
-Las comprobaciones relacionadas con responsables, permisos del propietario y cambio de estado exclusivo del asignado permanecen bloqueadas.
+Se aprobaron las comprobaciones de cambio de estado por usuario asignado y rechazo del cambio realizado por un usuario no asignado, conforme al comportamiento solicitado por HU-31.
 
-No se reportaron otros defectos confirmados. Los escenarios que todavía no pueden ejecutarse no se consideran pruebas fallidas.
+La asignación o cambio de responsables desde la aplicación todavía no está confirmada como implementada. Las validaciones generales del formulario permanecen pendientes de completar.
 
-El documento puede incorporarse al repositorio y presentarse a revisión como registro parcial de HU-42. La historia no debe declararse completamente aprobada hasta resolver el defecto y verificar los criterios pendientes, o contar con una decisión formal del equipo sobre su alcance.
+La documentación puede actualizarse y presentarse a revisión. HU-42 no debe declararse completamente aprobada mientras existan criterios pendientes o bloqueados.
