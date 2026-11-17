@@ -3,6 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { SUPABASE_CLIENT } from '../../../core/supabase/supabase-client';
 import {
   Task,
+  TaskAssignee,
   TaskRow,
   TaskStatus,
   isOverdue,
@@ -83,6 +84,25 @@ export class TaskBoardService {
           : task
       )
     );
+  }
+
+  /**
+   * Reemplaza los responsables de una tarea cargada, sin volver a consultar.
+   * Se usa después de guardar la asignación de responsables en Supabase
+   * (`projects/data/task-assignments.service.ts`) para que la tarjeta se actualice al momento.
+   */
+  setAssignees(taskId: string, assignees: readonly TaskAssignee[]): Task | null {
+    let updated: Task | null = null;
+    this.tasksState.update((list) =>
+      list.map((task) => {
+        if (task.id !== taskId) {
+          return task;
+        }
+        updated = { ...task, assignees };
+        return updated;
+      })
+    );
+    return updated;
   }
 
   /** Con silent se recarga sin vaciar el tablero ni mostrar "Cargando…". */

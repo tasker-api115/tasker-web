@@ -18,6 +18,12 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleAlert, lucideUserPlus } from '@ng-icons/lucide';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { ZardDialogImports } from '@/shared/components/dialog/dialog.imports';
+import { AssigneePicker } from '../../../projects/components/assignee-picker/assignee-picker';
+import { ProjectMember } from '../../../projects/data/project-detail.model';
+import {
+  TaskAssignmentsService,
+  assigneesErrorMessage,
+} from '../../../projects/data/task-assignments.service';
 import { TaskBoardService, UpdateTaskResult } from '../../data/task-board.service';
 import {
   createTaskEditForm,
@@ -25,7 +31,7 @@ import {
   formValueToDraft,
   taskToFormValue,
 } from '../../data/task-form';
-import { TASK_STATUS_LABELS, Task } from '../../data/task.model';
+import { TASK_STATUS_LABELS, Task, makeAssignee } from '../../data/task.model';
 
 type UpdateTaskFailure = Extract<UpdateTaskResult, { ok: false }>['reason'];
 
@@ -57,7 +63,7 @@ const TEXTAREA_CLASSES =
  */
 @Component({
   selector: 'app-edit-task-dialog',
-  imports: [ReactiveFormsModule, NgIcon, ZardDialogImports, ZardButtonComponent],
+  imports: [ReactiveFormsModule, NgIcon, ZardDialogImports, ZardButtonComponent, AssigneePicker],
   viewProviders: [provideIcons({ lucideCircleAlert, lucideUserPlus })],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-task-dialog.html',
@@ -65,11 +71,14 @@ const TEXTAREA_CLASSES =
 })
 export class EditTaskDialog {
   private readonly board = inject(TaskBoardService);
+  private readonly assignments = inject(TaskAssignmentsService);
   private readonly formElement = viewChild<ElementRef<HTMLFormElement>>('taskForm');
   private wasOpen = false;
 
   readonly task = input<Task | null>(null);
   readonly projectName = input('');
+  /** Integrantes registrados en el proyecto (HU-51): los únicos que se pueden asignar. */
+  readonly members = input<readonly ProjectMember[]>([]);
   /** Visibilidad del modal, enlazable con `[(open)]`. */
   readonly open = model(false);
   /** Se emite con la tarea ya guardada en Supabase. */
@@ -79,6 +88,8 @@ export class EditTaskDialog {
   protected readonly submitted = signal(false);
   protected readonly saving = signal(false);
   protected readonly saveError = signal<string | null>(null);
+  /** Responsables elegidos en el formulario. */
+  protected readonly selectedAssignees = signal<readonly string[]>([]);
 
   protected readonly inputClasses = INPUT_CLASSES;
   protected readonly textareaClasses = TEXTAREA_CLASSES;
@@ -92,7 +103,11 @@ export class EditTaskDialog {
   protected readonly dirty = computed(() => {
     this.formValue();
     const task = this.task();
-    return task !== null && draftDiffersFrom(formValueToDraft(this.form.getRawValue()), task);
+    return (
+      task !== null &&
+      (draftDiffersFrom(formValueToDraft(this.form.getRawValue()), task) ||
+        this.assigneesChanged(task))
+    );
   });
 
   protected readonly assigneeNames = computed(
@@ -113,6 +128,7 @@ export class EditTaskDialog {
           this.form.enable();
           this.submitted.set(false);
           this.saveError.set(null);
+          this.selectedAssignees.set(task.assignees.map((assignee) => assignee.id));
         }
         this.wasOpen = isOpen;
       });
@@ -152,8 +168,10 @@ export class EditTaskDialog {
     }
 
     const draft = formValueToDraft(this.form.getRawValue());
+    const draftChanged = draftDiffersFrom(draft, task);
+    const assigneesChanged = this.assigneesChanged(task);
 
-    if (!draftDiffersFrom(draft, task)) {
+    if (!draftChanged && !assigneesChanged) {
       this.open.set(false);
       return;
     }
@@ -161,18 +179,68 @@ export class EditTaskDialog {
     this.saving.set(true);
     this.form.disable({ emitEvent: false });
 
-    const result = await this.board.update(task.id, draft);
+    try {
+      let saved = task;
 
-    this.saving.set(false);
-    this.form.enable({ emitEvent: false });
+      if (draftChanged) {
+        const result = await this.board.update(task.id, draft);
+        if (!result.ok) {
+          this.saveError.set(SAVE_ERROR_MESSAGES[result.reason]);
+          return;
+        }
+        saved = result.task;
+      }
 
-    if (result.ok) {
-      this.updated.emit(result.task);
+      if (assigneesChanged) {
+        /*
+         * Responsables: se guardan en `ejecuta` después de los datos de la tarea.
+         * TODO(backend): no es atómico con el UPDATE de `tarea`; ver la RPC sugerida en
+         * projects/data/task-assignments.service.ts.
+         */
+        const nextIds = this.selectedAssignees();
+        const assigned = await this.assignments.replace(
+          task.id,
+          task.assignees.map((assignee) => assignee.id),
+          nextIds,
+          this.members().map((member) => member.id),
+        );
+
+        if (!assigned.ok) {
+          if (draftChanged) {
+            // Los datos sí se guardaron: se avisa para no ocultar ese cambio.
+            this.updated.emit(saved);
+            this.saveError.set(
+              `Se guardaron los datos de la tarea, pero no los responsables. ${assigneesErrorMessage(assigned.reason)}`,
+            );
+          } else {
+            this.saveError.set(assigneesErrorMessage(assigned.reason));
+          }
+          return;
+        }
+
+        const names = new Map(this.members().map((member) => [member.id, member.name]));
+        saved =
+          this.board.setAssignees(
+            task.id,
+            nextIds.map((id) => makeAssignee(id, names.get(id) ?? 'Sin nombre')),
+          ) ?? saved;
+      }
+
+      this.updated.emit(saved);
       this.open.set(false);
-      return;
+    } catch {
+      this.saveError.set(SAVE_ERROR_MESSAGES.unknown);
+    } finally {
+      this.saving.set(false);
+      this.form.enable({ emitEvent: false });
     }
+  }
 
-    this.saveError.set(SAVE_ERROR_MESSAGES[result.reason]);
+  /** Los responsables marcados difieren de los guardados. */
+  private assigneesChanged(task: Task): boolean {
+    const current = new Set(task.assignees.map((assignee) => assignee.id));
+    const next = this.selectedAssignees();
+    return next.length !== current.size || next.some((id) => !current.has(id));
   }
 
   private focusFirstInvalid(): void {

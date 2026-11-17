@@ -119,25 +119,12 @@
         </div>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <span class="text-sm font-medium">Responsables</span>
-
-        <button
-          z-button
-          zType="outline"
-          type="button"
-          class="w-full"
-          [zDisabled]="true"
-          aria-describedby="task-assignees-help"
-        >
-          <ng-icon name="lucideUserPlus" aria-hidden="true" />
-          Seleccionar integrantes
-        </button>
-
-        <p id="task-assignees-help" class="text-xs text-muted-foreground">
-          La asignación de responsables todavía no está disponible.
-        </p>
-      </div>
+      <app-assignee-picker
+        label="Responsables"
+        [members]="members()"
+        [(selected)]="selectedAssignees"
+        [disabled]="saving() || !!assignWarning()"
+      />
 
       <span
         class="w-fit rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground"
@@ -157,6 +144,16 @@
           {{ message }}
         </p>
       }
+      
+      @if (assignWarning(); as message) {
+        <p
+          role="alert"
+          class="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive"
+        >
+          {{ message }}
+        </p>
+      }
+
     </form>
 
     <z-dialog-footer>
@@ -167,7 +164,7 @@
         z-dialog-close
         [zDisabled]="saving()"
       >
-        Cancelar
+        {{ assignWarning() ? 'Cerrar' : 'Cancelar' }}
       </button>
 
       <button
