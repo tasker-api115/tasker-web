@@ -167,6 +167,7 @@
     [(open)]="editOpen"
     [task]="selectedTask()"
     [projectName]="projectName()"
+    [members]="members()"
     (updated)="onUpdated($event)"
   />
   <app-change-task-status-dialog
