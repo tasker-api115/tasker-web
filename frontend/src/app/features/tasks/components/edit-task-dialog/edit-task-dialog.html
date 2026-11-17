@@ -30,7 +30,7 @@
             aria-hidden="true"
           />
           <div>
-            <p class="font-medium text-destructive">No se pudo guardar la tarea</p>
+            <p class="font-medium text-destructive">No se pudo guardar todo</p>
             <p class="text-muted-foreground">{{ message }}</p>
           </div>
         </div>
@@ -123,23 +123,12 @@
         </div>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <span class="text-sm font-medium">Responsables</span>
-        <button
-          z-button
-          zType="outline"
-          type="button"
-          class="w-full"
-          [zDisabled]="true"
-          aria-describedby="edit-task-assignees-help"
-        >
-          <ng-icon name="lucideUserPlus" aria-hidden="true" />
-          {{ assigneeNames() }}
-        </button>
-        <p id="edit-task-assignees-help" class="text-xs text-muted-foreground">
-          La asignación de responsables todavía no está disponible.
-        </p>
-      </div>
+      <app-assignee-picker
+        label="Responsables"
+        [members]="members()"
+        [(selected)]="selectedAssignees"
+        [disabled]="saving()"
+      />
 
       <span class="w-fit rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
         Estado · {{ statusLabels[current.status] }}

@@ -40,7 +40,7 @@ import {
   Task,
   TaskStatus,
 } from '../../../tasks/data/task.model';
-import { ProjectTask } from '../../data/project-detail.model';
+import { ProjectMember, ProjectTask } from '../../data/project-detail.model';
 import { formatProjectDate } from '../../utils/format-project-date';
 
 interface BoardColumn {
@@ -122,6 +122,8 @@ export class ProjectKanban {
   readonly tasks = input<readonly ProjectTask[]>([]);
   /** El propietario puede eliminar tareas y mover cualquiera. */
   readonly isOwner = input(false);
+  /** Integrantes del proyecto (HU-51): los únicos que se pueden asignar como responsables. */
+  readonly members = input<readonly ProjectMember[]>([]);
   /** Se emite con el id de la tarea eliminada para que la página actualice sus datos. */
   readonly taskDeleted = output<string>();
   /** Se emite cuando una tarea cambió de estado y quedó guardada. */

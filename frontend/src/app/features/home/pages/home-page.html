@@ -7,24 +7,25 @@
   <z-card>
     <z-card-header>
       <z-badge zType="secondary" class="w-fit mb-4">Comienza aquí</z-badge>
-      <h2 z-card-title id="start-title" zTitle="Haz espacio para lo importante"></h2>
+      <h2 z-card-title id="start-title" zTitle="Tus proyectos, en un solo lugar"></h2>
       <p
         z-card-description
-        zDescription="Todo empieza con una tarea. Conoce tu nuevo espacio de trabajo."
+        zDescription="Crea proyectos, invita a tu equipo y sigue el avance de cada uno."
       ></p>
     </z-card-header>
     <z-card-content>
       <div class="flex items-start gap-4 text-muted-foreground">
         <ng-icon name="lucideSquareCheck" size="24" aria-hidden="true" />
         <p class="max-w-[640px]">
-          La sección de tareas ya tiene su lugar. Las funciones para crear, asignar y dar
-          seguimiento se incorporarán en próximas entregas.
+          En cada proyecto puedes organizar las tareas en un tablero Kanban, asignar
+          responsables entre los integrantes, revisar el cronograma y consultar el porcentaje
+          de avance según las tareas completadas.
         </p>
       </div>
     </z-card-content>
     <z-card-footer
-      ><a z-button zSize="lg" routerLink="/tareas"
-        >Explorar tareas <ng-icon name="lucideArrowRight" aria-hidden="true" /></a
+      ><a z-button zSize="lg" routerLink="/proyectos"
+        >Explorar proyectos <ng-icon name="lucideArrowRight" aria-hidden="true" /></a
     ></z-card-footer>
   </z-card>
 </section>
